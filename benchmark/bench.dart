@@ -6,6 +6,7 @@ library services.bench;
 
 import 'dart:async';
 
+import 'package:services/src/analysis_server.dart';
 import 'package:services/src/analyzer.dart';
 import 'package:services/src/bench.dart';
 import 'package:services/src/common.dart';
@@ -27,6 +28,9 @@ void main(List<String> args) {
     new Dart2jsBenchmark('hello', sampleCode),
     new Dart2jsBenchmark('hellohtml', sampleCodeWeb),
     new Dart2jsBenchmark('sunflower', _sunflower),
+
+    new ASCompletionBenchmark('hello', sampleCode),
+    new ASCompletionBenchmark('hellohtml', sampleCodeWeb),
   ];
 
   harness.benchmark(benchmarks);
@@ -56,6 +60,19 @@ class Dart2jsBenchmark extends Benchmark {
       if (!result.success) throw result;
     });
   }
+}
+
+class ASCompletionBenchmark extends Benchmark {
+  final String source;
+  AnalysisServerWrapper analysisServer;
+
+  ASCompletionBenchmark(String name, this.source) : super('as.complete.${name}') {
+    analysisServer = new AnalysisServerWrapper(sdkPath);
+  }
+
+  Future perform() => analysisServer.codeComplete(source, 20);
+
+  Future tearDown() => analysisServer.dispose();
 }
 
 final String _sunflower = '''

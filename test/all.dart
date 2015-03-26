@@ -4,6 +4,7 @@
 
 library services.all_test;
 
+import 'analysis_server_test.dart' as analysis_server_test;
 import 'analyzer_test.dart' as analyzer_test;
 import 'bench_test.dart' as bench_test;
 import 'common_server_test.dart' as common_server_test;
@@ -12,6 +13,7 @@ import 'compiler_test.dart' as compiler_test;
 import 'pub_test.dart' as pub_test;
 
 void main() {
+  analysis_server_test.defineTests();
   analyzer_test.defineTests();
   bench_test.defineTests();
   common_server_test.defineTests();

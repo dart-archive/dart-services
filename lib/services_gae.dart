@@ -9,24 +9,28 @@ import 'dart:io' as io;
 import 'dart:convert' as convert;
 
 import 'package:appengine/appengine.dart' as ae;
+import 'package:cli_util/cli_util.dart';
 import 'package:gcloud/db.dart' as db;
-
 import 'package:logging/logging.dart';
 import 'package:memcache/memcache.dart';
 import 'package:rpc/rpc.dart' as rpc;
-import 'src/common_server.dart';
 
-import 'src/completer_driver.dart' as completer;
+import 'src/common_server.dart';
 import 'src/sharded_counter.dart' as counter;
 
 const String _API = '/api';
 
 final Logger _logger = new Logger('gae_server');
 
-void main() {
-  // TODO: Use the cli_util package to locate the SDK? Or depend on a CLI arg?
-  GaeServer server = new GaeServer('/usr/lib/dart');
-  completer.setup();
+void main(List<String> args) {
+  io.Directory sdkDir = getSdkDir(args);
+
+  if (sdkDir == null) {
+    throw 'No Dart SDk available; set the DART_SDK env variable or pass '
+        '--dart-sdk on the command line.';
+  }
+
+  GaeServer server = new GaeServer(sdkDir.path);
 
   // Change the log level to get more or less detailed logging.
   ae.useLoggingPackageAdaptor();

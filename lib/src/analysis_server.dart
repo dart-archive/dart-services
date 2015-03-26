@@ -2,22 +2,64 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library services.completer_driver;
+/// A wrapper around an analysis server instance.
+library services.analysis_server;
 
 import 'dart:io' as io;
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
-import 'package:logging/logging.dart';
 
 import 'package:analysis_server/src/protocol.dart';
+import 'package:logging/logging.dart';
 
-final Logger _logger = new Logger('completer_driver');
+// TODO: call setup()
+
+final Logger _logger = new Logger('analysis_server');
+
+/// A wraper around an analysis server instance.
+class AnalysisServerWrapper {
+  final String sdkPath;
+
+  AnalysisServerWrapper(this.sdkPath) {
+    // TODO:
+
+  }
+
+  Future<CompletionResult> codeComplete(String source, int offset) {
+    // TODO:
+
+
+    return new Future.delayed(new Duration(milliseconds: 500), () {
+      return new CompletionResult(offset, 0, []);
+    });
+  }
+
+  Future dispose() {
+    // TODO:
+
+    return new Future.value();
+  }
+}
+
+class CompletionResult {
+  final int replaceOffset;
+  final int replaceLength;
+  final List<Map> results;
+
+//  List<Map> results = response['results'];
+//  results.sort((x, y) => -1 * x['relevance'].compareTo(y['relevance']));
+//  return new CompleteResponse(response['replacementOffset'],
+//      response['replacementLength'], results);
+
+  CompletionResult(this.replaceOffset, this.replaceLength, this.results) {
+    results.sort((x, y) => -1 * x['relevance'].compareTo(y['relevance']));
+  }
+}
 
 io.Directory sourceDirectory = io.Directory.systemTemp.createTempSync('analysisServer');
 
 // GAE configurations.
-String PACKAGE_ROOT = '/app/packages';
 String SDK = '/usr/lib/dart';
 String SERVER_PATH = "/app/lib/src/analysis_server_server.dart";
 bool NEEDS_ENABLE_ASYNC = true;
@@ -396,7 +438,6 @@ class Server {
     //arguments.add ("8181");
 
     if (NEEDS_ENABLE_ASYNC) arguments.add('--enable-async');
-    arguments.add('-p$PACKAGE_ROOT');
     //arguments.add('--enable-vm-service=8183');
     //arguments.add('--profile');
     if (debugServer) {
@@ -483,12 +524,9 @@ class Server {
   }
 }
 
-
-///
 /// Class to support merging multiple streams together into one so that
 /// the first item can be extracted from either, this is used for blocking
 /// on either a result or an error.
-///
 class MergeStream {
   final StreamController controller = new StreamController();
 
@@ -498,5 +536,3 @@ class MergeStream {
     stream.listen(controller.add);
  }
 }
-
-

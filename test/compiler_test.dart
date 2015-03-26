@@ -4,16 +4,16 @@
 
 library services.compiler_test;
 
+import 'package:cli_util/cli_util.dart';
 import 'package:services/src/common.dart';
 import 'package:services/src/compiler.dart';
-import 'package:grinder/grinder.dart' as grinder;
 import 'package:unittest/unittest.dart';
 
 void defineTests() {
   Compiler compiler;
 
   group('compiler', () {
-    String sdkPath = grinder.getSdkDir().path;
+    String sdkPath = getSdkDir().path;
 
     setUp(() {
       compiler = new Compiler(sdkPath);
