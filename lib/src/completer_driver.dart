@@ -8,9 +8,9 @@ import 'dart:io' as io;
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
-import 'package:logging/logging.dart';
 
 import 'package:analysis_server/src/protocol.dart';
+import 'package:logging/logging.dart';
 
 final Logger _logger = new Logger('completer_driver');
 
@@ -29,13 +29,13 @@ Server server;
  */
 typedef void NotificationProcessor(String event, params);
 
-Stream<bool> analysisComplete;
+Stream<bool> get analysisComplete => _onServerStatus.stream;
 StreamController<bool> _onServerStatus;
 
-Stream<Map> completionResults;
+Stream<Map> get completionResults => _onCompletionResults.stream;
 StreamController<Map> _onCompletionResults;
 
-Stream<Map> errors;
+Stream<Map> get errors => _onErrors.stream;
 StreamController<Map> _onErrors;
 
 io.File f = new io.File(sourceDirectory.path + io.Platform.pathSeparator + "main.dart");
@@ -61,14 +61,9 @@ Future setup() async {
 
   server = new Server();
 
-  _onServerStatus = new StreamController<bool>(sync: true);
-  analysisComplete = _onServerStatus.stream.asBroadcastStream();
-
-  _onCompletionResults = new StreamController(sync: true);
-  completionResults = _onCompletionResults.stream.asBroadcastStream();
-
-  _onErrors = new StreamController(sync: true);
-  errors = _onErrors.stream.asBroadcastStream();
+  _onServerStatus = new StreamController.broadcast(sync: true);
+  _onCompletionResults = new StreamController.broadcast(sync: true);
+  _onErrors = new StreamController.broadcast(sync: true);
 
   _logger.fine("Server about to start");
 
@@ -92,7 +87,6 @@ Future setup() async {
   _logger.fine("Setup done");
 
   return analysisComplete.first;
-
 }
 
 Future<Map> _complete(String src, int offset) async {
@@ -483,12 +477,9 @@ class Server {
   }
 }
 
-
-///
 /// Class to support merging multiple streams together into one so that
 /// the first item can be extracted from either, this is used for blocking
 /// on either a result or an error.
-///
 class MergeStream {
   final StreamController controller = new StreamController();
 
@@ -498,5 +489,3 @@ class MergeStream {
     stream.listen(controller.add);
  }
 }
-
-
