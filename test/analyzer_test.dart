@@ -4,12 +4,12 @@
 
 library services.analyzer_test;
 
+import 'package:cli_util/cli_util.dart';
 import 'package:services/src/analyzer.dart';
 import 'package:services/src/common.dart';
-import 'package:grinder/grinder.dart' as grinder;
 import 'package:unittest/unittest.dart';
 
-String sdkPath = grinder.getSdkDir().path;
+String sdkPath = getSdkDir().path;
 
 void defineTests() {
   Analyzer analyzer;
