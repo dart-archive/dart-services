@@ -22,6 +22,7 @@ import 'package:logging/logging.dart';
 
 import 'api_classes.dart';
 import 'common.dart';
+import 'package:analysis_server/src/services/correction/fix.dart' as fix;
 
 
 Logger _logger = new Logger('analyzer');
@@ -76,6 +77,10 @@ class Analyzer {
         .toList();
 
       List<AnalysisIssue> issues = errors.map((_Error error) {
+        List<fix.Fix> f = fix.computeFixes(_context.resolveCompilationUnit(_source, _context.computeLibraryElement(_source)),error.error);
+        if (f.isNotEmpty) {
+          // issue has fixes
+        }
         return new AnalysisIssue(
             error.severityName, error.line, error.message,
             location: error.location,
