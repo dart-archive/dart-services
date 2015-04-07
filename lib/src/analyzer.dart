@@ -250,7 +250,7 @@ class Analyzer {
     if (emptyArguments) {
       index = 0;
     } else if (argument is NamedExpression) {
-      NamedExpression namedArgument = argument as NamedExpression;
+      NamedExpression namedArgument = argument;
       String name = namedArgument.name.label.toString();
       //check if we can find the namedArgument in the list of parameters
       try {
