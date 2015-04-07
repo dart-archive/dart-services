@@ -251,26 +251,28 @@ class Analyzer {
       index = 0;
     } else if (argument is NamedExpression) {
       NamedExpression namedArgument = argument;
-      String name = namedArgument.name.label.toString();
+      String nameOfArgument = namedArgument.name.label.toString();
       //check if we can find the namedArgument in the list of parameters
       try {
-        var activeParameter = parameters.firstWhere((parameter) => parameter.name == name);
+        var activeParameter = parameters.firstWhere(
+                (parameter) => parameter.name == nameOfArgument);
         index = parameters.indexOf(activeParameter);
       } on StateError {
         index = null;
       }
       // if we can't find a match, index will be null
       // which means that the user has misspelled the named parameter
-    } else {
+    } else if (argument is Expression){
+      Expression arg = argument;
       // so if it is a positional argument
-      index = argList.arguments.indexOf(argument);
-      if (argList.getPropagatedParameterElementFor(argument) == null
-          && argList.getStaticParameterElementFor(argument) == null) {
+      if (arg.propagatedParameterElement == null && arg.staticParameterElement == null) {
         index = null;
+      } else {
+        index = argList.arguments.indexOf(argument);
       }
     }
 
-    if (index >= parameters.length) {
+    if (index != null && index >= parameters.length) {
       index = null;
     }
 
