@@ -215,7 +215,9 @@ class Analyzer {
 
     bool emptyArguments = false;
     while (true) {
-      if (argument.parent == null || argument.parent.parent == null) {
+      if (argument == argument.parent) {
+        throw 'self-cyclic AST';
+      } else if (argument.parent == null || argument.parent.parent == null) {
         argument = null;
         method = null;
         break;
