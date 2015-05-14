@@ -110,6 +110,8 @@ class Analyzer {
 
   Map<String, String> _computeDartdocInfo(CompilationUnit unit, int offset) {
     AstNode node = new NodeLocator.con1(offset).searchWithin(unit);
+    Map info = {};
+    AstNode argument = node;
 
     if (node.parent is TypeName &&
         node.parent.parent is ConstructorName &&
@@ -124,7 +126,6 @@ class Analyzer {
 
     if (node is Expression) {
       Expression expression = node;
-      Map info = {};
 
       // element
       Element element = ElementLocator.locateWithOffset(expression, offset);
@@ -199,11 +200,94 @@ class Analyzer {
       if (expression.propagatedType != null) {
         info['propagatedType'] = '${_prettifyType(expression.propagatedType)}';
       }
-
+    }
+    Map infoAsArgument = _computeArgumentInfo(argument);
+    if (infoAsArgument != null) {
+      info['infoAsArgument'] = infoAsArgument;
+    }
+    if (info.isEmpty) {
+      return null;
+    } else {
       return info;
     }
+  }
 
-    return null;
+  Map _computeArgumentInfo(AstNode argument) {
+    var method;
+
+    bool emptyArguments = false;
+    while (true) {
+      if (argument == argument.parent) {
+        throw 'self-cyclic AST';
+      } else if (argument.parent == null || argument.parent.parent == null) {
+        argument = null;
+        method = null;
+        break;
+      } else if (argument.parent is ArgumentList) {
+        method = argument.parent.parent;
+        break;
+      } else if (argument is ArgumentList) {
+        emptyArguments = true;
+        method = argument.parent;
+        break;
+      }
+      argument = argument.parent;
+    }
+
+    if (method == null
+        || !(method is MethodInvocation || method is InstanceCreationExpression))
+      return null;
+
+    // method is either InstanceCreationExpression or MethodInvocation
+    // both have the getter argumentList
+    ArgumentList argList = method.argumentList;
+
+    var e = ElementLocator.locateWithOffset(method, method.offset);
+    if (!(e is ExecutableElement)) {
+      return null;
+    }
+    ExecutableElement methodElement = e as ExecutableElement;
+    // list of parameters associated with the method
+    List<ParameterElement> parameters = methodElement.parameters;
+
+    int index;
+    if (emptyArguments) {
+      index = 0;
+    } else if (argument is NamedExpression) {
+      NamedExpression namedArgument = argument;
+      String nameOfArgument = namedArgument.name.label.toString();
+      //check if we can find the namedArgument in the list of parameters
+      try {
+        var activeParameter = parameters.firstWhere(
+                (parameter) => parameter.name == nameOfArgument);
+        index = parameters.indexOf(activeParameter);
+      } on StateError {
+        index = null;
+      }
+      // if we can't find a match, index will be null
+      // which means that the user has misspelled the named parameter
+    } else if (argument is Expression){
+      Expression arg = argument;
+      // so if it is a positional argument
+      if (arg.propagatedParameterElement == null && arg.staticParameterElement == null) {
+        index = null;
+      } else {
+        index = argList.arguments.indexOf(argument);
+      }
+    }
+
+    if (index != null && index >= parameters.length) {
+      index = null;
+    }
+
+    return  {
+      "name" : emptyArguments ? "" : argument.toString(),
+      "kind" : index == null ? null : parameters[index].parameterKind.toString(),
+      "indexActiveArgument" : index,
+      "parameters" :  parameters.map((param) => '${param}').toList(),
+      "lParenOffset" : argList.leftParenthesis.offset,
+      "rParenOffset" : argList.rightParenthesis.offset,
+    };
   }
 
   // TODO(lukechurch): Determine whether we can change this in the Analyzer.
