@@ -18,6 +18,7 @@ import 'package:shelf_cors/shelf_cors.dart' as shelf_cors;
 import 'package:shelf_route/shelf_route.dart';
 
 import 'src/common_server.dart';
+import 'src/db_server.dart';
 
 const Map _textPlainHeader = const {HttpHeaders.CONTENT_TYPE: 'text/plain'};
 const Map _jsonHeader = const {HttpHeaders.CONTENT_TYPE: 'application/json'};
@@ -29,6 +30,7 @@ void main(List<String> args) {
   parser.addOption('port', abbr: 'p', defaultsTo: '8080');
   parser.addOption('dart-sdk');
   parser.addFlag('discovery');
+  parser.addFlag('database');
   parser.addOption('server-url', defaultsTo: 'http://localhost');
 
   var result = parser.parse(args);
@@ -39,18 +41,26 @@ void main(List<String> args) {
 
   Directory sdkDir = cli_util.getSdkDir(args);
   if (sdkDir == null) {
-    stdout.writeln(
-        "Could not locate the SDK; "
+    stdout.writeln("Could not locate the SDK; "
         "please start the server with the '--dart-sdk' option.");
     exit(1);
   }
 
   if (result['discovery']) {
     var serverUrl = result['server-url'];
-    EndpointsServer.generateDiscovery(sdkDir.path, serverUrl).then((doc) {
-      print(doc);
-      exit(0);
-    });
+    if (result['database']) {
+      EndpointsServer
+          .generateDatabaseDiscovery(sdkDir.path, serverUrl)
+          .then((doc) {
+        print(doc);
+        exit(0);
+      });
+    } else {
+      EndpointsServer.generateDiscovery(sdkDir.path, serverUrl).then((doc) {
+        print(doc);
+        exit(0);
+      });
+    }
     return;
   }
 
@@ -66,31 +76,41 @@ class EndpointsServer {
   static Future<EndpointsServer> serve(String sdkPath, int port) {
     EndpointsServer endpointsServer = new EndpointsServer._(sdkPath, port);
 
-    return shelf.serve(
-        endpointsServer.handler, InternetAddress.ANY_IP_V4, port).then((server) {
+    return shelf
+        .serve(endpointsServer.handler, InternetAddress.ANY_IP_V4, port)
+        .then((server) {
       endpointsServer.server = server;
       return endpointsServer;
     });
   }
 
-  static Future<String> generateDiscovery(String sdkPath,
-                                          String serverUrl) async {
-    var commonServer = new CommonServer(
-        sdkPath,
-        new _ServerContainer(),
-        new _Cache(),
-        new _Recorder(),
-        new _Counter());
-    var apiServer =
-        new ApiServer(apiPrefix: '/api', prettyPrint: true)..addApi(commonServer);
+  static Future<String> generateDiscovery(
+      String sdkPath, String serverUrl) async {
+    var commonServer = new CommonServer(sdkPath, new _ServerContainer(),
+        new _Cache(), new _Recorder(), new _Counter());
+    var apiServer = new ApiServer(apiPrefix: '/api', prettyPrint: true)
+      ..addApi(commonServer);
     apiServer.enableDiscoveryApi();
 
     var uri = Uri.parse("/api/discovery/v1/apis/dartservices/v1/rest");
 
     var request =
-        new HttpApiRequest('GET',
-                           uri,
-                           {}, new Stream.fromIterable([]));
+        new HttpApiRequest('GET', uri, {}, new Stream.fromIterable([]));
+    HttpApiResponse response = await apiServer.handleHttpApiRequest(request);
+    return UTF8.decode(await response.body.first);
+  }
+
+  static Future<String> generateDatabaseDiscovery(
+      String sdkPath, String serverUrl) async {
+    var databaseServer = new DbServer();
+    var apiServer = new ApiServer(apiPrefix: '/api', prettyPrint: true)
+      ..addApi(databaseServer);
+    apiServer.enableDiscoveryApi();
+
+    var uri = Uri.parse("/api/discovery/v1/apis/_dbservices/v1/rest");
+
+    var request =
+        new HttpApiRequest('GET', uri, {}, new Stream.fromIterable([]));
     HttpApiResponse response = await apiServer.handleHttpApiRequest(request);
     return UTF8.decode(await response.body.first);
   }
@@ -108,22 +128,18 @@ class EndpointsServer {
 
   EndpointsServer._(String sdkPath, this.port) {
     discoveryEnabled = false;
-    commonServer = new CommonServer(
-        sdkPath,
-        new _ServerContainer(),
-        new _Cache(),
-        new _Recorder(),
-        new _Counter());
-    apiServer = new ApiServer(apiPrefix: '/api', prettyPrint: true)..addApi(commonServer);
+    commonServer = new CommonServer(sdkPath, new _ServerContainer(),
+        new _Cache(), new _Recorder(), new _Counter());
+    apiServer = new ApiServer(apiPrefix: '/api', prettyPrint: true)
+      ..addApi(commonServer);
 
     pipeline = new Pipeline()
-      .addMiddleware(logRequests())
-      .addMiddleware(_createCustomCorsHeadersMiddleware());
+        .addMiddleware(logRequests())
+        .addMiddleware(_createCustomCorsHeadersMiddleware());
 
     routes = router()
-        ..get('/', printUsage)
-        ..add('/api', ['GET', 'POST', 'OPTIONS'], _apiHandler,
-              exactMatch: false);
+      ..get('/', printUsage)
+      ..add('/api', ['GET', 'POST', 'OPTIONS'], _apiHandler, exactMatch: false);
     handler = pipeline.addHandler(routes.handler);
   }
 
@@ -135,14 +151,14 @@ class EndpointsServer {
     // NOTE: We could read in the request body here and parse it similar to
     // the _parseRequest method to determine content-type and dispatch to e.g.
     // a plain text handler if we want to support that.
-    var apiRequest = new HttpApiRequest(request.method, request.url,
-                                        request.headers,
-                                        request.read());
-    return apiServer.handleHttpApiRequest(apiRequest)
+    var apiRequest = new HttpApiRequest(
+        request.method, request.url, request.headers, request.read());
+    return apiServer
+        .handleHttpApiRequest(apiRequest)
         .then((HttpApiResponse apiResponse) {
-          return new Response(apiResponse.status, body: apiResponse.body,
-                              headers: apiResponse.headers);})
-        .catchError((e) => printUsage(request));
+      return new Response(apiResponse.status,
+          body: apiResponse.body, headers: apiResponse.headers);
+    }).catchError((e) => printUsage(request));
   }
 
   Response printUsage(Request request) {
@@ -154,10 +170,12 @@ View the available API calls at /api/discovery/v1/apis/dartservices/v1/rest.
   }
 
   Middleware _createCustomCorsHeadersMiddleware() {
-    return shelf_cors.createCorsHeadersMiddleware(corsHeaders: {
+    return shelf_cors.createCorsHeadersMiddleware(
+        corsHeaders: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+      'Access-Control-Allow-Headers':
+          'Origin, X-Requested-With, Content-Type, Accept'
     });
   }
 }
@@ -195,7 +213,7 @@ class _Counter implements PersistentCounter {
   }
 
   @override
-  Future increment(String name, {int increment : 1}) {
+  Future increment(String name, {int increment: 1}) {
     _map.putIfAbsent(name, () => 0);
     _map[name]++;
     return new Future.value();
