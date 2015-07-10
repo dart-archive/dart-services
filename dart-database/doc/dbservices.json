@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "cc60a2f953cab531cefc86c7e608e1c7d60ebb45",
+ "etag": "6ba665abbef0975cb2e0b7511b885ab241f03e80",
  "discoveryVersion": "v1",
  "id": "dbservices:v1",
  "name": "dbservices",
@@ -24,6 +24,9 @@
      "type": "string"
     },
     "css": {
+     "type": "string"
+    },
+    "UUID": {
      "type": "string"
     }
    }
@@ -55,7 +58,7 @@
   "returnContent": {
    "id": "dbServer.returnContent",
    "path": "return",
-   "httpMethod": "GET",
+   "httpMethod": "DELETE",
    "parameters": {
     "key": {
      "type": "string",

@@ -36,20 +36,19 @@ main(List<String> args) async {
   ae.runAppEngine(requestHandler);
 }
 
-Future requestHandler(HttpRequest request) async {
-  var apiResponse;
-  try {
-    var apiRequest = new HttpApiRequest.fromHttpRequest(request);
-    apiResponse =
-        await _apiServer.handleHttpApiRequest(apiRequest);
-  } catch (error, stack) {
-    var exception =
-        error is Error ? new Exception(error.toString()) : error;
-    apiResponse = new HttpApiResponse.error(
-        HttpStatus.INTERNAL_SERVER_ERROR, exception.toString(),
-        exception, stack);
-  }
-  return sendApiResponse(apiResponse, request.response);
+requestHandler(HttpRequest request) {
+  request.response.headers.add('Access-Control-Allow-Methods',
+      'POST, DELETE');
+  request.response.headers.add('Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept');
+  var apiRequest = new HttpApiRequest.fromHttpRequest(request);
+  _apiServer.handleHttpApiRequest(apiRequest)
+    .then((HttpApiResponse apiResponse) {
+      return sendApiResponse(apiResponse, request.response);
+  }).catchError((e) {
+      request.response..statusCode = HttpStatus.INTERNAL_SERVER_ERROR
+                    ..close();
+      });
 }
 
 Future<String> generateDiscovery() async {
