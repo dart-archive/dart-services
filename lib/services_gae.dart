@@ -46,45 +46,42 @@ class GaeServer {
   rpc.ApiServer apiServer;
   CommonServer commonServer;
   DbServer databaseServer;
-  
+
   GaeServer(this.sdkPath) {
     hierarchicalLoggingEnabled = true;
     _logger.level = Level.ALL;
 
     discoveryEnabled = false;
     databaseServer = new DbServer();
-    commonServer = new CommonServer(
-        sdkPath,
-        new GaeServerContainer(),
-        new GaeCache(),
-        new GaeSourceRequestRecorder(),
-        new GaeCounter());
+    commonServer = new CommonServer(sdkPath, new GaeServerContainer(),
+        new GaeCache(), new GaeSourceRequestRecorder(), new GaeCounter());
     // Enabled pretty printing of returned json for debuggability.
-    apiServer =
-        new rpc.ApiServer(apiPrefix: _API, prettyPrint: true)..addApi(commonServer)
-        ..addApi(databaseServer);
+    apiServer = new rpc.ApiServer(apiPrefix: _API, prettyPrint: true)
+      ..addApi(commonServer)
+      ..addApi(databaseServer);
   }
 
   Future start() => ae.runAppEngine(requestHandler);
 
   void requestHandler(io.HttpRequest request) {
-    request.response.headers.add('Access-Control-Allow-Methods',
-        'DELETE, POST, OPTIONS');
+    request.response.headers.add(
+        'Access-Control-Allow-Methods', 'DELETE, POST, OPTIONS');
     request.response.headers.add('Access-Control-Allow-Headers',
         'Origin, X-Requested-With, Content-Type, Accept');
 
     // Explicitly handle an OPTIONS requests.
     if (request.method == 'OPTIONS') {
       var requestedMethod =
-        request.headers.value('access-control-request-method');
+          request.headers.value('access-control-request-method');
       var statusCode;
       if (requestedMethod != null && requestedMethod.toUpperCase() == 'POST') {
         statusCode = io.HttpStatus.OK;
       } else {
         statusCode = io.HttpStatus.BAD_REQUEST;
       }
-      request.response..statusCode = statusCode
-                      ..close();
+      request.response
+        ..statusCode = statusCode
+        ..close();
       return;
     }
 
@@ -97,20 +94,23 @@ class GaeServer {
       // the _parseRequest method to determine content-type and dispatch to e.g.
       // a plain text handler if we want to support that.
       var apiRequest = new rpc.HttpApiRequest.fromHttpRequest(request);
-      apiServer.handleHttpApiRequest(apiRequest)
-        .then((rpc.HttpApiResponse apiResponse) {
-          return rpc.sendApiResponse(apiResponse, request.response);
+      apiServer
+          .handleHttpApiRequest(apiRequest)
+          .then((rpc.HttpApiResponse apiResponse) {
+        return rpc.sendApiResponse(apiResponse, request.response);
       }).catchError((e) {
-          // This should only happen in the case where there is a bug in the
-          // rpc package. Otherwise it always returns an HttpApiResponse.
-          _logger.warning('Failed with error: $e when trying to call'
+        // This should only happen in the case where there is a bug in the
+        // rpc package. Otherwise it always returns an HttpApiResponse.
+        _logger.warning('Failed with error: $e when trying to call'
             'method at \'${request.uri.path}\'.');
-          request.response..statusCode = io.HttpStatus.INTERNAL_SERVER_ERROR
-                        ..close();
-          });
+        request.response
+          ..statusCode = io.HttpStatus.INTERNAL_SERVER_ERROR
+          ..close();
+      });
     } else {
-      request.response..statusCode = io.HttpStatus.INTERNAL_SERVER_ERROR
-                       ..close();
+      request.response
+        ..statusCode = io.HttpStatus.INTERNAL_SERVER_ERROR
+        ..close();
     }
   }
 }
@@ -125,38 +125,38 @@ class GaeCache implements ServerCache {
   Future<String> get(String key) => _ignoreErrors(_memcache.get(key));
 
   Future set(String key, String value, {Duration expiration}) =>
-    _ignoreErrors(_memcache.set(key, value, expiration: expiration));
+      _ignoreErrors(_memcache.set(key, value, expiration: expiration));
 
   Future remove(String key) => _ignoreErrors(_memcache.remove(key));
 
   Future _ignoreErrors(Future f) {
     return f.catchError((error, stackTrace) {
       _logger.fine(
-          'Soft-ERR memcache API call (error: $error)',
-          error, stackTrace);
+          'Soft-ERR memcache API call (error: $error)', error, stackTrace);
     });
   }
 }
 
 class GaeSourceRequestRecorder implements SourceRequestRecorder {
   @override
-  Future record(String verb, String source, [int offset = -99, maxRetries = 3]) {
+  Future record(String verb, String source,
+      [int offset = -99, maxRetries = 3]) {
     if (maxRetries < 0) {
       _logger.warning("Soft-ERR: Max retries exceeded in SourceRequest.record");
       return new Future.value(null);
     }
 
     int ms = new DateTime.now().millisecondsSinceEpoch;
-    GaeSourceRecordBlob record = new GaeSourceRecordBlob.FromData(
-        ms, verb, source, offset);
+    GaeSourceRecordBlob record =
+        new GaeSourceRecordBlob.FromData(ms, verb, source, offset);
 
     return new Future.sync(() => db.dbService.commit(inserts: [record]))
-      .catchError((error, stackTrace) {
+        .catchError((error, stackTrace) {
       _logger.fine(
-          'Soft-ERR SourceRequestRecorder.record failed (error: $error)',
-            error, stackTrace);
-        return this.record(verb, source, offset, maxRetries -1);
-      });
+          'Soft-ERR SourceRequestRecorder.record failed (error: $error)', error,
+          stackTrace);
+      return this.record(verb, source, offset, maxRetries - 1);
+    });
   }
 }
 
@@ -167,7 +167,7 @@ class GaeCounter implements PersistentCounter {
   }
 
   @override
-  Future increment(String name, {int increment : 1}) {
+  Future increment(String name, {int increment: 1}) {
     return counter.Counter.increment(name, increment: increment);
   }
 }
