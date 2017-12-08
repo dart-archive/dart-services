@@ -86,8 +86,6 @@ class DownloadingSdk extends Sdk {
     String url = 'https://storage.googleapis.com/dart-archive/channels/'
         '$channel/release/$_versionFull/sdk/$zipName';
 
-    print(url);
-
     _logger.info('Downloading from $url');
 
     File destFile = new File(path.join(Directory.systemTemp.path, zipName));
