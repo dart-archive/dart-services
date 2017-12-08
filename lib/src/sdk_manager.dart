@@ -81,8 +81,6 @@ class DownloadingSdk extends Sdk {
       throw 'platform ${Platform.operatingSystem} not supported';
     }
 
-    print(_versionFull);
-
     String url = 'https://storage.googleapis.com/dart-archive/channels/'
         '$channel/release/$_versionFull/sdk/$zipName';
 
