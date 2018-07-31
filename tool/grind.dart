@@ -85,6 +85,8 @@ void coverage() {
   PubApp coveralls = new PubApp.global('dart_coveralls');
   coveralls.run([
     'report',
+    '-E',
+    '-C',
     '--token',
     _env['REPO_TOKEN'],
     '--retry',
