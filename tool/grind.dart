@@ -76,6 +76,7 @@ void deploy() {
 }
 
 @Task()
+@Depends(init)
 void coverage() {
   if (!_env.containsKey('REPO_TOKEN')) {
     log("env var 'REPO_TOKEN' not found");
