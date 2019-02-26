@@ -1,4 +1,4 @@
-FROM google/dart:2.2.0
+FROM google/dart-runtime:2.2.0
 
 WORKDIR /app
 ADD tool/dart_run.sh /dart_runtime/
