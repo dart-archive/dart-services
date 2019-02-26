@@ -34,7 +34,7 @@ void serve() {
       Platform.executable, ['bin/server_dev.dart', '--port', '8082']);
 }
 
-final _dockerVersionMatcher = RegExp(r'^FROM google/dart-runtime:(.*)$');
+final _dockerVersionMatcher = RegExp(r'^FROM google/dart:(.*)$');
 final _dartSdkVersionMatcher = RegExp(r'(^\d+[.]\d+[.]\d+.*)');
 @Task('Update the docker and SDK versions')
 void updateDockerVersion() {
