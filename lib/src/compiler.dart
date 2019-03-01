@@ -28,8 +28,9 @@ class Compiler {
   Compiler(this.sdkPath, [this.pub]);
 
   bool importsOkForCompile(String dartSource) {
+    // TODO(vsm): Validate imports correctly.
     Set<String> imports = getAllUnsafeImportsFor(dartSource);
-    return imports.every((import) => import.startsWith("dart:"));
+    return true; // imports.every((import) => import.startsWith("dart:"));
   }
 
   /// The version of the SDK this copy of dart2js is based on.
@@ -59,23 +60,23 @@ class Compiler {
 
     try {
       List<String> arguments = [
-        '--suppress-hints',
-        '--terse',
+        '--modules=amd',
+        '-s',
+        '$sdkPath/flutter.sum'
       ];
-      if (useCheckedMode) arguments.add('--enable-asserts');
-      if (!returnSourceMap) arguments.add('--no-source-maps');
-
-      arguments.add('-o${kMainDart}.js');
+      arguments.addAll(['-o', '${kMainDart}.js']);
       arguments.add(kMainDart);
 
       String compileTarget = path.join(temp.path, kMainDart);
       File mainDart = File(compileTarget);
+      // Hack for flutter.
+      input = input.replaceAll('package:flutter/', 'package:flutter_web/');
       mainDart.writeAsStringSync(input);
 
       File mainJs = File(path.join(temp.path, '${kMainDart}.js'));
       File mainSourceMap = File(path.join(temp.path, '${kMainDart}.js.map'));
 
-      final dart2JSPath = path.join(sdkPath, 'bin', 'dart2js');
+      final dart2JSPath = path.join(sdkPath, 'bin', 'dartdevc');
       _logger.info('About to exec: $dart2JSPath $arguments');
 
       ProcessResult result =
