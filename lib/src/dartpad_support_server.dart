@@ -126,7 +126,7 @@ class FileRelayServer {
     final int limit = 4;
     int attemptCount = 0;
     String randomUuid;
-    List<dynamic> result = <dynamic>[];
+    List<dynamic> result;
     do {
       randomUuid = uuid_tools.Uuid().v4();
       result = await _databaseQuery<_GistMapping>('internalId =', randomUuid);
