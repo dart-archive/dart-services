@@ -67,7 +67,7 @@ class FileRelayServer {
       if (inserts != null) {
         for (dynamic insertObject in inserts) {
           if (!database.containsKey(getTypeName(insertObject))) {
-            database[getTypeName(insertObject)] = List<dynamic>();
+            database[getTypeName(insertObject)] = <dynamic>[];
           }
           database[getTypeName(insertObject)].add(insertObject);
         }
@@ -216,10 +216,7 @@ class GistToInternalIdMapping {
 
   GistToInternalIdMapping();
 
-  GistToInternalIdMapping.fromIds(String gistId, String internalId) {
-    this.gistId = gistId;
-    this.internalId = internalId;
-  }
+  GistToInternalIdMapping.fromIds(this.gistId, this.internalId);
 }
 
 /// Internal storage representation for storage of pads.
@@ -245,11 +242,10 @@ class _GaePadSaveObject extends db.Model {
   }
 
   _GaePadSaveObject.fromData(String dart, String html, String css,
-      {String uuid}) {
+      {this.uuid}) {
     this.dart = _gzipEncode(dart);
     this.html = _gzipEncode(html);
     this.css = _gzipEncode(css);
-    this.uuid = uuid;
     this.epochTime = DateTime.now().millisecondsSinceEpoch;
   }
 
