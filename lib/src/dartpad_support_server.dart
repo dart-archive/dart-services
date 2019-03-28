@@ -118,7 +118,7 @@ class FileRelayServer {
       }));
       _logger.info("Deleted Export with ID ${record.uuid}");
     }
-    return PadSaveObject.fromRecordSource(record);
+    return Future<PadSaveObject>.value(PadSaveObject.fromRecordSource(record));
   }
 
   @ApiMethod(method: 'GET', path: 'getUnusedMappingId')
@@ -176,7 +176,7 @@ class FileRelayServer {
     } else {
       _GistMapping entry = result.first;
       _logger.info("Mapping with ID ${id} retrieved.");
-      return UuidContainer.fromUuid(entry.gistId);
+      return Future<UuidContainer>.value(UuidContainer.fromUuid(entry.gistId));
     }
   }
 }
