@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: always_specify_types
-
 /// A benchmark library. This library supports running benchmarks which can
 /// run asynchronously.
 library services.bench;
@@ -16,12 +14,12 @@ abstract class Benchmark {
 
   Benchmark(this.name);
 
-  Future init() => Future.value();
+  Future<void> init() => Future<void>.value();
 
-  Future perform();
+  Future<void> perform();
 
   /// Called once when this benchmark will no longer be used.
-  Future tearDown() => Future.value();
+  Future<void> tearDown() => Future<void>.value();
 
   @override
   String toString() => name;
@@ -35,7 +33,7 @@ class BenchmarkHarness {
 
   BenchmarkHarness({this.asJson, this.logger = print});
 
-  Future benchmark(List<Benchmark> benchmarks) async {
+  Future<void> benchmark(List<Benchmark> benchmarks) async {
     if (isCheckedMode()) {
       logger(
           'WARNING: You are running in checked mode. Benchmarks should be run in unchecked,\n'
@@ -45,18 +43,18 @@ class BenchmarkHarness {
     log('Running ${benchmarks.length} benchmarks.');
     log('');
 
-    List<BenchMarkResult> results = [];
+    List<BenchMarkResult> results = <BenchMarkResult>[];
 
     await Future.forEach(benchmarks, (Benchmark benchmark) => benchmark.init());
 
-    return Future.forEach(benchmarks, (benchmark) {
-      return benchmarkSingle(benchmark).then((result) {
+    return Future.forEach(benchmarks, (Benchmark benchmark) {
+      return benchmarkSingle(benchmark).then((BenchMarkResult result) {
         results.add(result);
       });
     }).then((_) {
       if (asJson) {
         logger(json.encode(results
-            .map((r) => {r.benchmark.name: r.averageMilliseconds()})
+            .map((BenchMarkResult r) => <String, num>{r.benchmark.name: r.averageMilliseconds()})
             .toList()));
       }
     });
@@ -69,7 +67,7 @@ class BenchmarkHarness {
       logResult(result);
       return result;
     }).whenComplete(() {
-      return benchmark.tearDown().catchError((e) => null);
+      return benchmark.tearDown().catchError((dynamic e) => null);
     });
   }
 
@@ -81,7 +79,7 @@ class BenchmarkHarness {
     if (!asJson) logger(result.toString());
   }
 
-  Future _warmup(Benchmark benchmark) {
+  Future<BenchMarkResult> _warmup(Benchmark benchmark) {
     return _time(benchmark, 2, 1000);
   }
 
