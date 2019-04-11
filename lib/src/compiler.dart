@@ -28,8 +28,10 @@ class Compiler {
   String _sdkVersion;
 
   Compiler(this.sdkPath, this.flutterWebManager)
-      : _ddcDriver = BazelWorkerDriver(() => Process.start(
-            path.join(sdkPath, 'bin', 'dartdevc'), ['--persistent_worker'])) {
+      : _ddcDriver = BazelWorkerDriver(
+            () => Process.start(path.join(sdkPath, 'bin', 'dartdevc'),
+                <String>['--persistent_worker']),
+            maxWorkers: 1) {
     _sdkVersion = File('dart-sdk.version').readAsStringSync().trim();
   }
 
