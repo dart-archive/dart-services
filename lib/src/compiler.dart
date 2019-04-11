@@ -85,7 +85,7 @@ class Compiler {
       if (result.exitCode != 0) {
         final CompilationResults results =
             CompilationResults(problems: <CompilationProblem>[
-          CompilationProblem._(result.stdout),
+          CompilationProblem._(result.stdout as String),
         ]);
         return results;
       } else {
@@ -149,7 +149,7 @@ class Compiler {
 
       if (result.exitCode != 0) {
         return DDCCompilationResults.failed(<CompilationProblem>[
-          CompilationProblem._(result.stdout),
+          CompilationProblem._(result.stdout as String),
         ]);
       } else {
         final DDCCompilationResults results = DDCCompilationResults(

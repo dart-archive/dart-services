@@ -132,6 +132,7 @@ bool isCheckedMode() {
   try {
     String result = 'foo';
     result = '${result}bar';
+    // ignore: invalid_assignment
     result = _intVal;
     return false;
   } catch (e) {

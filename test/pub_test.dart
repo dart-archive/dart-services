@@ -95,7 +95,7 @@ import 'dart:math';
 import 'package:../foo/foo.dart';
 void main() { }
 ''';
-      Set imports = getAllImportsFor(source);
+      Set<String> imports = getAllImportsFor(source);
       expect(
           imports, unorderedMatches(['dart:math', 'package:../foo/foo.dart']));
       expect(filterSafePackagesFromImports(imports), isEmpty);
@@ -105,7 +105,7 @@ void main() { }
       final String source = '''
 import 'dart:../bar.dart';
 ''';
-      Set imports = getAllImportsFor(source);
+      Set<String> imports = getAllImportsFor(source);
       expect(imports, unorderedMatches(['dart:../bar.dart']));
       expect(filterSafePackagesFromImports(imports), isEmpty);
     });
@@ -114,7 +114,7 @@ import 'dart:../bar.dart';
       final String source = '''
 import '../foo.dart';
 ''';
-      Set imports = getAllImportsFor(source);
+      Set<String> imports = getAllImportsFor(source);
       expect(imports, unorderedMatches(['../foo.dart']));
       expect(filterSafePackagesFromImports(imports), isEmpty);
     });
