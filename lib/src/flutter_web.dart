@@ -52,11 +52,7 @@ $_samplePackageName:lib/
   }
 
   Future<void> warmup() async {
-    try {
-      await initFlutterWeb();
-    } catch (_) {
-      // ignore any exception here
-    }
+    await initFlutterWeb();
   }
 
   Future<void> initFlutterWeb() async {
