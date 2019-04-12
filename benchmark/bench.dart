@@ -22,8 +22,8 @@ void main(List<String> args) async {
   final BenchmarkHarness harness = BenchmarkHarness(asJson: json);
 
   final FlutterWebManager flutterWebManager = FlutterWebManager(sdkPath);
-  // Fetches the flutter web summary files etc from google cloud storage.
-  await flutterWebManager.warmup();
+  await flutterWebManager.initFlutterWeb();
+
   var compiler = Compiler(sdkPath, flutterWebManager);
 
   Logger.root.level = Level.WARNING;
