@@ -31,7 +31,7 @@ void main(List<String> args) {
   parser.addOption('server-url', defaultsTo: 'http://localhost');
 
   ArgResults result = parser.parse(args);
-  num port = int.tryParse(result['port'] as String);
+  int port = int.tryParse(result['port'] as String);
   if (port == null) {
     stdout.writeln(
         'Could not parse port value "${result['port']}" into a number.');
@@ -61,7 +61,7 @@ void main(List<String> args) {
     if (record.stackTrace != null) print(record.stackTrace);
   });
 
-  EndpointsServer.serve(sdk, port.toInt()).then((EndpointsServer server) {
+  EndpointsServer.serve(sdk, port).then((EndpointsServer server) {
     _logger.info('Listening on port ${server.port}');
   });
 }
