@@ -17,27 +17,27 @@ import 'package:rpc/rpc.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:test/test.dart';
 
-String quickFixesCode = r'''
+const quickFixesCode = r'''
 import 'dart:async';
 void main() {
   int i = 0;
 }
 ''';
 
-String preFormattedCode = r'''
+const preFormattedCode = r'''
 void main()
 {
 int i = 0;
 }
 ''';
 
-String postFormattedCode = r'''
+const postFormattedCode = r'''
 void main() {
   int i = 0;
 }
 ''';
 
-String formatBadCode = r'''
+const formatBadCode = r'''
 void main()
 {
   print('foo')
