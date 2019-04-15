@@ -16,14 +16,10 @@ void defineTests() {
   FlutterWebManager flutterWebManager;
 
   group('compiler', () {
-    setUpAll(() async {
+    setUp(() async {
       flutterWebManager = FlutterWebManager(sdkPath);
 
       compiler = Compiler(sdkPath, flutterWebManager);
-    });
-
-    tearDownAll(() async {
-      await compiler.dispose();
     });
 
     test('simple', () {
