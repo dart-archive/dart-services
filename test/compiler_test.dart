@@ -36,7 +36,7 @@ void defineTests() {
       });
     });
 
-    test('simple ddc', () {
+    test('compileDDC simple', () {
       return compiler
           .compileDDC(sampleCode)
           .then((DDCCompilationResults result) {
@@ -48,7 +48,7 @@ void defineTests() {
       });
     });
 
-    test('compileDDC with web', (){
+    test('compileDDC with web', () {
       return compiler
           .compileDDC(sampleCodeWeb)
           .then((DDCCompilationResults result) {
@@ -60,7 +60,7 @@ void defineTests() {
       });
     });
 
-    test('compileDDC with async', (){
+    test('compileDDC with async', () {
       return compiler
           .compileDDC(sampleCodeAsync)
           .then((DDCCompilationResults result) {
@@ -72,26 +72,29 @@ void defineTests() {
       });
     });
 
-
-    test('compileDDC with single error', (){
+    test('compileDDC with single error', () {
       return compiler
           .compileDDC(sampleCodeError)
           .then((DDCCompilationResults result) {
         expect(result.success, false);
         expect(result.problems.length, 1);
-        expect(result.problems[0].toString(), contains('[error] Expected to find \';\'.'));
+        expect(result.problems[0].toString(),
+            contains('[error] Expected to find \';\'.'));
       });
     });
 
-    test('compileDDC with multiple errors', (){
+    test('compileDDC with multiple errors', () {
       return compiler
           .compileDDC(sampleCodeErrors)
           .then((DDCCompilationResults result) {
         expect(result.success, false);
         expect(result.problems.length, 1);
-        expect(result.problems[0].toString(), contains('[error] The function \'print1\' isn\'t defined.'));
-        expect(result.problems[0].toString(), contains('[error] The function \'print2\' isn\'t defined.'));
-        expect(result.problems[0].toString(), contains('[error] The function \'print3\' isn\'t defined.'));
+        expect(result.problems[0].toString(),
+            contains('[error] The function \'print1\' isn\'t defined.'));
+        expect(result.problems[0].toString(),
+            contains('[error] The function \'print2\' isn\'t defined.'));
+        expect(result.problems[0].toString(),
+            contains('[error] The function \'print3\' isn\'t defined.'));
       });
     });
 
