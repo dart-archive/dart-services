@@ -5,7 +5,6 @@
 import 'dart:io';
 import 'dart:typed_data' show Uint8List;
 
-import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
 
@@ -69,17 +68,15 @@ $_samplePackageName:lib/
     File(path.join(_projectDirectory.path, 'pubspec.yaml'))
         .writeAsStringSync(pubspec);
 
+    final Uint8List contents =
+        Uint8List.fromList(File('flutter_web.sum').readAsBytesSync());
+    final String flutterWebPath =
+        path.join(_projectDirectory.path, 'flutter_web.sum');
+    File(flutterWebPath)..writeAsBytesSync(contents);
+    _logger.info('$flutterWebPath written');
+
     _runPubGet();
 
-    final String sdkVersion =
-        File('dart-sdk.version').readAsStringSync().trim();
-
-    // download and save the flutter_web.sum file
-    String url = 'https://storage.googleapis.com/compilation_artifacts/'
-        '$sdkVersion/flutter_web.sum';
-    Uint8List summaryContents = await http.readBytes(url);
-    File(path.join(_projectDirectory.path, 'flutter_web.sum'))
-        .writeAsBytesSync(summaryContents);
 
     _initedFlutterWeb = true;
   }

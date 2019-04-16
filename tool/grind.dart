@@ -6,6 +6,7 @@ library services.grind;
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data' show Uint8List;
 
 import 'package:dart_services/src/flutter_web.dart';
 import 'package:grinder/grinder.dart';
@@ -30,14 +31,26 @@ Future test() => TestRunner().testAsync();
 @Depends(analyze, test)
 void analyzeTest() => null;
 
-@Task()
+@Task('Retrieve Flutter Web Summary file')
 @Depends(init)
-void serve() {
-  // You can run the `grind serve` command, or just run
-  // `dart bin/server_dev.dart --port 8002` locally.
+Future<void> flutterWebSummary() async {
+  final String sdkVersion = File('dart-sdk.version').readAsStringSync().trim();
 
-  Process.runSync(
-      Platform.executable, ['bin/server_dev.dart', '--port', '8082']);
+  // download and save the flutter_web.sum file
+  String url = 'https://storage.googleapis.com/compilation_artifacts/'
+      '$sdkVersion/flutter_web.sum';
+  Uint8List summaryContents = await http.readBytes(url);
+  File('flutter_web.sum').writeAsBytesSync(summaryContents);
+}
+
+@Task()
+@Depends(init, flutterWebSummary)
+Future<void> serve() async {
+  await Process.start(Platform.executable, ['bin/server_dev.dart', '--port', '8002'])
+      .then((Process process) {
+    stdout.addStream(process.stdout);
+    stderr.addStream(process.stderr);
+  });
 }
 
 final _dockerVersionMatcher = RegExp(r'^FROM google/dart-runtime:(.*)$');
@@ -95,7 +108,7 @@ Future _validateExists(String url) async {
   if (response.statusCode != 200) {
     fail(
       'compilation artifact not found: $url '
-      '(${response.statusCode} ${response.reasonPhrase})',
+          '(${response.statusCode} ${response.reasonPhrase})',
     );
   }
 }
@@ -190,7 +203,8 @@ void fuzz() {
 }
 
 @Task('Update discovery files and run all checks prior to deployment')
-@Depends(updateDockerVersion, init, discovery, analyze, test, fuzz)
+@Depends(updateDockerVersion, init, discovery, analyze, test, fuzz,
+    flutterWebSummary)
 void deploy() {
   log('Run: gcloud app deploy --project=dart-services --no-promote');
 }

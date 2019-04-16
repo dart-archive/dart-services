@@ -23,3 +23,6 @@ artifacts/
 
 # local configuration overrides
 config.properties
+
+# Generated files
+flutter_web.sum
