@@ -188,9 +188,8 @@ void fuzz() {
   log('warning: fuzz testing is a noop, see #301');
 }
 
-// TODO(domesticmouse): Add back `analyze` when we remove the flutter_web hack
 @Task('Update discovery files and run all checks prior to deployment')
-@Depends(updateDockerVersion, init, discovery, test, fuzz)
+@Depends(updateDockerVersion, init, discovery, analyze, test, fuzz)
 void deploy() {
   log('Run: gcloud app deploy --project=dart-services --no-promote');
 }
