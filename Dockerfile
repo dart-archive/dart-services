@@ -23,8 +23,7 @@ RUN rm -rf /app/flutter_web
 ADD flutter_web /flutter_web
 RUN echo "flutter_repo_path=/flutter_web" > /app/config.properties
 
-ENV PORT 8080
-EXPOSE ${PORT} 8181 5858
+EXPOSE 8080 8181 5858
 
 # Clear out any arguments the base images might have set and ensure we start
 # the Dart app using custom script enabling debug modes.
