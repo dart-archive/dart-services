@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-/// This library is a wrapper around the Dart to JavaScript (dart2js) compiler.
+/// This library is a wrapper around the dart2js and DDC compilers.
 library services.compiler;
 
 import 'dart:async';
@@ -18,20 +18,21 @@ import 'pub.dart';
 
 Logger _logger = Logger('compiler');
 
-/// An interface to the dart2js compiler. A compiler object can process one
-/// compile at a time.
+/// An interface to the dart2js and DDC compilers. A compiler object can process
+/// one compile at a time.
 class Compiler {
   final String sdkPath;
   final FlutterWebManager flutterWebManager;
 
-  final BazelWorkerDriver _ddcDriver;
+  BazelWorkerDriver _ddcDriver;
   String _sdkVersion;
 
-  Compiler(this.sdkPath, this.flutterWebManager)
-      : _ddcDriver = BazelWorkerDriver(
-            () => Process.start(path.join(sdkPath, 'bin', 'dartdevc'),
-                <String>['--persistent_worker']),
-            maxWorkers: 1) {
+  Compiler(this.sdkPath, this.flutterWebManager) {
+    _ddcDriver = BazelWorkerDriver(
+      () => Process.start(path.join(sdkPath, 'bin', 'dartdevc'),
+          <String>['--persistent_worker']),
+      maxWorkers: 1,
+    );
     _sdkVersion = File('dart-sdk.version').readAsStringSync().trim();
   }
 
@@ -217,6 +218,7 @@ class DDCCompilationResults {
 
   /// This is true if there were no errors.
   bool get success => problems.isEmpty;
+
   @override
   String toString() => success
       ? 'CompilationResults: Success'
