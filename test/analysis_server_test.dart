@@ -23,6 +23,16 @@ void main() {
 }
 ''';
 
+const completionLargeNamespaces = r'''
+class A {}
+class AB {}
+class ABC {}
+void main() {
+  var c = A
+}
+class ZZ {}
+''';
+
 const quickFixesCode = r'''
 void main() {
   int i = 0
@@ -92,7 +102,6 @@ void defineTests() {
     test('import_test', () {
       String testCode = "import '/'; main() { int a = 0; a. }";
 
-      //Just after i.
       return analysisServer
           .complete(testCode, 9)
           .then((CompleteResponse results) {
@@ -105,7 +114,6 @@ void defineTests() {
     test('import_and_other_test', () {
       String testCode = "import '/'; main() { int a = 0; a. }";
 
-      //Just after i.
       return analysisServer
           .complete(testCode, 34)
           .then((CompleteResponse results) {
@@ -114,7 +122,6 @@ void defineTests() {
     });
 
     test('simple_quickFix', () {
-      //Just after i.
       return analysisServer
           .getFixes(quickFixesCode, 25)
           .then((FixesResponse results) {
@@ -175,6 +182,20 @@ void defineTests() {
 
       AnalysisResults results = await analysisServer.analyze(sampleDart2OK);
       expect(results.issues, hasLength(0));
+    });
+
+    test('filter completions', () async {
+      // just after A
+      var idx = 61;
+      expect(completionLargeNamespaces.substring(idx - 1, idx), 'A');
+      return analysisServer
+          .complete(completionLargeNamespaces, 61)
+          .then((CompleteResponse results) {
+        expect(completionsContains(results, 'A'), true);
+        expect(completionsContains(results, 'AB'), true);
+        expect(completionsContains(results, 'ABC'), true);
+        expect(completionsContains(results, 'ZZ'), false);
+      });
     });
   });
 }

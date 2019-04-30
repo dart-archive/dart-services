@@ -332,7 +332,10 @@ class AnalysisServerWrapper {
       );
       CompletionResults results = await getCompletionResults(id.id);
       await _unloadSources();
-      return results;
+      var source = sources[_getPathFromName(sourceName)];
+      var prefix = source.substring(results.replacementOffset,
+          results.replacementOffset + results.replacementLength);
+      return _completionResultsOnlyWithPrefix(results, prefix);
     }, timeoutDuration: _ANALYSIS_SERVER_TIMEOUT));
   }
 
@@ -439,6 +442,15 @@ class AnalysisServerWrapper {
         }
       }
     });
+  }
+
+  CompletionResults _completionResultsOnlyWithPrefix(
+      CompletionResults results, String prevPattern) {
+    var filteredResults = results.results
+        .where((s) => s.completion.startsWith(prevPattern))
+        .toList();
+    return CompletionResults(results.id, results.replacementOffset,
+        results.replacementLength, filteredResults, results.isLast);
   }
 
   Future<CompletionResults> getCompletionResults(String id) {
