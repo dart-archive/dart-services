@@ -128,7 +128,8 @@ class AnalysisServerWrapper {
     var source = sources[location.sourceName];
     var prefix = source.substring(results.replacementOffset, location.offset);
     suggestions = suggestions
-        .where((s) => s.completion.startsWith(prefix))
+        .where(
+            (s) => s.completion.toLowerCase().startsWith(prefix.toLowerCase()))
         // This hack filters out of scope completions. It needs removing when we
         // have categories of completions.
         // TODO(devoncarew): Remove this filter code.

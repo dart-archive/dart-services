@@ -31,6 +31,7 @@ void main() {
   var c = A
 }
 class ZZ {}
+class a {}
 ''';
 
 const quickFixesCode = r'''
@@ -193,6 +194,7 @@ void defineTests() {
       expect(completionsContains(results, 'A'), true);
       expect(completionsContains(results, 'AB'), true);
       expect(completionsContains(results, 'ABC'), true);
+      expect(completionsContains(results, 'a'), true);
       expect(completionsContains(results, 'ZZ'), false);
     });
   });
