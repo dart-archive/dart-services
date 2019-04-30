@@ -188,14 +188,12 @@ void defineTests() {
       // just after A
       var idx = 61;
       expect(completionLargeNamespaces.substring(idx - 1, idx), 'A');
-      return analysisServer
-          .complete(completionLargeNamespaces, 61)
-          .then((CompleteResponse results) {
-        expect(completionsContains(results, 'A'), true);
-        expect(completionsContains(results, 'AB'), true);
-        expect(completionsContains(results, 'ABC'), true);
-        expect(completionsContains(results, 'ZZ'), false);
-      });
+      var results =
+          await analysisServer.complete(completionLargeNamespaces, 61);
+      expect(completionsContains(results, 'A'), true);
+      expect(completionsContains(results, 'AB'), true);
+      expect(completionsContains(results, 'ABC'), true);
+      expect(completionsContains(results, 'ZZ'), false);
     });
   });
 }
