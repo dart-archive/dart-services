@@ -9,8 +9,6 @@ import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
 
-import 'config.dart';
-
 Logger _logger = Logger('flutter_web');
 
 /// Handle provisioning package:flutter_web and related work.
