@@ -29,7 +29,6 @@ void main() {
 void setupDartpadServices() {
   setupExport();
   setupRetrieve();
-  setupSummary();
   setupIdRetrieval();
   setupGistStore();
   setupGistRetrieval();

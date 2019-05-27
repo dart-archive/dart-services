@@ -92,6 +92,8 @@ class AnalysisServerWrapper {
         await _sendAddOverlays(<String, String>{mainPath: _WARMUP_SRC});
         await analysisComplete.future;
         await _sendRemoveOverlays();
+
+        return analysisServer;
       });
     }
 
@@ -112,15 +114,10 @@ class AnalysisServerWrapper {
     });
   }
 
-  Future<api.CompleteResponse> complete(String src, int offset) {
-    return completeMulti(
-      <String, String>{kMainDart: src},
-      api.Location.from(kMainDart, offset),
-    );
-  }
+  Future<api.CompleteResponse> complete(String src, int offset) async {
+    Map<String, String> sources = <String, String>{kMainDart: src};
+    api.Location location = api.Location.from(kMainDart, offset);
 
-  Future<api.CompleteResponse> completeMulti(
-      Map<String, String> sources, api.Location location) async {
     CompletionResults results =
         await _completeImpl(sources, location.sourceName, location.offset);
     List<CompletionSuggestion> suggestions = results.results;
@@ -227,10 +224,8 @@ class AnalysisServerWrapper {
   }
 
   Future<api.AnalysisResults> analyze(String source) {
-    return analyzeMulti(<String, String>{kMainDart: source});
-  }
+    Map<String, String> sources = <String, String>{kMainDart: source};
 
-  Future<api.AnalysisResults> analyzeMulti(Map<String, String> sources) {
     _logger
         .fine('analyzeMulti: Scheduler queue: ${serverScheduler.queueCount}');
 
@@ -312,7 +307,7 @@ class AnalysisServerWrapper {
   /// Cleanly shutdown the Analysis Server.
   Future<dynamic> shutdown() {
     // TODO(jcollins-g): calling dispose() sometimes prevents
-    // --pause-isolates-on-exit from working.  Fix.
+    // --pause-isolates-on-exit from working; fix.
     return analysisServer.server
         .shutdown()
         .timeout(Duration(seconds: 1))
