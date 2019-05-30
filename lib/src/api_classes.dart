@@ -232,6 +232,19 @@ class SourceEdit {
   }
 }
 
+class AssistsRequest {
+  @ApiProperty(required: true, description: 'The Dart source.')
+  String source;
+
+  @ApiProperty(description: 'An optional offset into the source code.')
+  int offset;
+}
+
+class AssistsResponse {
+  List<CandidateFix> assists;
+  AssistsResponse(this.assists);
+}
+
 /// The response from the `/version` service call.
 class VersionResponse {
   @ApiProperty(
