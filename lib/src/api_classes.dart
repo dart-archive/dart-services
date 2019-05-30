@@ -232,16 +232,9 @@ class SourceEdit {
   }
 }
 
-class AssistsRequest {
-  @ApiProperty(required: true, description: 'The Dart source.')
-  String source;
-
-  @ApiProperty(description: 'An optional offset into the source code.')
-  int offset;
-}
-
+/// The response from the `/assists` service call.
 class AssistsResponse {
-  List<CandidateFix> assists;
+  final List<CandidateFix> assists;
   AssistsResponse(this.assists);
 }
 

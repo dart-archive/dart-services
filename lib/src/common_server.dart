@@ -600,7 +600,7 @@ class CommonServer {
 
     Stopwatch watch = Stopwatch()..start();
     var response = await analysisServer.getAssists(source, offset);
-    log.info('PERF: Computed fixes in ${watch.elapsedMilliseconds}ms.');
+    log.info('PERF: Computed assists in ${watch.elapsedMilliseconds}ms.');
     return response;
   }
 
