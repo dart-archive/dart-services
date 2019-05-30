@@ -23,3 +23,7 @@ artifacts/
 
 # editor artifacts 
 .vscode/ 
+.idea
+
+# local configuration
+config.properties
