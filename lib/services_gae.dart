@@ -85,26 +85,41 @@ class GaeServer {
     apiServer = rpc.ApiServer(apiPrefix: _API, prettyPrint: true)
       ..addApi(commonServer)
       ..addApi(fileRelayServer);
-    
-    // Rotate the journal log files, as we don't have journal rotation in a Docker image without running init and systemd
+
+    // Rotate the journal log files, as we don't have journal rotation in a 
+    // Docker image without running init and systemd
     final rotationTime = Duration(hours: 1);
     journalRotator = Timer.periodic(rotationTime, (timer) async {
-      final rotationResults = await io.Process.run(_sudoBinary, [_journalctlBinary, '--rotate']);
-      if(rotationResults.exitCode != 0) {
-        _logger.severe('sudo journalctl --rotate failed:\n${rotationResults.stdout}\n${rotationResults.stderr}');
+      final rotationResults =
+          await io.Process.run(_sudoBinary, [_journalctlBinary, '--rotate']);
+      if (rotationResults.exitCode != 0) {
+        _logger.severe(
+            '''sudo journalctl --rotate failed:
+            ${rotationResults.stdout}
+            ${rotationResults.stderr}''');
       } else {
-        _logger.info('sudo journalctl --rotate succeeded: ${rotationResults.stdout}');
+        _logger.info(
+            'sudo journalctl --rotate succeeded: ${rotationResults.stdout}');
 
         // Trim to 256mb of journal logs
-        final vacuumResults = await io.Process.run(_sudoBinary, [_journalctlBinary,'--vacuum-size=268435456']);
+        final vacuumResults = await io.Process.run(
+            _sudoBinary, [_journalctlBinary, '--vacuum-size=268435456']);
         if (vacuumResults.exitCode != 0) {
-          _logger.severe('sudo journalctl --vacuum-size failed:\n${rotationResults.stdout}\n${rotationResults.stderr}');
+          _logger.severe(
+              '''sudo journalctl --vacuum-size failed:
+              ${rotationResults.stdout}
+              ${rotationResults.stderr}''');
         } else {
-          _logger.info('sudo journalctl --vacuum-size succeeded:\n${rotationResults.stdout}');
+          _logger.info(
+              '''sudo journalctl --vacuum-size succeeded:
+              ${rotationResults.stdout}''');
 
           // Log journal disk usage report
-          final usageResults = await io.Process.run(_sudoBinary, [_journalctlBinary, '--disk-usage']);
-          _logger.info('sudo journalctl --disk-usage:\n${usageResults.stdout}');
+          final usageResults = await io.Process.run(
+              _sudoBinary, [_journalctlBinary, '--disk-usage']);
+          _logger.info(
+            '''sudo journalctl --disk-usage:
+            ${usageResults.stdout}''');
         }
       }
     });
