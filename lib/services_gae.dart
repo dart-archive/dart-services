@@ -17,6 +17,8 @@ import 'src/dartpad_support_server.dart';
 import 'src/flutter_web.dart';
 
 const String _API = '/api';
+const String _livenessCheck = '/_ah/health';
+const String _readynessCheck = '/_ah/ready';
 
 final Logger _logger = Logger('gae_server');
 
@@ -88,7 +90,7 @@ class GaeServer {
     return ae.runAppEngine(requestHandler, port: gaePort);
   }
 
-  void requestHandler(io.HttpRequest request) {
+  Future<void> requestHandler(io.HttpRequest request) async {
     request.response.headers
         .add('Access-Control-Allow-Methods', 'POST, OPTIONS');
     request.response.headers.add('Access-Control-Allow-Headers',
@@ -104,9 +106,34 @@ class GaeServer {
       } else {
         statusCode = io.HttpStatus.badRequest;
       }
-      request.response
-        ..statusCode = statusCode
-        ..close();
+      request.response.statusCode = statusCode;
+      await request.response.close();
+      return;
+    }
+
+    if (request.uri.path == _readynessCheck) {
+      request.response.statusCode = io.HttpStatus.ok;
+      await request.response.close();
+      return;
+    }
+
+    if (request.uri.path == _livenessCheck) {
+      try {
+        var tempDir = await io.Directory.systemTemp.createTemp('livenessCheck');
+        var file = await io.File('${tempDir.path}/livecheck.txt');
+        await file.writeAsString('testing123\n' * 1000, flush: true);
+        var stat = await file.stat();
+        if (stat.size > 10000) {
+          request.response.statusCode = io.HttpStatus.ok;
+        } else {
+          request.response.statusCode = io.HttpStatus.internalServerError;
+        }
+        await request.response.close();
+      } catch (e) {
+        _logger.severe('Failed to create temporary file: $e');
+        request.response.statusCode = io.HttpStatus.internalServerError;
+        await request.response.close();
+      }
       return;
     }
 
@@ -123,24 +150,21 @@ class GaeServer {
 
       // Dartpad sends data as plain text, we need to promote this to
       // application/json to ensure that the rpc library processes it correctly
-      apiRequest.headers['content-type'] = 'application/json; charset=utf-8';
-      apiServer
-          .handleHttpApiRequest(apiRequest)
-          .then((rpc.HttpApiResponse apiResponse) {
-        return rpc.sendApiResponse(apiResponse, request.response);
-      }).catchError((dynamic e) {
+      try {
+        apiRequest.headers['content-type'] = 'application/json; charset=utf-8';
+        var apiResponse = await apiServer.handleHttpApiRequest(apiRequest);
+        await rpc.sendApiResponse(apiResponse, request.response);
+      } catch (e) {
         // This should only happen in the case where there is a bug in the rpc
         // package. Otherwise it always returns an HttpApiResponse.
         _logger.warning('Failed with error: $e when trying to call '
             'method at \'${request.uri.path}\'.');
-        request.response
-          ..statusCode = io.HttpStatus.internalServerError
-          ..close();
-      });
+        request.response.statusCode = io.HttpStatus.internalServerError;
+        await request.response.close();
+      }
     } else {
-      request.response
-        ..statusCode = io.HttpStatus.notFound
-        ..close();
+      request.response.statusCode = io.HttpStatus.notFound;
+      await request.response.close();
     }
   }
 }
