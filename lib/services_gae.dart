@@ -119,16 +119,17 @@ class GaeServer {
 
     if (request.uri.path == _livenessCheck) {
       try {
-        var tempDir = await io.Directory.systemTemp.createTemp('livenessCheck');
-        var file = await io.File('${tempDir.path}/livecheck.txt');
+        final tempDir = await io.Directory.systemTemp.createTemp('healthz');
+        final file = await io.File('${tempDir.path}/livecheck.txt');
         await file.writeAsString('testing123\n' * 1000, flush: true);
-        var stat = await file.stat();
+        final stat = await file.stat();
         if (stat.size > 10000) {
           request.response.statusCode = io.HttpStatus.ok;
         } else {
           request.response.statusCode = io.HttpStatus.internalServerError;
         }
         await request.response.close();
+        await tempDir.delete(recursive: true);
       } catch (e) {
         _logger.severe('Failed to create temporary file: $e');
         request.response.statusCode = io.HttpStatus.internalServerError;
