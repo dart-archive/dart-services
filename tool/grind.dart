@@ -20,10 +20,6 @@ void analyze() {
 }
 
 @Task()
-void init() => Dart.run('bin/update_sdk.dart');
-
-@Task()
-@Depends(init)
 Future test() => TestRunner().testAsync();
 
 @DefaultTask()
@@ -31,7 +27,6 @@ Future test() => TestRunner().testAsync();
 void analyzeTest() => null;
 
 @Task()
-@Depends(init)
 void serve() {
   // You can run the `grind serve` command, or just run
   // `dart bin/server_dev.dart --port 8002` locally.
@@ -101,7 +96,6 @@ Future _validateExists(String url) async {
 }
 
 @Task('build the sdk compilation artifacts for upload to google storage')
-@Depends(init)
 void buildStorageArtifacts() {
   // build and copy dart_sdk.js, flutter_web.js, and flutter_web.sum
   final Directory temp =
@@ -183,20 +177,19 @@ void _buildStorageArtifacts(Directory dir) {
 }
 
 @Task()
-@Depends(init)
 void fuzz() {
   log('warning: fuzz testing is a noop, see #301');
 }
 
 @Task('Update discovery files and run all checks prior to deployment')
-@Depends(updateDockerVersion, init, discovery, analyze, test, fuzz,
+@Depends(updateDockerVersion, discovery, analyze, test, fuzz,
     validateStorageArtifacts)
 void deploy() {
   log('Run: gcloud app deploy --project=dart-services --no-promote');
 }
 
 @Task()
-@Depends(init, discovery, analyze, fuzz)
+@Depends(discovery, analyze, fuzz)
 void buildbot() => null;
 
 @Task('Generate the discovery doc and Dart library from the annotated API')
