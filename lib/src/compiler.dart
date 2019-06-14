@@ -129,23 +129,31 @@ class Compiler {
     Directory temp = Directory.systemTemp.createTempSync('dartpad');
 
     try {
-      List<String> arguments = <String>[
-        '--modules=amd',
-      ];
-
-      if (flutterWebManager.usesFlutterWeb(imports)) {
-        arguments.addAll(<String>['-s', flutterWebManager.summaryFilePath]);
-      }
-
       String compileTarget = path.join(temp.path, kMainDart);
       File mainDart = File(compileTarget);
       mainDart.writeAsStringSync(input);
+      File pubspec = File(path.join(temp.path, 'pubspec.yaml'));
+      pubspec.writeAsStringSync('''
+name: dartpad_main
 
-      arguments.addAll(<String>['-o', path.join(temp.path, '$kMainDart.js')]);
-      arguments.add('--single-out-file');
-      arguments.addAll(<String>['--module-name', 'dartpad_main']);
-      arguments.add(compileTarget);
-      arguments.addAll(<String>['--library-root', temp.path]);
+environment:
+  sdk: '>=2.3.2 <3.0.0'
+
+dependencies:
+  test: ^1.6.4
+''');
+
+      final arguments = <String>[
+        '--modules=amd',
+        if (flutterWebManager.usesFlutterWeb(imports)) ...[
+          '-s',
+          flutterWebManager.summaryFilePath
+        ],
+        ...['-o', path.join(temp.path, '$kMainDart.js')],
+        '--single-out-file',
+        compileTarget,
+        ...['--library-root', temp.path],
+      ];
 
       File mainJs = File(path.join(temp.path, '$kMainDart.js'));
 
