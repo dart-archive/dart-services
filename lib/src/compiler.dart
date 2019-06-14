@@ -137,10 +137,10 @@ class Compiler {
 name: dartpad_main
 
 environment:
-  sdk: '>=2.3.2 <3.0.0'
+  sdk: '>=${SdkManager.sdk.version} <3.0.0'
 
 dependencies:
-  test: ^1.6.4
+  test: any
 ''');
 
       final arguments = <String>[
