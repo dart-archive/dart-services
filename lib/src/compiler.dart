@@ -151,6 +151,7 @@ dependencies:
         ],
         ...['-o', path.join(temp.path, '$kMainDart.js')],
         '--single-out-file',
+        ...['--module-name', 'dartpad_main'],
         compileTarget,
         ...['--library-root', temp.path],
       ];

@@ -44,7 +44,7 @@ void defineTests() {
         expect(result.compiledJS, isNotEmpty);
         expect(result.modulesBaseUrl, isNotEmpty);
 
-        expect(result.compiledJS, contains("define('main.dart', ["));
+        expect(result.compiledJS, contains("define('dartpad_main', ["));
       });
     });
 
@@ -56,7 +56,7 @@ void defineTests() {
         expect(result.compiledJS, isNotEmpty);
         expect(result.modulesBaseUrl, isNotEmpty);
 
-        expect(result.compiledJS, contains("define('main.dart', ["));
+        expect(result.compiledJS, contains("define('dartpad_main', ["));
       });
     });
 
@@ -68,7 +68,7 @@ void defineTests() {
         expect(result.compiledJS, isNotEmpty);
         expect(result.modulesBaseUrl, isNotEmpty);
 
-        expect(result.compiledJS, contains("define('main.dart', ["));
+        expect(result.compiledJS, contains("define('dartpad_main', ["));
       });
     });
 
