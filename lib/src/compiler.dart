@@ -140,7 +140,7 @@ environment:
   sdk: '>=${SdkManager.sdk.version} <3.0.0'
 
 dependencies:
-  test: any
+  matcher: any
 ''');
 
       final arguments = <String>[

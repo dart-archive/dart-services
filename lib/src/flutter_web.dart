@@ -91,7 +91,6 @@ $_samplePackageName:lib/
     'package:flutter_web',
     'package:flutter_web_ui',
     'package:flutter_web_test',
-    'package:test',
   };
 
   bool usesFlutterWeb(Set<String> imports) {
