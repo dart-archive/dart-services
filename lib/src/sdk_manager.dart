@@ -44,7 +44,6 @@ class PlatformSdk extends Sdk {
   Future<void> init() async {
     _versionFull =
         (await File(path.join(sdkPath, 'version')).readAsString()).trim();
-    return;
   }
 
   @override
@@ -52,4 +51,24 @@ class PlatformSdk extends Sdk {
 
   @override
   String get sdkPath => path.dirname(path.dirname(Platform.resolvedExecutable));
+}
+
+class FlutterSdk extends Sdk {
+  String _versionFull = '';
+
+  @override
+  Future<void> init() async {
+    if (Platform.environment['FLUTTER_SDK'] == null) {
+      throw Exception('No FLUTTER_SDK env var set.');
+    }
+
+    _versionFull =
+        (await File(path.join(sdkPath, 'version')).readAsString()).trim();
+  }
+
+  @override
+  String get sdkPath => '${Platform.environment['FLUTTER_SDK']}/bin/cache/dart-sdk/';
+
+  @override
+  String get versionFull => _versionFull;
 }
