@@ -9,7 +9,4 @@ dart:
   #- dev
 branches:
   only: [master]
-before_script:
-  - git clone https://github.com/flutter/flutter.git -b dev
-  - ./flutter/bin/flutter doctor
 script: ./tool/travis.sh
