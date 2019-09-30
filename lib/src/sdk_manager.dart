@@ -10,12 +10,18 @@ import 'package:path/path.dart' as path;
 /// Generally, this should be a singleton instance (it's a heavy-weight object).
 class SdkManager {
   static Sdk get sdk => _sdk ?? (_sdk = PlatformSdk());
+  static Sdk get flutterSdk => _flutterSdk ?? (_flutterSdk = FlutterSdk());
 
   static void setSdk(Sdk value) {
     _sdk = sdk;
   }
 
+  static void setFlutterSdk(Sdk value) {
+    _flutterSdk = sdk;
+  }
+
   static Sdk _sdk;
+  static Sdk _flutterSdk;
 }
 
 abstract class Sdk {

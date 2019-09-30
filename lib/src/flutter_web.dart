@@ -161,25 +161,10 @@ name: $_samplePackageName
     if (includeFlutterWeb) {
       content += '''
 dependencies:
-  flutter_web:
-    git:
-      url: https://github.com/flutter/flutter_web
-      path: packages/flutter_web
-  flutter_web_test:
-    git:
-      url: https://github.com/flutter/flutter_web
-      path: packages/flutter_web_test
-  flutter_web_ui:
-    git:
-      url: https://github.com/flutter/flutter_web
-      path: packages/flutter_web_ui
-dependency_overrides:
-  flutter_web:
-    path: ${Directory.current.path}/flutter_web/packages/flutter_web
-  flutter_web_test:
-    path: ${Directory.current.path}/flutter_web/packages/flutter_web_test
-  flutter_web_ui:
-    path: ${Directory.current.path}/flutter_web/packages/flutter_web_ui
+  flutter:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
 ''';
     }
 
