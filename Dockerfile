@@ -1,8 +1,6 @@
 # Keep aligned with min SDK in pubspec.yaml and Dart test version in .travis.yml
 FROM google/dart:2.5.0
 
-ARG flutter=flutter_linux_v1.9.1+hotfix.2-stable.tar.xz
-ARG flutter_sdk_dl=https://storage.googleapis.com/flutter_infra/releases/stable/linux/${flutter}
 ENV FLUTTER_SDK=/app/flutter
 
 WORKDIR /app
@@ -19,15 +17,13 @@ RUN pub get --offline
 # We install unzip and remove the apt-index again to keep the
 # docker image diff small.
 RUN apt-get update && \
-  apt-get install -y unzip wget xz-utils && \
+  apt-get install -y unzip git && \
   cp -a third_party/pkg ../pkg && \
   rm -rf /var/lib/apt/lists/*
 
 # Download and install flutter
-RUN wget -q ${flutter_sdk_dl} && \
-    tar xf ${flutter} && \
-    ${FLUTTER_SDK}/bin/flutter channel dev && \
-    ${FLUTTER_SDK}/bin/flutter upgrade && \
+RUN git clone https://github.com/flutter/flutter.git -b dev  && \
+    ${FLUTTER_SDK}/bin/flutter doctor && \
     ${FLUTTER_SDK}/bin/flutter config --enable-web && \
     ${FLUTTER_SDK}/bin/flutter precache --web --no-android --no-ios
 
