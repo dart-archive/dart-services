@@ -10,18 +10,18 @@ import 'package:path/path.dart' as path;
 /// Generally, this should be a singleton instance (it's a heavy-weight object).
 class SdkManager {
   static Sdk get sdk => _sdk ?? (_sdk = PlatformSdk());
-  static Sdk get flutterSdk => _flutterSdk ?? (_flutterSdk = FlutterSdk());
+  static FlutterSdk get flutterSdk => _flutterSdk ?? (_flutterSdk = FlutterSdk());
 
   static void setSdk(Sdk value) {
     _sdk = sdk;
   }
 
-  static void setFlutterSdk(Sdk value) {
-    _flutterSdk = sdk;
+  static void setFlutterSdk(FlutterSdk value) {
+    _flutterSdk = value;
   }
 
   static Sdk _sdk;
-  static Sdk _flutterSdk;
+  static FlutterSdk _flutterSdk;
 }
 
 abstract class Sdk {
@@ -73,7 +73,9 @@ class FlutterSdk extends Sdk {
   }
 
   @override
-  String get sdkPath => '${Platform.environment['FLUTTER_SDK']}/bin/cache/dart-sdk/';
+  String get sdkPath => '$flutterBinPath/cache/dart-sdk/';
+
+  String get flutterBinPath => '${Platform.environment['FLUTTER_SDK']}/bin';
 
   @override
   String get versionFull => _versionFull;

@@ -18,6 +18,7 @@ import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/common_server.dart';
 import 'package:dart_services/src/compiler.dart' as comp;
 import 'package:dart_services/src/flutter_web.dart';
+import 'package:dart_services/src/sdk_manager.dart';
 import 'package:rpc/rpc.dart';
 
 bool _SERVER_BASED_CALL = false;
@@ -64,7 +65,6 @@ Usage: slow_test path_to_test_collection
   if (args.length >= 4) iterations = int.parse(args[3]);
   if (args.length >= 5) commandToRun = args[4];
   if (args.length >= 6) dumpServerComms = args[5].toLowerCase() == 'true';
-  String sdk = sdkPath;
 
   // Load the list of files.
   var fileEntities = <io.FileSystemEntity>[];
@@ -81,10 +81,10 @@ Usage: slow_test path_to_test_collection
   Stopwatch sw = Stopwatch()..start();
 
   print('About to setuptools');
-  print(sdk);
+  print(SdkManager.flutterSdk.sdkPath);
 
   // Warm up the services.
-  await setupTools(sdk);
+  await setupTools(SdkManager.flutterSdk);
 
   print('Setup tools done');
 
@@ -106,7 +106,7 @@ Usage: slow_test path_to_test_collection
       print('FAILED: ${fse.path}');
 
       // Try and re-cycle the services for the next test after the crash
-      await setupTools(sdk);
+      await setupTools(SdkManager.flutterSdk);
     }
   }
 
@@ -117,13 +117,13 @@ Usage: slow_test path_to_test_collection
 }
 
 /// Init the tools, and warm them up
-Future setupTools(String sdkPath) async {
+Future setupTools(FlutterSdk sdk) async {
   print('Executing setupTools');
   await analysisServer?.shutdown();
 
   print('SdKPath: $sdkPath');
 
-  FlutterWebManager flutterWebManager = FlutterWebManager(sdkPath);
+  FlutterWebManager flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
 
   container = MockContainer();
   cache = MockCache();
@@ -140,7 +140,7 @@ Future setupTools(String sdkPath) async {
   await analysisServer.warmup();
 
   print('Warming up compiler');
-  compiler = comp.Compiler(sdkPath, flutterWebManager);
+  compiler = comp.Compiler(SdkManager.sdk, SdkManager.flutterSdk, flutterWebManager);
   await compiler.warmup();
   print('SetupTools done');
 }

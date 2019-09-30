@@ -111,6 +111,7 @@ void defineTests() {
 
     setUpAll(() async {
       await SdkManager.sdk.init();
+      await SdkManager.flutterSdk.init();
       redisProcess = await startRedisProcessAndDrainIO(9501);
       log.onRecord.listen((LogRecord rec) {
         logMessages.add('${rec.level.name}: ${rec.time}: ${rec.message}');
@@ -298,7 +299,7 @@ void defineTests() {
     setUpAll(() async {
       container = MockContainer();
       cache = MockCache();
-      flutterWebManager = FlutterWebManager(sdkPath);
+      flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
 
       server = CommonServer(sdkPath, flutterWebManager, container, cache);
       await server.init();

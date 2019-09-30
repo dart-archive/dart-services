@@ -26,7 +26,7 @@ RUN apt-get update && \
 # Download and install flutter
 RUN wget -q ${flutter_sdk_dl} && \
     tar xf ${flutter} && \
-    ${FLUTTER_SDK}/bin/flutter channel master && \
+    ${FLUTTER_SDK}/bin/flutter channel dev && \
     ${FLUTTER_SDK}/bin/flutter upgrade && \
     ${FLUTTER_SDK}/bin/flutter config --enable-web && \
     ${FLUTTER_SDK}/bin/flutter precache --web --no-android --no-ios

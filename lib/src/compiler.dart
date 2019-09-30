@@ -22,15 +22,17 @@ Logger _logger = Logger('compiler');
 /// An interface to the dart2js compiler. A compiler object can process one
 /// compile at a time.
 class Compiler {
-  final String sdkPath;
+  final Sdk sdk;
+  final FlutterSdk flutterSdk;
   final FlutterWebManager flutterWebManager;
 
-  final BazelWorkerDriver _ddcDriver;
+  final BazelWorkerDriver _flutterDdcDriver;
   String _sdkVersion;
 
-  Compiler(this.sdkPath, this.flutterWebManager)
-      : _ddcDriver = BazelWorkerDriver(
-            () => Process.start(path.join(sdkPath, 'bin', 'dartdevc'),
+  Compiler(this.sdk, this.flutterSdk, this.flutterWebManager)
+      : _flutterDdcDriver = BazelWorkerDriver(
+            () => Process.start(
+                path.join(flutterSdk.sdkPath, 'bin', 'dartdevc'),
                 <String>['--persistent_worker']),
             maxWorkers: 1) {
     _sdkVersion = SdkManager.sdk.version;
@@ -86,8 +88,8 @@ class Compiler {
       final String dart2JSPath = path.join(sdkPath, 'bin', 'dart2js');
       _logger.info('About to exec: $dart2JSPath $arguments');
 
-      ProcessResult result = await
-          Process.run(dart2JSPath, arguments, workingDirectory: temp.path);
+      ProcessResult result = await Process.run(dart2JSPath, arguments,
+          workingDirectory: temp.path);
 
       if (result.exitCode != 0) {
         final CompilationResults results =
@@ -129,30 +131,30 @@ class Compiler {
     Directory temp = await Directory.systemTemp.createTemp('dartpad');
 
     try {
-      List<String> arguments = <String>[
-        '--modules=amd',
-      ];
-
-      if (flutterWebManager.usesFlutterWeb(imports)) {
-        arguments.addAll(<String>['-s', flutterWebManager.summaryFilePath]);
-      }
-
       String compileTarget = path.join(temp.path, kMainDart);
       File mainDart = File(compileTarget);
       await mainDart.writeAsString(input);
 
-      arguments.addAll(<String>['-o', path.join(temp.path, '$kMainDart.js')]);
-      arguments.add('--single-out-file');
-      arguments.addAll(<String>['--module-name', 'dartpad_main']);
-      arguments.add(compileTarget);
-      arguments.addAll(<String>['--library-root', temp.path]);
+      List<String> arguments = <String>[
+        '--modules=amd',
+        if (flutterWebManager.usesFlutterWeb(imports)) ...[
+          '-k',
+          '-s',
+          flutterWebManager.summaryFilePath
+        ],
+        ...['-o', path.join(temp.path, '$kMainDart.js')],
+        '--single-out-file',
+        ...['--module-name', 'dartpad_main'],
+        compileTarget,
+        ...['--library-root', temp.path],
+      ];
 
       File mainJs = File(path.join(temp.path, '$kMainDart.js'));
 
       _logger.info('About to exec dartdevc with:  $arguments');
 
-      final WorkResponse response =
-          await _ddcDriver.doWork(WorkRequest()..arguments.addAll(arguments));
+      final WorkResponse response = await _flutterDdcDriver
+          .doWork(WorkRequest()..arguments.addAll(arguments));
 
       if (response.exitCode != 0) {
         return DDCCompilationResults.failed(<CompilationProblem>[
@@ -175,7 +177,7 @@ class Compiler {
     }
   }
 
-  Future<void> dispose() => _ddcDriver.terminateWorkers();
+  Future<void> dispose() => _flutterDdcDriver.terminateWorkers();
 }
 
 /// The result of a dart2js compile.
