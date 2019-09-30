@@ -7,6 +7,9 @@
 # Fast fail the script on failures.
 set -e
 
+# export Flutter SDK
+export FLUTTER_SDK=./flutter/
+
 # Run pub get to fetch packages.
 pub get
 
