@@ -26,11 +26,13 @@ class Compiler {
   final FlutterSdk flutterSdk;
   final FlutterWebManager flutterWebManager;
 
+  final String _dartdevcPath;
   final BazelWorkerDriver _flutterDdcDriver;
   String _sdkVersion;
 
   Compiler(this.sdk, this.flutterSdk, this.flutterWebManager)
-      : _flutterDdcDriver = BazelWorkerDriver(
+      : _dartdevcPath = path.join(flutterSdk.sdkPath, 'bin', 'dartdevc'),
+        _flutterDdcDriver = BazelWorkerDriver(
             () => Process.start(
                 path.join(flutterSdk.sdkPath, 'bin', 'dartdevc'),
                 <String>['--persistent_worker']),
@@ -140,7 +142,9 @@ class Compiler {
         if (flutterWebManager.usesFlutterWeb(imports)) ...[
           '-k',
           '-s',
-          flutterWebManager.summaryFilePath
+          flutterWebManager.summaryFilePath,
+          '-s',
+          '${flutterSdk.flutterBinPath}/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk.dill'
         ],
         ...['-o', path.join(temp.path, '$kMainDart.js')],
         '--single-out-file',
@@ -151,7 +155,8 @@ class Compiler {
 
       File mainJs = File(path.join(temp.path, '$kMainDart.js'));
 
-      _logger.info('About to exec dartdevc with:  $arguments');
+      _logger.info('About to exec "$_dartdevcPath ${arguments.join(' ')}"');
+      _logger.info('Compiling: $input');
 
       final WorkResponse response = await _flutterDdcDriver
           .doWork(WorkRequest()..arguments.addAll(arguments));
