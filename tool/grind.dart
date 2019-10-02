@@ -118,7 +118,7 @@ void _buildStorageArtifacts(Directory dir) {
   );
 
   // locate the artifacts
-  final List<String> flutterPackages = ['flutter'];
+  final List<String> flutterPackages = ['flutter', 'flutter_test'];
 
   List<String> flutterLibraries = [];
   List<String> packageLines = joinFile(dir, ['.packages']).readAsLinesSync();
