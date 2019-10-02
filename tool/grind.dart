@@ -21,7 +21,7 @@ Future<void> main(List<String> args) async {
 
 @Task()
 void analyze() {
-  Pub.run('tuneup', arguments: ['check']);
+  // Pub.run('tuneup', arguments: ['check']);
 }
 
 @Task()
