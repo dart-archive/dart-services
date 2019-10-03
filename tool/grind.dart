@@ -21,6 +21,7 @@ Future<void> main(List<String> args) async {
 
 @Task()
 void analyze() {
+  // TODO: Bring this back once we have travis under control
   // Pub.run('tuneup', arguments: ['check']);
 }
 
