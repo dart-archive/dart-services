@@ -1,6 +1,9 @@
 runtime: custom
 env: flex
 
+# This is temporary.
+service: flutter-web-unforked
+
 resources:
   cpu: 1
   memory_gb: 4

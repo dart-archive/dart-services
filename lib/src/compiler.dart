@@ -40,11 +40,6 @@ class Compiler {
     return !_flutterWebManager.hasUnsupportedImport(imports);
   }
 
-  /// The version of the SDK this copy of dart2js is based on.
-  String get version {
-    return File(path.join(sdkPath, 'version')).readAsStringSync().trim();
-  }
-
   Future<CompilationResults> warmup({bool useHtml = false}) {
     return compile(useHtml ? sampleCodeWeb : sampleCode);
   }

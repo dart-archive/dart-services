@@ -155,11 +155,13 @@ class RedisCache implements ServerCache {
         });
   }
 
-  /// Build a key that includes the server version, and Dart SDK Version.
+  /// Build a key that includes the server version, Dart SDK, and Flutter Dart SDK Versions.
   ///
   /// We don't use the existing key directly so that different AppEngine versions
   /// using the same redis cache do not have collisions.
-  String _genKey(String key) => 'server:$serverVersion:dart:${SdkManager.sdk.versionFull}+$key';
+  String _genKey(String key) =>
+      'server:$serverVersion:dart:${SdkManager.sdk.versionFull}'
+      ':flutter-dart:${SdkManager.flutterSdk.versionFull}+$key';
 
   @override
   Future<String> get(String key) async {
@@ -280,7 +282,8 @@ class CommonServer {
 
   Future<void> init() async {
     analysisServer = AnalysisServerWrapper(sdkPath, flutterWebManager);
-    compiler = Compiler(SdkManager.sdk, SdkManager.flutterSdk, flutterWebManager);
+    compiler =
+        Compiler(SdkManager.sdk, SdkManager.flutterSdk, flutterWebManager);
 
     await analysisServer.init();
 

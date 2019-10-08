@@ -18,8 +18,10 @@ void defineTests() {
 
   group('compiler', () {
     setUpAll(() async {
-      flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
+      await SdkManager.sdk.init();
+      await SdkManager.flutterSdk.init();
 
+      flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
       compiler = Compiler(SdkManager.sdk, SdkManager.flutterSdk, flutterWebManager);
     });
 
@@ -114,8 +116,6 @@ void defineTests() {
       return compiler
           .compile(sampleCode, returnSourceMap: true)
           .then((CompilationResults result) {
-        expect(compiler.version, isNotNull);
-        expect(compiler.version, startsWith('2.'));
         expect(result.sourceMap, isNotNull);
         expect(result.sourceMap, isNotEmpty);
       });
