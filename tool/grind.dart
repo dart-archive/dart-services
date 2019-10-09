@@ -146,18 +146,29 @@ void _buildStorageArtifacts(Directory dir) {
     }
   }
 
+  // Make sure flutter/bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk.dill
+  // is installed
+  run(
+    '${flutterSDK}/bin/flutter',
+    arguments: ['precache', '--web'],
+    workingDirectory: dir.path,
+  );
+
   // build the artifacts using DDC
   // dart-sdk/bin/dartdevc -k -s kernel/flutter_ddc_sdk.dill --modules=amd package:flutter_web/animation.dart ...
+  var binary = '${flutterSDK}/bin/cache/dart-sdk/bin/dartdevc';
+  var args = [
+    '-k',
+    '-s',
+    '${flutterSDK}/bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk.dill',
+    '--modules=amd',
+    '-o',
+    'flutter_web.js',
+    ...flutterLibraries
+  ];
   run(
-    '${flutterSDK}/bin/cache/dart-sdk/bin/dartdevc',
-    arguments: [
-      '-k',
-      '-s',
-      '${flutterSDK}/bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk.dill',
-      '--modules=amd',
-      '-o',
-      'flutter_web.js',
-    ]..addAll(flutterLibraries),
+    binary,
+    arguments: args,
     workingDirectory: dir.path,
   );
 
@@ -165,7 +176,9 @@ void _buildStorageArtifacts(Directory dir) {
   Directory artifactsDir = getDir('artifacts');
   artifactsDir.create();
 
-  copy(getFile('${flutterSDK}/bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/amd/dart_sdk.js'),
+  copy(
+      getFile(
+          '${flutterSDK}/bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/amd/dart_sdk.js'),
       artifactsDir);
   copy(joinFile(dir, ['flutter_web.js']), artifactsDir);
   copy(joinFile(dir, ['flutter_web.dill']), artifactsDir);
