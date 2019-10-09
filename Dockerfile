@@ -22,10 +22,10 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 # Download and install flutter
-RUN git clone https://github.com/flutter/flutter.git -b dev  && \
+RUN git clone https://github.com/flutter/flutter.git -b master  && \
     ${FLUTTER_SDK}/bin/flutter doctor && \
     ${FLUTTER_SDK}/bin/flutter config --enable-web && \
-    ${FLUTTER_SDK}/bin/flutter precache --web --no-android --no-ios
+    ${FLUTTER_SDK}/bin/flutter precache --web --no-android --no-ios --no-linux --no-windows --no-macos --no-fuchsia
 
 EXPOSE 8080 8181 5858
 
