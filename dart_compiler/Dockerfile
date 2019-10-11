@@ -6,6 +6,7 @@ ADD tool/dart_run.sh /dart_runtime/
 RUN chmod 755 /dart_runtime/dart_run.sh && \
   chown root:root /dart_runtime/dart_run.sh
 ADD pubspec.* /app/
+ADD ../dart_services/ /dart_services/
 ADD third_party /app/third_party
 RUN find -name "*" -print
 RUN pub get

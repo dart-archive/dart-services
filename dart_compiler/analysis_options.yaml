@@ -1,0 +1,5 @@
+analyzer:
+  strong-mode:
+    implicit-casts: false
+  exclude:
+    - 'flutter_web/**'

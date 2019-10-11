@@ -4,7 +4,5 @@ analyzer:
   strong-mode:
     implicit-casts: false
   exclude:
-    - 'dart-sdk/**'
     - 'third_party/**'
     - 'doc/generated/**'
-    - 'flutter_web/**'
