@@ -1,0 +1,6 @@
+[submodule "dart_services/flutter_web"]
+	path = dart_compiler/flutter_web
+	url = https://github.com/flutter/flutter_web
+[submodule "flutter"]
+	path = flutter
+	url = https://github.com/flutter/flutter
