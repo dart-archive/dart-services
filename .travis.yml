@@ -5,6 +5,11 @@ dart:
   # Keep this value aligned with min SDK value in pubspec.yaml and FROM line of Dockerfile
   - "2.5.2"
   - dev
+
+# Speed up builds by using containerization. Disable this if you need to use
+# sudo in your scripts.
+sudo: false
+
 branches:
   only: [master]
 script: ./tool/travis.sh
