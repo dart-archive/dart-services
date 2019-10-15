@@ -160,8 +160,7 @@ class RedisCache implements ServerCache {
   /// We don't use the existing key directly so that different AppEngine versions
   /// using the same redis cache do not have collisions.
   String _genKey(String key) =>
-      'server:$serverVersion:dart:${SdkManager.sdk.versionFull}'
-      ':flutter-dart:${SdkManager.flutterSdk.versionFull}+$key';
+      'server:$serverVersion:dart:${SdkManager.sdk.versionFull}+$key';
 
   @override
   Future<String> get(String key) async {
@@ -466,7 +465,7 @@ class CommonServer {
         .then((CompilationResults results) {
       if (results.hasOutput) {
         final lineCount = source.split('\n').length;
-        final outputSize = (results.compiledJS.length + 512) ~/ 1024;
+        final outputSize = (results.compiledJS.length / 1024).ceil();
         final ms = watch.elapsedMilliseconds;
         log.info('PERF: Compiled $lineCount lines of Dart into '
             '${outputSize}kb of JavaScript in ${ms}ms using dart2js.');

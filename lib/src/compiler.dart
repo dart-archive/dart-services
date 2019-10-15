@@ -80,11 +80,8 @@ class Compiler {
       final String dart2JSPath = path.join(_sdk.sdkPath, 'bin', 'dart2js');
       _logger.info('About to exec: $dart2JSPath $arguments');
 
-      ProcessResult result = await Process.run(
-        dart2JSPath,
-        arguments,
-        workingDirectory: temp.path,
-      );
+      ProcessResult result = await Process.run(dart2JSPath, arguments,
+          workingDirectory: temp.path);
 
       if (result.exitCode != 0) {
         final CompilationResults results =
