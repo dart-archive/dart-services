@@ -464,7 +464,7 @@ class CommonServer {
         .then((CompilationResults results) {
       if (results.hasOutput) {
         final lineCount = source.split('\n').length;
-        final outputSize = (results.compiledJS.length + 512) ~/ 1024;
+        final outputSize = (results.compiledJS.length / 1024).ceil();
         final ms = watch.elapsedMilliseconds;
         log.info('PERF: Compiled $lineCount lines of Dart into '
             '${outputSize}kb of JavaScript in ${ms}ms using dart2js.');
@@ -516,7 +516,7 @@ class CommonServer {
     return compiler.compileDDC(source).then((DDCCompilationResults results) {
       if (results.hasOutput) {
         final lineCount = source.split('\n').length;
-        final outputSize = (results.compiledJS.length + 512) ~/ 1024;
+        final outputSize = (results.compiledJS.length / 1024).ceil();
         final ms = watch.elapsedMilliseconds;
         log.info('PERF: Compiled $lineCount lines of Dart into '
             '${outputSize}kb of JavaScript in ${ms}ms using DDC.');
