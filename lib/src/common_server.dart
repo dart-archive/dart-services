@@ -159,7 +159,8 @@ class RedisCache implements ServerCache {
   ///
   /// We don't use the existing key directly so that different AppEngine versions
   /// using the same redis cache do not have collisions.
-  String _genKey(String key) => 'server:$serverVersion:dart:${SdkManager.sdk.versionFull}+$key';
+  String _genKey(String key) =>
+      'server:$serverVersion:dart:${SdkManager.sdk.versionFull}+$key';
 
   @override
   Future<String> get(String key) async {
