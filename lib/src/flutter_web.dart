@@ -18,6 +18,10 @@ Logger _logger = Logger('flutter_web');
 class FlutterWebManager {
   final FlutterSdk flutterSdk;
 
+  // TODO(redbrogdon): Find a better way to determine the number of an unused
+  // port.
+  static const observatoryPort = 49003;
+
   Directory _projectDirectory;
 
   bool _initedFlutterWeb = false;
@@ -106,9 +110,6 @@ $_samplePackageName:lib/
   }
 
   String getUnsupportedImport(Set<String> imports) {
-    // TODO(devoncarew): Should we support a white-listed set of package:
-    // imports?
-
     for (String import in imports) {
       // All dart: imports are ok;
       if (import.startsWith('dart:')) {
@@ -135,17 +136,35 @@ $_samplePackageName:lib/
   Future<void> _runPubGet() async {
     _logger.info('running flutter pub get (${_projectDirectory.path})');
 
-    ProcessResult result = await Process.run(
+    // The DART_VM_OPTIONS flag is included here to override the one sent by the
+    // Dart SDK during tests. Without the flag, the Flutter tool will attempt to
+    // spin up its own observatory on the same port as the one already
+    // instantiated by the Dart SDK running the test, causing a hang.
+    //
+    // The value should be an available port number.
+    final result = await Process.start(
       path.join(flutterSdk.flutterBinPath, 'flutter'),
       ['packages', 'get'],
       workingDirectory: _projectDirectory.path,
-      stderrEncoding: utf8,
-      stdoutEncoding: utf8,
+      environment: {'DART_VM_OPTIONS': '--enable-vm-service=$observatoryPort'},
     );
+
+    final allErr = StringBuffer();
+    final allOut = StringBuffer();
+
+    result.stdout.transform(utf8.decoder).listen((data) {
+      allErr.write(data);
+    });
+
+    result.stderr.transform(utf8.decoder).listen((data) {
+      allOut.write(data);
+    });
 
     _logger.info('${result.stdout}'.trim());
 
-    if (result.exitCode != 0) {
+    final code = await result.exitCode;
+
+    if (code != 0) {
       _logger.warning('pub get failed: ${result.exitCode}');
       _logger.warning(result.stderr);
 
