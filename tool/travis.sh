@@ -10,6 +10,9 @@ set -e
 # Run pub get to fetch packages.
 pub get
 
+# run 'flutter doctor' before other build tools
+./flutter/bin/flutter doctor
+
 # Prepare to run unit tests (but do not actually run tests).
 pub run grinder buildbot
 
