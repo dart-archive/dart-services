@@ -150,6 +150,9 @@ class Compiler {
         '--packages=${_flutterWebManager.packagesFilePath}',
       ];
 
+      print('bootstrap file contents:');
+      print(await File(bootstrapPath).readAsString());
+
       File mainJs = File(path.join(temp.path, '$kMainDart.js'));
 
       _logger.info('About to exec "$_dartdevcPath ${arguments.join(' ')}"');
