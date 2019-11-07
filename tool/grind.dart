@@ -103,7 +103,7 @@ void buildStorageArtifacts() {
 }
 
 void _buildStorageArtifacts(Directory dir) {
-  final flutterSdkPath = '${Directory.current.parent.path}/flutter';
+  final flutterSdkPath = '${Directory.current.path}/flutter';
   String pubspec = FlutterWebManager.createPubspec(true);
   joinFile(dir, ['pubspec.yaml']).writeAsStringSync(pubspec);
 
