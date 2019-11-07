@@ -21,4 +21,4 @@ before_script:
   - flutter doctor
   - flutter config --enable-web
   - flutter precache --web --no-android --no-ios --no-linux --no-windows --no-macos --no-fuchsia
-script: ./travis.sh
+script: ./tool/travis.sh
