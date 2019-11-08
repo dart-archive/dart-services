@@ -8,9 +8,11 @@ import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/compiler.dart';
 import 'package:dart_services/src/flutter_web.dart';
 import 'package:dart_services/src/sdk_manager.dart';
+import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
 void main() => defineTests();
+Logger _logger = Logger('flutter_web');
 
 void defineTests() {
   Compiler compiler;
@@ -18,6 +20,7 @@ void defineTests() {
 
   group('compiler', () {
     setUpAll(() async {
+      _logger.level = Level.ALL;
       await SdkManager.sdk.init();
       await SdkManager.flutterSdk.init();
 
