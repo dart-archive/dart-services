@@ -11,7 +11,8 @@ import 'package:path/path.dart' as path;
 class SdkManager {
   static Sdk get sdk => _sdk ?? (_sdk = PlatformSdk());
 
-  static FlutterSdk get flutterSdk => _flutterSdk ?? (_flutterSdk = FlutterSdk());
+  static FlutterSdk get flutterSdk =>
+      _flutterSdk ?? (_flutterSdk = FlutterSdk());
 
   static void setSdk(Sdk value) {
     _sdk = sdk;
@@ -76,9 +77,10 @@ class FlutterSdk extends Sdk {
   }
 
   @override
-  String get sdkPath => '$flutterBinPath/cache/dart-sdk/';
+  String get sdkPath => path.join(flutterBinPath, 'cache/dart-sdk');
 
-  String get flutterBinPath => '${Directory.current.path}/flutter/bin';
+  String get flutterBinPath =>
+      path.join(Directory.current.parent.path, 'flutter/bin');
 
   @override
   String get versionFull => _versionFull;
