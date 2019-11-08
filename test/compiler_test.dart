@@ -20,7 +20,7 @@ void defineTests() {
 
   group('compiler', () {
     setUpAll(() async {
-      _logger.level = Level.ALL;
+      Logger.root.level = Level.ALL;
       await SdkManager.sdk.init();
       await SdkManager.flutterSdk.init();
 
