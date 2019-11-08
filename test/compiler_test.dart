@@ -8,11 +8,9 @@ import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/compiler.dart';
 import 'package:dart_services/src/flutter_web.dart';
 import 'package:dart_services/src/sdk_manager.dart';
-import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
 void main() => defineTests();
-Logger _logger = Logger('flutter_web');
 
 void defineTests() {
   Compiler compiler;
@@ -20,16 +18,6 @@ void defineTests() {
 
   group('compiler', () {
     setUpAll(() async {
-      hierarchicalLoggingEnabled = true;
-      Logger.root.level = Level.ALL;
-      _logger.level = Level.ALL;
-      Logger.root.onRecord.listen((record) {
-        print('${record.level.name}: ${record.time}: ${record.message}');
-      });
-      _logger.onRecord.listen((record) {
-        print('${record.level.name}: ${record.time}: ${record.message}');
-      });
-
       await SdkManager.sdk.init();
       await SdkManager.flutterSdk.init();
 
