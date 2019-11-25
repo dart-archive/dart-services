@@ -209,7 +209,7 @@ void deploy() {
 }
 
 @Task()
-@Depends(discovery, analyze, fuzz)
+@Depends(discovery, analyze, fuzz, buildStorageArtifacts)
 void buildbot() => null;
 
 @Task('Generate the discovery doc and Dart library from the annotated API')
