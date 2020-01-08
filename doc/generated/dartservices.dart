@@ -20,10 +20,10 @@ class DartservicesApi {
   final commons.ApiRequester _requester;
 
   DartservicesApi(http.Client client,
-      {core.String rootUrl = "/",
-      core.String servicePath = "api/dartservices/v1/"})
+      {core.String rootUrl: "/",
+      core.String servicePath: "api/dartservices/v1/"})
       : _requester =
-            commons.ApiRequester(client, rootUrl, servicePath, USER_AGENT);
+            new commons.ApiRequester(client, rootUrl, servicePath, USER_AGENT);
 
   /// Analyze the given Dart source code and return any resulting analysis
   /// errors or warnings.
@@ -41,7 +41,7 @@ class DartservicesApi {
   /// this method will complete with the same error.
   async.Future<AnalysisResults> analyze(SourceRequest request) {
     var _url = null;
-    var _queryParams = core.Map<core.String, core.List<core.String>>();
+    var _queryParams = new core.Map<core.String, core.List<core.String>>();
     var _uploadMedia = null;
     var _uploadOptions = null;
     var _downloadOptions = commons.DownloadOptions.Metadata;
@@ -59,7 +59,7 @@ class DartservicesApi {
         uploadOptions: _uploadOptions,
         uploadMedia: _uploadMedia,
         downloadOptions: _downloadOptions);
-    return _response.then((data) => AnalysisResults.fromJson(data));
+    return _response.then((data) => new AnalysisResults.fromJson(data));
   }
 
   /// Get assists for the given source code location.
@@ -77,7 +77,7 @@ class DartservicesApi {
   /// this method will complete with the same error.
   async.Future<AssistsResponse> assists(SourceRequest request) {
     var _url = null;
-    var _queryParams = core.Map<core.String, core.List<core.String>>();
+    var _queryParams = new core.Map<core.String, core.List<core.String>>();
     var _uploadMedia = null;
     var _uploadOptions = null;
     var _downloadOptions = commons.DownloadOptions.Metadata;
@@ -95,7 +95,7 @@ class DartservicesApi {
         uploadOptions: _uploadOptions,
         uploadMedia: _uploadMedia,
         downloadOptions: _downloadOptions);
-    return _response.then((data) => AssistsResponse.fromJson(data));
+    return _response.then((data) => new AssistsResponse.fromJson(data));
   }
 
   /// Compile the given Dart source code and return the resulting JavaScript;
@@ -114,7 +114,7 @@ class DartservicesApi {
   /// this method will complete with the same error.
   async.Future<CompileResponse> compile(CompileRequest request) {
     var _url = null;
-    var _queryParams = core.Map<core.String, core.List<core.String>>();
+    var _queryParams = new core.Map<core.String, core.List<core.String>>();
     var _uploadMedia = null;
     var _uploadOptions = null;
     var _downloadOptions = commons.DownloadOptions.Metadata;
@@ -132,7 +132,7 @@ class DartservicesApi {
         uploadOptions: _uploadOptions,
         uploadMedia: _uploadMedia,
         downloadOptions: _downloadOptions);
-    return _response.then((data) => CompileResponse.fromJson(data));
+    return _response.then((data) => new CompileResponse.fromJson(data));
   }
 
   /// Compile the given Dart source code and return the resulting JavaScript;
@@ -151,7 +151,7 @@ class DartservicesApi {
   /// this method will complete with the same error.
   async.Future<CompileDDCResponse> compileDDC(CompileRequest request) {
     var _url = null;
-    var _queryParams = core.Map<core.String, core.List<core.String>>();
+    var _queryParams = new core.Map<core.String, core.List<core.String>>();
     var _uploadMedia = null;
     var _uploadOptions = null;
     var _downloadOptions = commons.DownloadOptions.Metadata;
@@ -169,7 +169,7 @@ class DartservicesApi {
         uploadOptions: _uploadOptions,
         uploadMedia: _uploadMedia,
         downloadOptions: _downloadOptions);
-    return _response.then((data) => CompileDDCResponse.fromJson(data));
+    return _response.then((data) => new CompileDDCResponse.fromJson(data));
   }
 
   /// Get the valid code completion results for the given offset.
@@ -187,7 +187,7 @@ class DartservicesApi {
   /// this method will complete with the same error.
   async.Future<CompleteResponse> complete(SourceRequest request) {
     var _url = null;
-    var _queryParams = core.Map<core.String, core.List<core.String>>();
+    var _queryParams = new core.Map<core.String, core.List<core.String>>();
     var _uploadMedia = null;
     var _uploadOptions = null;
     var _downloadOptions = commons.DownloadOptions.Metadata;
@@ -205,7 +205,7 @@ class DartservicesApi {
         uploadOptions: _uploadOptions,
         uploadMedia: _uploadMedia,
         downloadOptions: _downloadOptions);
-    return _response.then((data) => CompleteResponse.fromJson(data));
+    return _response.then((data) => new CompleteResponse.fromJson(data));
   }
 
   /// Return the relevant dartdoc information for the element at the given
@@ -224,7 +224,7 @@ class DartservicesApi {
   /// this method will complete with the same error.
   async.Future<DocumentResponse> document(SourceRequest request) {
     var _url = null;
-    var _queryParams = core.Map<core.String, core.List<core.String>>();
+    var _queryParams = new core.Map<core.String, core.List<core.String>>();
     var _uploadMedia = null;
     var _uploadOptions = null;
     var _downloadOptions = commons.DownloadOptions.Metadata;
@@ -242,7 +242,7 @@ class DartservicesApi {
         uploadOptions: _uploadOptions,
         uploadMedia: _uploadMedia,
         downloadOptions: _downloadOptions);
-    return _response.then((data) => DocumentResponse.fromJson(data));
+    return _response.then((data) => new DocumentResponse.fromJson(data));
   }
 
   /// Get any quick fixes for the given source code location.
@@ -260,7 +260,7 @@ class DartservicesApi {
   /// this method will complete with the same error.
   async.Future<FixesResponse> fixes(SourceRequest request) {
     var _url = null;
-    var _queryParams = core.Map<core.String, core.List<core.String>>();
+    var _queryParams = new core.Map<core.String, core.List<core.String>>();
     var _uploadMedia = null;
     var _uploadOptions = null;
     var _downloadOptions = commons.DownloadOptions.Metadata;
@@ -278,7 +278,7 @@ class DartservicesApi {
         uploadOptions: _uploadOptions,
         uploadMedia: _uploadMedia,
         downloadOptions: _downloadOptions);
-    return _response.then((data) => FixesResponse.fromJson(data));
+    return _response.then((data) => new FixesResponse.fromJson(data));
   }
 
   /// Format the given Dart source code and return the results. If an offset is
@@ -298,7 +298,7 @@ class DartservicesApi {
   /// this method will complete with the same error.
   async.Future<FormatResponse> format(SourceRequest request) {
     var _url = null;
-    var _queryParams = core.Map<core.String, core.List<core.String>>();
+    var _queryParams = new core.Map<core.String, core.List<core.String>>();
     var _uploadMedia = null;
     var _uploadOptions = null;
     var _downloadOptions = commons.DownloadOptions.Metadata;
@@ -316,7 +316,7 @@ class DartservicesApi {
         uploadOptions: _uploadOptions,
         uploadMedia: _uploadMedia,
         downloadOptions: _downloadOptions);
-    return _response.then((data) => FormatResponse.fromJson(data));
+    return _response.then((data) => new FormatResponse.fromJson(data));
   }
 
   /// Return the current SDK version for DartServices.
@@ -332,7 +332,7 @@ class DartservicesApi {
   /// this method will complete with the same error.
   async.Future<VersionResponse> version() {
     var _url = null;
-    var _queryParams = core.Map<core.String, core.List<core.String>>();
+    var _queryParams = new core.Map<core.String, core.List<core.String>>();
     var _uploadMedia = null;
     var _uploadOptions = null;
     var _downloadOptions = commons.DownloadOptions.Metadata;
@@ -346,7 +346,7 @@ class DartservicesApi {
         uploadOptions: _uploadOptions,
         uploadMedia: _uploadMedia,
         downloadOptions: _downloadOptions);
-    return _response.then((data) => VersionResponse.fromJson(data));
+    return _response.then((data) => new VersionResponse.fromJson(data));
   }
 }
 
@@ -387,7 +387,7 @@ class AnalysisIssue {
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (charLength != null) {
       _json["charLength"] = charLength;
     }
@@ -424,7 +424,7 @@ class AnalysisResults {
   AnalysisResults.fromJson(core.Map _json) {
     if (_json.containsKey("issues")) {
       issues = (_json["issues"] as core.List)
-          .map<AnalysisIssue>((value) => AnalysisIssue.fromJson(value))
+          .map<AnalysisIssue>((value) => new AnalysisIssue.fromJson(value))
           .toList();
     }
     if (_json.containsKey("packageImports")) {
@@ -435,7 +435,7 @@ class AnalysisResults {
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (issues != null) {
       _json["issues"] = issues.map((value) => (value).toJson()).toList();
     }
@@ -454,14 +454,14 @@ class AssistsResponse {
   AssistsResponse.fromJson(core.Map _json) {
     if (_json.containsKey("assists")) {
       assists = (_json["assists"] as core.List)
-          .map<CandidateFix>((value) => CandidateFix.fromJson(value))
+          .map<CandidateFix>((value) => new CandidateFix.fromJson(value))
           .toList();
     }
   }
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (assists != null) {
       _json["assists"] = assists.map((value) => (value).toJson()).toList();
     }
@@ -480,12 +480,12 @@ class CandidateFix {
   CandidateFix.fromJson(core.Map _json) {
     if (_json.containsKey("edits")) {
       edits = (_json["edits"] as core.List)
-          .map<SourceEdit>((value) => SourceEdit.fromJson(value))
+          .map<SourceEdit>((value) => new SourceEdit.fromJson(value))
           .toList();
     }
     if (_json.containsKey("linkedEditGroups")) {
       linkedEditGroups = (_json["linkedEditGroups"] as core.List)
-          .map<LinkedEditGroup>((value) => LinkedEditGroup.fromJson(value))
+          .map<LinkedEditGroup>((value) => new LinkedEditGroup.fromJson(value))
           .toList();
     }
     if (_json.containsKey("message")) {
@@ -498,7 +498,7 @@ class CandidateFix {
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (edits != null) {
       _json["edits"] = edits.map((value) => (value).toJson()).toList();
     }
@@ -533,7 +533,7 @@ class CompileDDCResponse {
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (modulesBaseUrl != null) {
       _json["modulesBaseUrl"] = modulesBaseUrl;
     }
@@ -564,7 +564,7 @@ class CompileRequest {
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (returnSourceMap != null) {
       _json["returnSourceMap"] = returnSourceMap;
     }
@@ -592,7 +592,7 @@ class CompileResponse {
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (result != null) {
       _json["result"] = result;
     }
@@ -631,7 +631,7 @@ class CompleteResponse {
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (completions != null) {
       _json["completions"] = completions;
     }
@@ -658,7 +658,7 @@ class DocumentResponse {
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (info != null) {
       _json["info"] = info;
     }
@@ -674,14 +674,14 @@ class FixesResponse {
   FixesResponse.fromJson(core.Map _json) {
     if (_json.containsKey("fixes")) {
       fixes = (_json["fixes"] as core.List)
-          .map<ProblemAndFixes>((value) => ProblemAndFixes.fromJson(value))
+          .map<ProblemAndFixes>((value) => new ProblemAndFixes.fromJson(value))
           .toList();
     }
   }
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (fixes != null) {
       _json["fixes"] = fixes.map((value) => (value).toJson()).toList();
     }
@@ -709,7 +709,7 @@ class FormatResponse {
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (newString != null) {
       _json["newString"] = newString;
     }
@@ -743,14 +743,14 @@ class LinkedEditGroup {
     if (_json.containsKey("suggestions")) {
       suggestions = (_json["suggestions"] as core.List)
           .map<LinkedEditSuggestion>(
-              (value) => LinkedEditSuggestion.fromJson(value))
+              (value) => new LinkedEditSuggestion.fromJson(value))
           .toList();
     }
   }
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (length != null) {
       _json["length"] = length;
     }
@@ -785,7 +785,7 @@ class LinkedEditSuggestion {
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (kind != null) {
       _json["kind"] = kind;
     }
@@ -807,7 +807,7 @@ class ProblemAndFixes {
   ProblemAndFixes.fromJson(core.Map _json) {
     if (_json.containsKey("fixes")) {
       fixes = (_json["fixes"] as core.List)
-          .map<CandidateFix>((value) => CandidateFix.fromJson(value))
+          .map<CandidateFix>((value) => new CandidateFix.fromJson(value))
           .toList();
     }
     if (_json.containsKey("length")) {
@@ -823,7 +823,7 @@ class ProblemAndFixes {
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (fixes != null) {
       _json["fixes"] = fixes.map((value) => (value).toJson()).toList();
     }
@@ -861,7 +861,7 @@ class SourceEdit {
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (length != null) {
       _json["length"] = length;
     }
@@ -895,7 +895,7 @@ class SourceRequest {
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (offset != null) {
       _json["offset"] = offset;
     }
@@ -946,7 +946,7 @@ class VersionResponse {
 
   core.Map<core.String, core.Object> toJson() {
     final core.Map<core.String, core.Object> _json =
-        core.Map<core.String, core.Object>();
+        new core.Map<core.String, core.Object>();
     if (appEngineVersion != null) {
       _json["appEngineVersion"] = appEngineVersion;
     }
