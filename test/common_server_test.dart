@@ -12,6 +12,7 @@ import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/common_server.dart';
 import 'package:dart_services/src/flutter_web.dart';
 import 'package:dart_services/src/sdk_manager.dart';
+import 'package:dart_services/src/server_cache.dart';
 import 'package:logging/logging.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:rpc/rpc.dart';
@@ -50,6 +51,8 @@ main() {
   int v = 0;
 }
 ''';
+
+Logger _log = Logger('common_server_test');
 
 void main() => defineTests();
 
@@ -112,7 +115,7 @@ void defineTests() {
     setUpAll(() async {
       await SdkManager.sdk.init();
       redisProcess = await startRedisProcessAndDrainIO(9501);
-      log.onRecord.listen((LogRecord rec) {
+      _log.onRecord.listen((LogRecord rec) {
         logMessages.add('${rec.level.name}: ${rec.time}: ${rec.message}');
         print(logMessages.last);
       });
@@ -130,7 +133,7 @@ void defineTests() {
     });
 
     tearDownAll(() async {
-      log.clearListeners();
+      _log.clearListeners();
       await Future.wait([redisCache.shutdown(), redisCacheAlt.shutdown()]);
       redisProcess.kill();
       await redisProcess.exitCode;
@@ -331,12 +334,12 @@ void defineTests() {
     });
 
     setUp(() {
-      log.onRecord.listen((LogRecord rec) {
+      _log.onRecord.listen((LogRecord rec) {
         print('${rec.level.name}: ${rec.time}: ${rec.message}');
       });
     });
 
-    tearDown(log.clearListeners);
+    tearDown(_log.clearListeners);
 
     test('analyze Dart', () async {
       final jsonData = {'source': sampleCode};
