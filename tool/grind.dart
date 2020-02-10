@@ -17,14 +17,6 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 
 Future<void> main(List<String> args) async {
-
-  // run flutter doctor to make sure flutter has downloaded artifacts
-  // required for compilation
-  run(
-    path.join(Directory.current.path, 'flutter/bin/flutter'),
-    arguments: ['doctor'],
-  );
-
   await SdkManager.sdk.init();
   await SdkManager.flutterSdk.init();
   return grind(args);
@@ -248,8 +240,8 @@ void fuzz() {
 }
 
 @Task('Update discovery files and run all checks prior to deployment')
-@Depends(updateDockerVersion, discovery, analyze, test, fuzz,
-    validateStorageArtifacts)
+@Depends(setupFlutterSubmodule, updateDockerVersion, discovery, analyze, test,
+    fuzz, validateStorageArtifacts)
 void deploy() {
   log('Run: gcloud app deploy --project=dart-services --no-promote');
 }
