@@ -52,8 +52,6 @@ main() {
 }
 ''';
 
-Logger _log = Logger('common_server_test');
-
 void main() => defineTests();
 
 void defineTests() {
@@ -115,7 +113,7 @@ void defineTests() {
     setUpAll(() async {
       await SdkManager.sdk.init();
       redisProcess = await startRedisProcessAndDrainIO(9501);
-      _log.onRecord.listen((LogRecord rec) {
+      log.onRecord.listen((LogRecord rec) {
         logMessages.add('${rec.level.name}: ${rec.time}: ${rec.message}');
         print(logMessages.last);
       });
@@ -133,7 +131,7 @@ void defineTests() {
     });
 
     tearDownAll(() async {
-      _log.clearListeners();
+      log.clearListeners();
       await Future.wait([redisCache.shutdown(), redisCacheAlt.shutdown()]);
       redisProcess.kill();
       await redisProcess.exitCode;
@@ -334,12 +332,12 @@ void defineTests() {
     });
 
     setUp(() {
-      _log.onRecord.listen((LogRecord rec) {
+      log.onRecord.listen((LogRecord rec) {
         print('${rec.level.name}: ${rec.time}: ${rec.message}');
       });
     });
 
-    tearDown(_log.clearListeners);
+    tearDown(log.clearListeners);
 
     test('analyze Dart', () async {
       final jsonData = {'source': sampleCode};

@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:appengine/appengine.dart' as ae;
+import 'package:dart_services/src/sdk_manager.dart';
 import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart' as rpc;
 
@@ -16,13 +17,12 @@ import 'src/common_server.dart';
 import 'src/dartpad_support_server.dart';
 import 'src/flutter_web.dart';
 import 'src/server_cache.dart';
-import 'src/sdk_manager.dart';
 
 const String _API = '/api';
 const String _healthCheck = '/_ah/health';
 const String _readynessCheck = '/_ah/ready';
 
-final Logger _log = Logger('gae_server');
+final Logger _logger = Logger('gae_server');
 
 void main(List<String> args) {
   var gaePort = 8080;
@@ -36,7 +36,7 @@ void main(List<String> args) {
 
   // Log to stdout/stderr.  AppEngine's logging package is disabled in 0.6.0
   // and AppEngine copies stdout/stderr to the dashboards.
-  _log.onRecord.listen((LogRecord rec) {
+  _logger.onRecord.listen((LogRecord rec) {
     final out = ('${rec.level.name}: ${rec.time}: ${rec.message}\n');
     if (rec.level > Level.INFO) {
       io.stderr.write(out);
@@ -44,7 +44,7 @@ void main(List<String> args) {
       io.stdout.write(out);
     }
   });
-  _log.info('''Initializing dart-services:
+  log.info('''Initializing dart-services:
     port: $gaePort
     sdkPath: $sdkPath
     REDIS_SERVER_URI: ${io.Platform.environment['REDIS_SERVER_URI']}
@@ -67,7 +67,7 @@ class GaeServer {
 
   GaeServer(this.sdkPath, this.redisServerUri) {
     hierarchicalLoggingEnabled = true;
-    _log.level = Level.ALL;
+    _logger.level = Level.ALL;
 
     discoveryEnabled = false;
     fileRelayServer = FileRelayServer();
@@ -130,7 +130,7 @@ class GaeServer {
 
   Future _processHealthRequest(io.HttpRequest request) async {
     if (commonServer.running && !commonServer.analysisServersRunning) {
-      _log.severe('CommonServer running without analysis servers. '
+      _logger.severe('CommonServer running without analysis servers. '
           'Intentionally failing healthcheck.');
       request.response.statusCode = io.HttpStatus.internalServerError;
     } else {
@@ -149,7 +149,7 @@ class GaeServer {
           await tempDir.delete(recursive: true);
         }
       } catch (e) {
-        _log.severe('Failed to create temporary file: $e');
+        _logger.severe('Failed to create temporary file: $e');
         request.response.statusCode = io.HttpStatus.internalServerError;
       }
     }
@@ -176,7 +176,7 @@ class GaeServer {
     } catch (e) {
       // This should only happen in the case where there is a bug in the rpc
       // package. Otherwise it always returns an HttpApiResponse.
-      _log.warning('Failed with error: $e when trying to call '
+      _logger.warning('Failed with error: $e when trying to call '
           'method at \'${request.uri.path}\'.');
       request.response.statusCode = io.HttpStatus.internalServerError;
       await request.response.close();

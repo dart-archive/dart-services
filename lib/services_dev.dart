@@ -23,7 +23,7 @@ import 'src/flutter_web.dart';
 import 'src/server_cache.dart';
 import 'src/shelf_cors.dart' as shelf_cors;
 
-Logger _log = Logger('services');
+Logger _logger = Logger('services');
 
 void main(List<String> args) {
   final parser = ArgParser();
@@ -65,7 +65,7 @@ void main(List<String> args) {
   });
 
   EndpointsServer.serve(sdk, port).then((EndpointsServer server) {
-    _log.info('Listening on port ${server.port}');
+    _logger.info('Listening on port ${server.port}');
   });
 }
 

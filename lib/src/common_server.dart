@@ -24,7 +24,7 @@ import 'server_cache.dart';
 import 'sdk_manager.dart';
 
 final Duration _standardExpiration = Duration(hours: 1);
-final Logger _log = Logger('common_server');
+final Logger log = Logger('common_server');
 
 abstract class ServerContainer {
   String get version;
@@ -60,11 +60,11 @@ class CommonServer {
     this.cache,
   ) {
     hierarchicalLoggingEnabled = true;
-    _log.level = Level.ALL;
+    log.level = Level.ALL;
   }
 
   Future<void> init() async {
-    _log.info('Beginning CommonServer init().');
+    log.info('Beginning CommonServer init().');
     analysisServer = AnalysisServerWrapper(sdkPath, flutterWebManager);
     flutterAnalysisServer = AnalysisServerWrapper(
         flutterWebManager.flutterSdk.sdkPath, flutterWebManager);
@@ -73,20 +73,20 @@ class CommonServer {
         Compiler(SdkManager.sdk, SdkManager.flutterSdk, flutterWebManager);
 
     await analysisServer.init();
-    _log.info('Dart analysis server initialized.');
+    log.info('Dart analysis server initialized.');
 
     await flutterAnalysisServer.init();
-    _log.info('Flutter analysis server initialized.');
+    log.info('Flutter analysis server initialized.');
 
     unawaited(analysisServer.onExit.then((int code) {
-      _log.severe('analysisServer exited, code: $code');
+      log.severe('analysisServer exited, code: $code');
       if (code != 0) {
         exit(code);
       }
     }));
 
     unawaited(flutterAnalysisServer.onExit.then((int code) {
-      _log.severe('flutterAnalysisServer exited, code: $code');
+      log.severe('flutterAnalysisServer exited, code: $code');
       if (code != 0) {
         exit(code);
       }
@@ -102,14 +102,14 @@ class CommonServer {
   }
 
   Future<void> restart() async {
-    _log.warning('Restarting CommonServer');
+    log.warning('Restarting CommonServer');
     await shutdown();
-    _log.info('Analysis Servers shutdown');
+    log.info('Analysis Servers shutdown');
 
     await init();
     await warmup();
 
-    _log.warning('Restart complete');
+    log.warning('Restart complete');
   }
 
   Future<dynamic> shutdown() {
@@ -227,10 +227,10 @@ class CommonServer {
       final results = await getCorrectAnalysisServer(source).analyze(source);
       final lineCount = source.split('\n').length;
       final ms = watch.elapsedMilliseconds;
-      _log.info('PERF: Analyzed $lineCount lines of Dart in ${ms}ms.');
+      log.info('PERF: Analyzed $lineCount lines of Dart in ${ms}ms.');
       return results;
     } catch (e, st) {
-      _log.severe('Error during analyze', e, st);
+      log.severe('Error during analyze', e, st);
       await restart();
       rethrow;
     }
@@ -252,7 +252,7 @@ class CommonServer {
 
     final result = await checkCache(memCacheKey);
     if (result != null) {
-      _log.info('CACHE: Cache hit for compileDart2js');
+      log.info('CACHE: Cache hit for compileDart2js');
       final resultObj = JsonDecoder().convert(result);
       return CompileResponse(
         resultObj['compiledJS'] as String,
@@ -260,7 +260,7 @@ class CommonServer {
       );
     }
 
-    _log.info('CACHE: MISS for compileDart2js');
+    log.info('CACHE: MISS for compileDart2js');
     final watch = Stopwatch()..start();
 
     return compiler
@@ -270,7 +270,7 @@ class CommonServer {
         final lineCount = source.split('\n').length;
         final outputSize = (results.compiledJS.length / 1024).ceil();
         final ms = watch.elapsedMilliseconds;
-        _log.info('PERF: Compiled $lineCount lines of Dart into '
+        log.info('PERF: Compiled $lineCount lines of Dart into '
             '${outputSize}kb of JavaScript in ${ms}ms using dart2js.');
         final sourceMap = returnSourceMap ? results.sourceMap : null;
 
@@ -288,7 +288,7 @@ class CommonServer {
       }
     }).catchError((dynamic e, dynamic st) {
       if (e is! BadRequestError) {
-        _log.severe('Error during compile (dart2js): $e\n$st');
+        log.severe('Error during compile (dart2js): $e\n$st');
       }
       throw e;
     });
@@ -306,7 +306,7 @@ class CommonServer {
 
     final result = await checkCache(memCacheKey);
     if (result != null) {
-      _log.info('CACHE: Cache hit for compileDDC');
+      log.info('CACHE: Cache hit for compileDDC');
       final resultObj = JsonDecoder().convert(result);
       return CompileDDCResponse(
         resultObj['compiledJS'] as String,
@@ -314,7 +314,7 @@ class CommonServer {
       );
     }
 
-    _log.info('CACHE: MISS for compileDDC');
+    log.info('CACHE: MISS for compileDDC');
     final watch = Stopwatch()..start();
 
     return compiler.compileDDC(source).then((DDCCompilationResults results) {
@@ -322,7 +322,7 @@ class CommonServer {
         final lineCount = source.split('\n').length;
         final outputSize = (results.compiledJS.length / 1024).ceil();
         final ms = watch.elapsedMilliseconds;
-        _log.info('PERF: Compiled $lineCount lines of Dart into '
+        log.info('PERF: Compiled $lineCount lines of Dart into '
             '${outputSize}kb of JavaScript in ${ms}ms using DDC.');
 
         final cachedResult = JsonEncoder().convert(<String, String>{
@@ -339,7 +339,7 @@ class CommonServer {
       }
     }).catchError((dynamic e, dynamic st) {
       if (e is! BadRequestError) {
-        _log.severe('Error during compile (DDC): $e\n$st');
+        log.severe('Error during compile (DDC): $e\n$st');
       }
       throw e;
     });
@@ -360,10 +360,10 @@ class CommonServer {
       var docInfo =
           await getCorrectAnalysisServer(source).dartdoc(source, offset);
       docInfo ??= <String, String>{};
-      _log.info('PERF: Computed dartdoc in ${watch.elapsedMilliseconds}ms.');
+      log.info('PERF: Computed dartdoc in ${watch.elapsedMilliseconds}ms.');
       return DocumentResponse(docInfo);
     } catch (e, st) {
-      _log.severe('Error during dartdoc', e, st);
+      log.severe('Error during dartdoc', e, st);
       await restart();
       rethrow;
     }
@@ -390,10 +390,10 @@ class CommonServer {
     try {
       final response =
           await getCorrectAnalysisServer(source).complete(source, offset);
-      _log.info('PERF: Computed completions in ${watch.elapsedMilliseconds}ms.');
+      log.info('PERF: Computed completions in ${watch.elapsedMilliseconds}ms.');
       return response;
     } catch (e, st) {
-      _log.severe('Error during _complete', e, st);
+      log.severe('Error during _complete', e, st);
       await restart();
       rethrow;
     }
@@ -412,7 +412,7 @@ class CommonServer {
     final watch = Stopwatch()..start();
     final response =
         await getCorrectAnalysisServer(source).getFixes(source, offset);
-    _log.info('PERF: Computed fixes in ${watch.elapsedMilliseconds}ms.');
+    log.info('PERF: Computed fixes in ${watch.elapsedMilliseconds}ms.');
     return response;
   }
 
@@ -429,7 +429,7 @@ class CommonServer {
     final watch = Stopwatch()..start();
     final response =
         await getCorrectAnalysisServer(source).getAssists(source, offset);
-    _log.info('PERF: Computed assists in ${watch.elapsedMilliseconds}ms.');
+    log.info('PERF: Computed assists in ${watch.elapsedMilliseconds}ms.');
     return response;
   }
 
@@ -443,7 +443,7 @@ class CommonServer {
 
     final response =
         await getCorrectAnalysisServer(source).format(source, offset);
-    _log.info('PERF: Computed format in ${watch.elapsedMilliseconds}ms.');
+    log.info('PERF: Computed format in ${watch.elapsedMilliseconds}ms.');
     return response;
   }
 
@@ -468,7 +468,7 @@ class CommonServer {
       try {
         await flutterWebManager.initFlutterWeb();
       } catch (e) {
-        _log.warning('unable to init package:flutter: $e');
+        log.warning('unable to init package:flutter: $e');
         return;
       }
     }
