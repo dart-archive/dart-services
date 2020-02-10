@@ -17,6 +17,14 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 
 Future<void> main(List<String> args) async {
+
+  // run flutter doctor to make sure flutter has downloaded artifacts
+  // required for compilation
+  run(
+    path.join(Directory.current.path, 'flutter/bin/flutter'),
+    arguments: ['doctor'],
+  );
+
   await SdkManager.sdk.init();
   await SdkManager.flutterSdk.init();
   return grind(args);
@@ -62,19 +70,6 @@ void updateDockerVersion() {
   File('Dockerfile').writeAsStringSync(dockerImageLines.join('\n'));
 }
 
-@Task()
-void flutterDoctor() async {
-  final flutterSdkPath =
-      Directory(path.join(Directory.current.path, 'flutter'));
-
-  // run flutter doctor to make sure flutter has downloaded artifacts
-  // required for compilation
-  run(
-    path.join(flutterSdkPath.path, 'bin/flutter'),
-    arguments: ['doctor'],
-  );
-}
-
 final List<String> compilationArtifacts = [
   'dart_sdk.js',
   'flutter_web.js',
@@ -82,7 +77,6 @@ final List<String> compilationArtifacts = [
 
 @Task('validate that we have the correct compilation artifacts available in '
     'google storage')
-@Depends(flutterDoctor)
 void validateStorageArtifacts() async {
   final version = SdkManager.flutterSdk.versionFull;
 
@@ -106,7 +100,6 @@ Future _validateExists(String url) async {
 }
 
 @Task('build the sdk compilation artifacts for upload to google storage')
-@Depends(flutterDoctor)
 void buildStorageArtifacts() {
   // build and copy dart_sdk.js, flutter_web.js, and flutter_web.dill
   final temp = Directory.systemTemp.createTempSync('flutter_web_sample');
