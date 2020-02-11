@@ -14,7 +14,6 @@ import 'package:rpc/rpc.dart' as rpc;
 
 import 'src/common.dart';
 import 'src/common_server.dart';
-import 'src/dartpad_support_server.dart';
 import 'src/flutter_web.dart';
 import 'src/server_cache.dart';
 
@@ -63,14 +62,12 @@ class GaeServer {
   rpc.ApiServer apiServer;
   FlutterWebManager flutterWebManager;
   CommonServer commonServer;
-  FileRelayServer fileRelayServer;
 
   GaeServer(this.sdkPath, this.redisServerUri) {
     hierarchicalLoggingEnabled = true;
     _logger.level = Level.ALL;
 
     discoveryEnabled = false;
-    fileRelayServer = FileRelayServer();
     flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
     commonServer = CommonServer(
         sdkPath,
@@ -82,8 +79,7 @@ class GaeServer {
                 redisServerUri, io.Platform.environment['GAE_VERSION']));
     // Enabled pretty printing of returned json for debuggability.
     apiServer = rpc.ApiServer(apiPrefix: _API, prettyPrint: true)
-      ..addApi(commonServer)
-      ..addApi(fileRelayServer);
+      ..addApi(commonServer);
   }
 
   Future<dynamic> start([int gaePort = 8080]) async {
