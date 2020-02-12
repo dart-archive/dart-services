@@ -10,14 +10,11 @@ import 'package:rpc/rpc.dart';
 
 import 'analysis_server.dart';
 import 'api_classes.dart';
-import 'common_server_impl.dart' show BadRequest, CommonServerImpl;
-export 'common_server_impl.dart' show log;
+import 'common_server_impl.dart'
+    show BadRequest, CommonServerImpl, ServerContainer;
+export 'common_server_impl.dart' show log, ServerContainer;
 import 'flutter_web.dart';
 import 'server_cache.dart';
-
-abstract class ServerContainer {
-  String get version;
-}
 
 @ApiClass(name: 'dartservices', version: 'v1')
 class CommonServer {
@@ -113,7 +110,8 @@ class CommonServer {
       method: 'GET',
       path: 'version',
       description: 'Return the current SDK version for DartServices.')
-  Future<VersionResponse> version() => _convertBadRequest(() => _impl.version());
+  Future<VersionResponse> version() =>
+      _convertBadRequest(() => _impl.version());
 
   Future<String> checkCache(String query) => _impl.checkCache(query);
 

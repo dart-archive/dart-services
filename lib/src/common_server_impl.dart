@@ -16,7 +16,6 @@ import '../version.dart';
 import 'analysis_server.dart';
 import 'api_classes.dart';
 import 'common.dart';
-import 'common_server.dart' show ServerContainer;
 import 'compiler.dart';
 import 'flutter_web.dart';
 import 'pub.dart';
@@ -29,6 +28,10 @@ final Logger log = Logger('common_server');
 class BadRequest implements Exception {
   String cause;
   BadRequest(this.cause);
+}
+
+abstract class ServerContainer {
+  String get version;
 }
 
 class CommonServerImpl {
