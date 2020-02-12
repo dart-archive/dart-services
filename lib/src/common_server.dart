@@ -6,16 +6,14 @@ library services.common_server;
 
 import 'dart:async';
 
-import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart';
 
 import 'analysis_server.dart';
 import 'api_classes.dart';
 import 'common_server_impl.dart' show BadRequest, CommonServerImpl;
+export 'common_server_impl.dart' show log;
 import 'flutter_web.dart';
 import 'server_cache.dart';
-
-final Logger log = Logger('common_server');
 
 abstract class ServerContainer {
   String get version;
@@ -36,10 +34,7 @@ class CommonServer {
     FlutterWebManager flutterWebManager,
     ServerContainer container,
     ServerCache cache,
-  ) : impl = CommonServerImpl(sdkPath, flutterWebManager, container, cache) {
-    hierarchicalLoggingEnabled = true;
-    log.level = Level.ALL;
-  }
+  ) : impl = CommonServerImpl(sdkPath, flutterWebManager, container, cache);
 
   Future<void> init() async => impl.init();
 

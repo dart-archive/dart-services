@@ -16,7 +16,7 @@ import '../version.dart';
 import 'analysis_server.dart';
 import 'api_classes.dart';
 import 'common.dart';
-import 'common_server.dart' show log, ServerContainer;
+import 'common_server.dart' show ServerContainer;
 import 'compiler.dart';
 import 'flutter_web.dart';
 import 'pub.dart';
@@ -24,6 +24,7 @@ import 'server_cache.dart';
 import 'sdk_manager.dart';
 
 final Duration _standardExpiration = Duration(hours: 1);
+final Logger log = Logger('common_server');
 
 class BadRequest implements Exception {
   String cause;
