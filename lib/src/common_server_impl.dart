@@ -117,7 +117,7 @@ class CommonServerImpl {
       flutterAnalysisServer.shutdown(),
       compiler.dispose(),
       Future<dynamic>.sync(cache.shutdown)
-    ]);
+    ]).timeout(Duration(minutes: 1));
   }
 
   Future<AnalysisResults> analyze(SourceRequest request) {
