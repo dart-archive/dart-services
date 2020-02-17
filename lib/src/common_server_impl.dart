@@ -89,6 +89,8 @@ class CommonServerImpl {
         exit(code);
       }
     }));
+
+    _running = true;
   }
 
   Future<void> warmup({bool useHtml = false}) async {
@@ -96,7 +98,6 @@ class CommonServerImpl {
     await compiler.warmup(useHtml: useHtml);
     await analysisServer.warmup(useHtml: useHtml);
     await flutterAnalysisServer.warmup(useHtml: useHtml);
-    _running = true;
   }
 
   Future<void> restart() async {
