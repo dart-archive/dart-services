@@ -18,6 +18,7 @@ part 'common_server_proto.g.dart'; // generated with 'pub run build_runner build
 
 const PROTOBUF_MIME_TYPE = 'application/x-protobuf';
 const JSON_MIME_TYPE = 'application/json';
+const String PROTO_API_URL_PREFIX = '/api2';
 
 typedef Responder = Future<Response> Function(Request request);
 
@@ -26,7 +27,7 @@ class CommonServerProto {
 
   CommonServerProto(this._impl);
 
-  @Route.post('/api2/analyze')
+  @Route.post('$PROTO_API_URL_PREFIX/analyze')
   Future<Response> analyze(Request request) async {
     if (request.mimeType == PROTOBUF_MIME_TYPE) {
       final body = <int>[];
@@ -72,7 +73,7 @@ class CommonServerProto {
       );
   }
 
-  @Route.post('/api2/compile')
+  @Route.post('$PROTO_API_URL_PREFIX/compile')
   Future<Response> compile(Request request) async {
     if (request.mimeType == PROTOBUF_MIME_TYPE) {
       final body = <int>[];
@@ -107,7 +108,7 @@ class CommonServerProto {
       ..sourceMap = apiResponse.sourceMap;
   }
 
-  @Route.post('/api2/compileDDC')
+  @Route.post('$PROTO_API_URL_PREFIX/compileDDC')
   Future<Response> compileDDC(Request request) async {
     if (request.mimeType == PROTOBUF_MIME_TYPE) {
       final body = <int>[];
@@ -143,7 +144,7 @@ class CommonServerProto {
       ..modulesBaseUrl = apiResponse.modulesBaseUrl;
   }
 
-  @Route.post('/api2/complete')
+  @Route.post('$PROTO_API_URL_PREFIX/complete')
   Future<Response> complete(Request request) async {
     if (request.mimeType == PROTOBUF_MIME_TYPE) {
       final body = <int>[];
@@ -183,7 +184,7 @@ class CommonServerProto {
       );
   }
 
-  @Route.post('/api2/fixes')
+  @Route.post('$PROTO_API_URL_PREFIX/fixes')
   Future<Response> fixes(Request request) async {
     if (request.mimeType == PROTOBUF_MIME_TYPE) {
       final body = <int>[];
@@ -245,7 +246,7 @@ class CommonServerProto {
       );
   }
 
-  @Route.post('/api2/assists')
+  @Route.post('$PROTO_API_URL_PREFIX/assists')
   Future<Response> assists(Request request) async {
     if (request.mimeType == PROTOBUF_MIME_TYPE) {
       final body = <int>[];
@@ -307,7 +308,7 @@ class CommonServerProto {
       );
   }
 
-  @Route.post('/api2/format')
+  @Route.post('$PROTO_API_URL_PREFIX/format')
   Future<Response> format(Request request) async {
     if (request.mimeType == PROTOBUF_MIME_TYPE) {
       final body = <int>[];
@@ -342,7 +343,7 @@ class CommonServerProto {
       ..offset = apiResponse.offset;
   }
 
-  @Route.post('/api2/document')
+  @Route.post('$PROTO_API_URL_PREFIX/document')
   Future<Response> document(Request request) async {
     if (request.mimeType == PROTOBUF_MIME_TYPE) {
       final body = <int>[];
@@ -375,7 +376,7 @@ class CommonServerProto {
     return proto.DocumentResponse()..info.addAll(apiResponse.info);
   }
 
-  @Route.post('/api2/version')
+  @Route.post('$PROTO_API_URL_PREFIX/version')
   Future<Response> version(Request request) async {
     if (request.mimeType == PROTOBUF_MIME_TYPE) {
       final body = <int>[];

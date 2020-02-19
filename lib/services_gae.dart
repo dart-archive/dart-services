@@ -11,10 +11,12 @@ import 'package:appengine/appengine.dart' as ae;
 import 'package:dart_services/src/sdk_manager.dart';
 import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart' as rpc;
+import 'package:shelf/shelf_io.dart' as shelf_io;
 
 import 'src/common.dart';
 import 'src/common_server.dart';
 import 'src/common_server_impl.dart';
+import 'src/common_server_proto.dart';
 import 'src/flutter_web.dart';
 import 'src/server_cache.dart';
 
@@ -64,6 +66,7 @@ class GaeServer {
   FlutterWebManager flutterWebManager;
   CommonServer commonServer;
   CommonServerImpl commonServerImpl;
+  CommonServerProto commonServerProto;
 
   GaeServer(this.sdkPath, this.redisServerUri) {
     hierarchicalLoggingEnabled = true;
@@ -85,6 +88,7 @@ class GaeServer {
             ),
     );
     commonServer = CommonServer(commonServerImpl);
+    commonServerProto = CommonServerProto(commonServerImpl);
     // Enabled pretty printing of returned json for debuggability.
     apiServer = rpc.ApiServer(apiPrefix: _API, prettyPrint: true)
       ..addApi(commonServer);
@@ -109,6 +113,8 @@ class GaeServer {
       await _processHealthRequest(request);
     } else if (request.uri.path.startsWith(_API)) {
       await _processApiRequest(request);
+    } else if (request.uri.path.startsWith(PROTO_API_URL_PREFIX)) {
+      await shelf_io.handleRequest(request, commonServerProto.router.handler);
     } else {
       await _processDefaultRequest(request);
     }
