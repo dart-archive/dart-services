@@ -285,5 +285,5 @@ void protobuf() {
   }
 
   // generate common_server_proto.g.dart
-  Pub.run('build_runner', arguments: ['build']);
+  Pub.run('build_runner', arguments: ['build', '--delete-conflicting-outputs']);
 }
