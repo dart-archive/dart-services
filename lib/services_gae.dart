@@ -14,6 +14,7 @@ import 'package:rpc/rpc.dart' as rpc;
 
 import 'src/common.dart';
 import 'src/common_server.dart';
+import 'src/common_server_impl.dart';
 import 'src/flutter_web.dart';
 import 'src/server_cache.dart';
 
@@ -62,6 +63,7 @@ class GaeServer {
   rpc.ApiServer apiServer;
   FlutterWebManager flutterWebManager;
   CommonServer commonServer;
+  CommonServerImpl commonServerImpl;
 
   GaeServer(this.sdkPath, this.redisServerUri) {
     hierarchicalLoggingEnabled = true;
@@ -71,21 +73,25 @@ class GaeServer {
 
     discoveryEnabled = false;
     flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
-    commonServer = CommonServer(
-        sdkPath,
-        flutterWebManager,
-        GaeServerContainer(),
-        redisServerUri == null
-            ? InMemoryCache()
-            : RedisCache(
-                redisServerUri, io.Platform.environment['GAE_VERSION']));
+    commonServerImpl = CommonServerImpl(
+      sdkPath,
+      flutterWebManager,
+      GaeServerContainer(),
+      redisServerUri == null
+          ? InMemoryCache()
+          : RedisCache(
+              redisServerUri,
+              io.Platform.environment['GAE_VERSION'],
+            ),
+    );
+    commonServer = CommonServer(commonServerImpl);
     // Enabled pretty printing of returned json for debuggability.
     apiServer = rpc.ApiServer(apiPrefix: _API, prettyPrint: true)
       ..addApi(commonServer);
   }
 
   Future<dynamic> start([int gaePort = 8080]) async {
-    await commonServer.init();
+    await commonServerImpl.init();
     return ae.runAppEngine(requestHandler, port: gaePort);
   }
 
@@ -122,7 +128,7 @@ class GaeServer {
   }
 
   Future _processReadynessRequest(io.HttpRequest request) async {
-    if (commonServer.running) {
+    if (commonServerImpl.running) {
       request.response.statusCode = io.HttpStatus.ok;
     } else {
       request.response.statusCode = io.HttpStatus.internalServerError;
@@ -133,7 +139,7 @@ class GaeServer {
   }
 
   Future _processHealthRequest(io.HttpRequest request) async {
-    if (commonServer.running && !commonServer.analysisServersRunning) {
+    if (commonServerImpl.running && !commonServerImpl.analysisServersRunning) {
       _logger.severe('CommonServer running without analysis servers. '
           'Intentionally failing healthcheck.');
       request.response.statusCode = io.HttpStatus.internalServerError;

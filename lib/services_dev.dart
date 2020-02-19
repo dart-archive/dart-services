@@ -18,6 +18,8 @@ import 'package:shelf/shelf_io.dart' as shelf;
 
 import 'src/common.dart';
 import 'src/common_server.dart';
+import 'src/common_server_impl.dart';
+import 'src/common_server_proto.dart';
 import 'src/flutter_web.dart';
 import 'src/server_cache.dart';
 import 'src/shelf_cors.dart' as shelf_cors;
@@ -80,9 +82,14 @@ class EndpointsServer {
   static Future<String> generateDiscovery(
       FlutterSdk flutterSdk, String serverUrl) async {
     final flutterWebManager = FlutterWebManager(flutterSdk);
-    final commonServer =
-        CommonServer(sdkPath, flutterWebManager, _ServerContainer(), _Cache());
-    await commonServer.init();
+    final commonServerImpl = CommonServerImpl(
+      sdkPath,
+      flutterWebManager,
+      _ServerContainer(),
+      _Cache(),
+    );
+    final commonServer = CommonServer(commonServerImpl);
+    await commonServerImpl.init();
     final apiServer = ApiServer(apiPrefix: '/api', prettyPrint: true)
       ..addApi(commonServer);
     apiServer.enableDiscoveryApi();
@@ -103,15 +110,23 @@ class EndpointsServer {
   ApiServer apiServer;
   bool discoveryEnabled;
   CommonServer commonServer;
+  CommonServerImpl commonServerImpl;
+  CommonServerProto commonServerProto;
   FlutterWebManager flutterWebManager;
 
   EndpointsServer._(String sdkPath, this.port) {
     discoveryEnabled = false;
 
     flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
-    commonServer =
-        CommonServer(sdkPath, flutterWebManager, _ServerContainer(), _Cache());
-    commonServer.init();
+    commonServerImpl = CommonServerImpl(
+      sdkPath,
+      flutterWebManager,
+      _ServerContainer(),
+      _Cache(),
+    );
+    commonServer = CommonServer(commonServerImpl);
+    commonServerProto = CommonServerProto(commonServerImpl);
+    commonServerImpl.init();
 
     apiServer = ApiServer(apiPrefix: '/api', prettyPrint: true)
       ..addApi(commonServer);
@@ -120,7 +135,10 @@ class EndpointsServer {
         .addMiddleware(logRequests())
         .addMiddleware(_createCustomCorsHeadersMiddleware());
 
-    handler = pipeline.addHandler(_apiHandler);
+    handler = pipeline.addHandler(Cascade()
+        .add(_apiHandler)
+        .add(commonServerProto.router.handler)
+        .handler);
   }
 
   Future<Response> _apiHandler(Request request) {

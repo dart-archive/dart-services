@@ -10,6 +10,7 @@ import 'dart:io';
 
 import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/common_server.dart';
+import 'package:dart_services/src/common_server_impl.dart';
 import 'package:dart_services/src/flutter_web.dart';
 import 'package:dart_services/src/sdk_manager.dart';
 import 'package:dart_services/src/server_cache.dart';
@@ -56,6 +57,7 @@ void main() => defineTests();
 
 void defineTests() {
   CommonServer server;
+  CommonServerImpl commonServerImpl;
   ApiServer apiServer;
   FlutterWebManager flutterWebManager;
 
@@ -300,9 +302,10 @@ void defineTests() {
       container = MockContainer();
       cache = MockCache();
       flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
-
-      server = CommonServer(sdkPath, flutterWebManager, container, cache);
-      await server.init();
+       commonServerImpl =
+          CommonServerImpl(sdkPath, flutterWebManager, container, cache);
+      server = CommonServer(commonServerImpl);
+      await commonServerImpl.init();
 
       apiServer = ApiServer(apiPrefix: '/api', prettyPrint: true);
       apiServer.addApi(server);
@@ -328,7 +331,7 @@ void defineTests() {
     });
 
     tearDownAll(() async {
-      await server.shutdown();
+      await commonServerImpl.shutdown();
     });
 
     setUp(() {
