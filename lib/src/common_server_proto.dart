@@ -6,6 +6,8 @@ library services.common_server_proto;
 
 import 'dart:async';
 import 'dart:convert';
+
+import 'package:protobuf/protobuf.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
@@ -28,28 +30,11 @@ class CommonServerProto {
   CommonServerProto(this._impl);
 
   @Route.post('$PROTO_API_URL_PREFIX/analyze')
-  Future<Response> analyze(Request request) async {
-    if (request.mimeType == PROTOBUF_MIME_TYPE) {
-      final body = <int>[];
-      await for (final chunk in request.read()) {
-        body.addAll(chunk);
-      }
-      final response = await _analyze(proto.SourceRequest.fromBuffer(body));
-      return Response.ok(
-        response.writeToBuffer(),
-        headers: {'Content-Type': PROTOBUF_MIME_TYPE},
+  Future<Response> analyze(Request request) => _serve(
+        request,
+        (bytes) => _analyze(proto.SourceRequest.fromBuffer(bytes)),
+        (json) => _analyze(proto.SourceRequest.fromJson(json)),
       );
-    } else {
-      // Assume JSON proto3 format
-      final body = await request.readAsString();
-      final response = await _analyze(proto.SourceRequest.fromJson(body));
-      return Response.ok(
-        response.writeToJson(),
-        encoding: utf8,
-        headers: {'Content-Type': JSON_MIME_TYPE},
-      );
-    }
-  }
 
   Future<proto.AnalyzeReply> _analyze(proto.SourceRequest request) async {
     final apiRequest = api.SourceRequest()
@@ -74,28 +59,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/compile')
-  Future<Response> compile(Request request) async {
-    if (request.mimeType == PROTOBUF_MIME_TYPE) {
-      final body = <int>[];
-      await for (final chunk in request.read()) {
-        body.addAll(chunk);
-      }
-      final response = await _compile(proto.CompileRequest.fromBuffer(body));
-      return Response.ok(
-        response.writeToBuffer(),
-        headers: {'Content-Type': PROTOBUF_MIME_TYPE},
+  Future<Response> compile(Request request) => _serve(
+        request,
+        (bytes) => _compile(proto.CompileRequest.fromBuffer(bytes)),
+        (json) => _compile(proto.CompileRequest.fromJson(json)),
       );
-    } else {
-      // Assume JSON proto3 format
-      final body = await request.readAsString();
-      final response = await _compile(proto.CompileRequest.fromJson(body));
-      return Response.ok(
-        response.writeToJson(),
-        encoding: utf8,
-        headers: {'Content-Type': JSON_MIME_TYPE},
-      );
-    }
-  }
 
   Future<proto.CompileResponse> _compile(proto.CompileRequest request) async {
     final apiRequest = api.CompileRequest()
@@ -109,28 +77,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/compileDDC')
-  Future<Response> compileDDC(Request request) async {
-    if (request.mimeType == PROTOBUF_MIME_TYPE) {
-      final body = <int>[];
-      await for (final chunk in request.read()) {
-        body.addAll(chunk);
-      }
-      final response = await _compileDDC(proto.CompileRequest.fromBuffer(body));
-      return Response.ok(
-        response.writeToBuffer(),
-        headers: {'Content-Type': PROTOBUF_MIME_TYPE},
+  Future<Response> compileDDC(Request request) => _serve(
+        request,
+        (bytes) => _compileDDC(proto.CompileRequest.fromBuffer(bytes)),
+        (json) => _compileDDC(proto.CompileRequest.fromJson(json)),
       );
-    } else {
-      // Assume JSON proto3 format
-      final body = await request.readAsString();
-      final response = await _compileDDC(proto.CompileRequest.fromJson(body));
-      return Response.ok(
-        response.writeToJson(),
-        encoding: utf8,
-        headers: {'Content-Type': JSON_MIME_TYPE},
-      );
-    }
-  }
 
   Future<proto.CompileDDCResponse> _compileDDC(
       proto.CompileRequest request) async {
@@ -145,28 +96,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/complete')
-  Future<Response> complete(Request request) async {
-    if (request.mimeType == PROTOBUF_MIME_TYPE) {
-      final body = <int>[];
-      await for (final chunk in request.read()) {
-        body.addAll(chunk);
-      }
-      final response = await _complete(proto.SourceRequest.fromBuffer(body));
-      return Response.ok(
-        response.writeToBuffer(),
-        headers: {'Content-Type': PROTOBUF_MIME_TYPE},
+  Future<Response> complete(Request request) => _serve(
+        request,
+        (bytes) => _complete(proto.SourceRequest.fromBuffer(bytes)),
+        (json) => _complete(proto.SourceRequest.fromJson(json)),
       );
-    } else {
-      // Assume JSON proto3 format
-      final body = await request.readAsString();
-      final response = await _complete(proto.SourceRequest.fromJson(body));
-      return Response.ok(
-        response.writeToJson(),
-        encoding: utf8,
-        headers: {'Content-Type': JSON_MIME_TYPE},
-      );
-    }
-  }
 
   Future<proto.CompleteResponse> _complete(proto.SourceRequest request) async {
     final apiRequest = api.SourceRequest()
@@ -185,28 +119,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/fixes')
-  Future<Response> fixes(Request request) async {
-    if (request.mimeType == PROTOBUF_MIME_TYPE) {
-      final body = <int>[];
-      await for (final chunk in request.read()) {
-        body.addAll(chunk);
-      }
-      final response = await _fixes(proto.SourceRequest.fromBuffer(body));
-      return Response.ok(
-        response.writeToBuffer(),
-        headers: {'Content-Type': PROTOBUF_MIME_TYPE},
+  Future<Response> fixes(Request request) => _serve(
+        request,
+        (bytes) => _fixes(proto.SourceRequest.fromBuffer(bytes)),
+        (json) => _fixes(proto.SourceRequest.fromJson(json)),
       );
-    } else {
-      // Assume JSON proto3 format
-      final body = await request.readAsString();
-      final response = await _fixes(proto.SourceRequest.fromJson(body));
-      return Response.ok(
-        response.writeToJson(),
-        encoding: utf8,
-        headers: {'Content-Type': JSON_MIME_TYPE},
-      );
-    }
-  }
 
   Future<proto.FixesResponse> _fixes(proto.SourceRequest request) async {
     final apiRequest = api.SourceRequest()
@@ -247,28 +164,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/assists')
-  Future<Response> assists(Request request) async {
-    if (request.mimeType == PROTOBUF_MIME_TYPE) {
-      final body = <int>[];
-      await for (final chunk in request.read()) {
-        body.addAll(chunk);
-      }
-      final response = await _assists(proto.SourceRequest.fromBuffer(body));
-      return Response.ok(
-        response.writeToBuffer(),
-        headers: {'Content-Type': PROTOBUF_MIME_TYPE},
+  Future<Response> assists(Request request) => _serve(
+        request,
+        (bytes) => _assists(proto.SourceRequest.fromBuffer(bytes)),
+        (json) => _assists(proto.SourceRequest.fromJson(json)),
       );
-    } else {
-      // Assume JSON proto3 format
-      final body = await request.readAsString();
-      final response = await _assists(proto.SourceRequest.fromJson(body));
-      return Response.ok(
-        response.writeToJson(),
-        encoding: utf8,
-        headers: {'Content-Type': JSON_MIME_TYPE},
-      );
-    }
-  }
 
   Future<proto.AssistsResponse> _assists(proto.SourceRequest request) async {
     final apiRequest = api.SourceRequest()
@@ -309,28 +209,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/format')
-  Future<Response> format(Request request) async {
-    if (request.mimeType == PROTOBUF_MIME_TYPE) {
-      final body = <int>[];
-      await for (final chunk in request.read()) {
-        body.addAll(chunk);
-      }
-      final response = await _format(proto.SourceRequest.fromBuffer(body));
-      return Response.ok(
-        response.writeToBuffer(),
-        headers: {'Content-Type': PROTOBUF_MIME_TYPE},
+  Future<Response> format(Request request) => _serve(
+        request,
+        (bytes) => _format(proto.SourceRequest.fromBuffer(bytes)),
+        (json) => _format(proto.SourceRequest.fromJson(json)),
       );
-    } else {
-      // Assume JSON proto3 format
-      final body = await request.readAsString();
-      final response = await _format(proto.SourceRequest.fromJson(body));
-      return Response.ok(
-        response.writeToJson(),
-        encoding: utf8,
-        headers: {'Content-Type': JSON_MIME_TYPE},
-      );
-    }
-  }
 
   Future<proto.FormatResponse> _format(proto.SourceRequest request) async {
     final apiRequest = api.SourceRequest()
@@ -344,28 +227,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/document')
-  Future<Response> document(Request request) async {
-    if (request.mimeType == PROTOBUF_MIME_TYPE) {
-      final body = <int>[];
-      await for (final chunk in request.read()) {
-        body.addAll(chunk);
-      }
-      final response = await _document(proto.SourceRequest.fromBuffer(body));
-      return Response.ok(
-        response.writeToBuffer(),
-        headers: {'Content-Type': PROTOBUF_MIME_TYPE},
+  Future<Response> document(Request request) => _serve(
+        request,
+        (bytes) => _document(proto.SourceRequest.fromBuffer(bytes)),
+        (json) => _document(proto.SourceRequest.fromJson(json)),
       );
-    } else {
-      // Assume JSON proto3 format
-      final body = await request.readAsString();
-      final response = await _document(proto.SourceRequest.fromJson(body));
-      return Response.ok(
-        response.writeToJson(),
-        encoding: utf8,
-        headers: {'Content-Type': JSON_MIME_TYPE},
-      );
-    }
-  }
 
   Future<proto.DocumentResponse> _document(proto.SourceRequest request) async {
     final apiRequest = api.SourceRequest()
@@ -377,28 +243,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/version')
-  Future<Response> version(Request request) async {
-    if (request.mimeType == PROTOBUF_MIME_TYPE) {
-      final body = <int>[];
-      await for (final chunk in request.read()) {
-        body.addAll(chunk);
-      }
-      final response = await _version(proto.VersionRequest.fromBuffer(body));
-      return Response.ok(
-        response.writeToBuffer(),
-        headers: {'Content-Type': PROTOBUF_MIME_TYPE},
+  Future<Response> version(Request request) => _serve(
+        request,
+        (bytes) => _version(proto.VersionRequest.fromBuffer(bytes)),
+        (json) => _version(proto.VersionRequest.fromJson(json)),
       );
-    } else {
-      // Assume JSON proto3 format
-      final body = await request.readAsString();
-      final response = await _version(proto.VersionRequest.fromJson(body));
-      return Response.ok(
-        response.writeToJson(),
-        encoding: utf8,
-        headers: {'Content-Type': JSON_MIME_TYPE},
-      );
-    }
-  }
 
   Future<proto.VersionResponse> _version(proto.VersionRequest request) async {
     final apiResponse = await _impl.version();
@@ -412,4 +261,30 @@ class CommonServerProto {
   }
 
   Router get router => _$CommonServerProtoRouter(this);
+
+  Future<Response> _serve<T extends GeneratedMessage>(
+      Request request,
+      Future<T> Function(List<int> bytes) decodeFromBuffer,
+      Future<T> Function(String json) decodeFromString) async {
+    if (request.mimeType == PROTOBUF_MIME_TYPE) {
+      final body = <int>[];
+      await for (final chunk in request.read()) {
+        body.addAll(chunk);
+      }
+      final response = await decodeFromBuffer(body);
+      return Response.ok(
+        response.writeToBuffer(),
+        headers: {'Content-Type': PROTOBUF_MIME_TYPE},
+      );
+    } else {
+      // Assume JSON proto3 format
+      final body = await request.readAsString();
+      final response = await decodeFromString(body);
+      return Response.ok(
+        response.writeToJson(),
+        encoding: utf8,
+        headers: {'Content-Type': JSON_MIME_TYPE},
+      );
+    }
+  }
 }
