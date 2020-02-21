@@ -18,10 +18,6 @@ message Source {
   int32 offset = 2;
 }
 
-message SourceRequest { Source source = 1; }
-
-message CompileRequest { Compile compile = 1; }
-
 message AnalyzeReply {
   repeated AnalysisIssue issues = 1;
 

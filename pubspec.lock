@@ -379,6 +379,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.6+3"
+  mock_request:
+    dependency: "direct dev"
+    description:
+      name: mock_request
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.6"
   multi_server_socket:
     dependency: transitive
     description:

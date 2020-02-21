@@ -21,20 +21,6 @@ const Source$json = const {
   ],
 };
 
-const SourceRequest$json = const {
-  '1': 'SourceRequest',
-  '2': const [
-    const {'1': 'source', '3': 1, '4': 1, '5': 11, '6': '.dart_services.api.Source', '10': 'source'},
-  ],
-};
-
-const CompileRequest$json = const {
-  '1': 'CompileRequest',
-  '2': const [
-    const {'1': 'compile', '3': 1, '4': 1, '5': 11, '6': '.dart_services.api.Compile', '10': 'compile'},
-  ],
-};
-
 const AnalyzeReply$json = const {
   '1': 'AnalyzeReply',
   '2': const [
