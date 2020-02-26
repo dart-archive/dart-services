@@ -20,7 +20,7 @@ part 'common_server_proto.g.dart'; // generated with 'pub run build_runner build
 
 const PROTOBUF_CONTENT_TYPE = 'application/x-protobuf';
 const JSON_CONTENT_TYPE = 'application/json; charset=utf-8';
-const String PROTO_API_URL_PREFIX = '/api2';
+const String PROTO_API_URL_PREFIX = '/api/dartservices/v2';
 
 typedef Responder = Future<Response> Function(Request request);
 
