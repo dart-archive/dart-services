@@ -110,7 +110,6 @@ class EndpointsServer {
   ApiServer apiServer;
   bool discoveryEnabled;
   CommonServer commonServer;
-  CommonServerImpl commonServerImpl;
   CommonServerProto commonServerProto;
   FlutterWebManager flutterWebManager;
 
@@ -118,7 +117,7 @@ class EndpointsServer {
     discoveryEnabled = false;
 
     flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
-    commonServerImpl = CommonServerImpl(
+    final commonServerImpl = CommonServerImpl(
       sdkPath,
       flutterWebManager,
       _ServerContainer(),
