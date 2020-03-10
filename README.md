@@ -13,11 +13,33 @@ It provides many of DartPad's features, including static analysis (errors and wa
 compilation to JavaScript, code completion, dartdoc information, code formatting, and
 quick fixes for issues.
 
+## Getting set up
+
+This project is built with [grinder](https://pub.dev/packages/grinder). To install, please run:
+
+```bash
+pub global activate grinder
+```
+
+The dart-services v2 API is defined in terms of Protobuf, so we need to install the Protobuf `protoc` compiler. For Mac:
+
+```bash
+brew install protobuf
+```
+
+We also need the Dart protoc plugin for the above `protoc` compiler to generate Dart code. To install, please run:
+
+```bash
+pub global install protoc_plugin
+```
+
 ## Running
 
 To run the server, run:
 
+```bash
     dart bin/server_dev.dart --port 8082
+```
 
 The server will run from port 8082 and export several JSON APIs, like
 `/api/compile` and `/api/analyze`.
@@ -44,7 +66,9 @@ Modify `warmup.dart` to point the BASE_URI to your AppEngine project.
 
 Then run
 
+```bash
     ./tool/deploy.sh
+```
 
 The will deploy the server, and run the warmup sequence and sanity checks.
 
