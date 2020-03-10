@@ -844,7 +844,7 @@ class VersionResponse extends $pb.GeneratedMessage {
 
 class BadRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('BadRequest', package: const $pb.PackageName('dart_services.api'), createEmptyInstance: create)
-    ..pc<ErrorMessage>(99, 'error', $pb.PbFieldType.PM, subBuilder: ErrorMessage.create)
+    ..aOM<ErrorMessage>(99, 'error', subBuilder: ErrorMessage.create)
     ..hasRequiredFields = false
   ;
 
@@ -864,7 +864,15 @@ class BadRequest extends $pb.GeneratedMessage {
   static BadRequest _defaultInstance;
 
   @$pb.TagNumber(99)
-  $core.List<ErrorMessage> get error => $_getList(0);
+  ErrorMessage get error => $_getN(0);
+  @$pb.TagNumber(99)
+  set error(ErrorMessage v) { setField(99, v); }
+  @$pb.TagNumber(99)
+  $core.bool hasError() => $_has(0);
+  @$pb.TagNumber(99)
+  void clearError() => clearField(99);
+  @$pb.TagNumber(99)
+  ErrorMessage ensureError() => $_ensure(0);
 }
 
 class ErrorMessage extends $pb.GeneratedMessage {

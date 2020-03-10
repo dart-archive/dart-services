@@ -196,7 +196,7 @@ const VersionResponse$json = const {
 const BadRequest$json = const {
   '1': 'BadRequest',
   '2': const [
-    const {'1': 'error', '3': 99, '4': 3, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
+    const {'1': 'error', '3': 99, '4': 1, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
   ],
 };
 

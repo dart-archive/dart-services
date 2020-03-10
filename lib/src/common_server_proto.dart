@@ -36,6 +36,10 @@ class CommonServerProto {
       transform: _analyze);
 
   Future<proto.AnalyzeReply> _analyze(proto.Source request) async {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+
     final apiRequest = api.SourceRequest()
       ..source = request.source
       ..offset = request.offset;
@@ -102,6 +106,13 @@ class CommonServerProto {
       transform: _complete);
 
   Future<proto.CompleteResponse> _complete(proto.Source request) async {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+    if (!request.hasOffset()) {
+      throw BadRequest('Missing parameter: \'offset\'');
+    }
+
     final apiRequest = api.SourceRequest()
       ..offset = request.offset
       ..source = request.source;
@@ -125,6 +136,13 @@ class CommonServerProto {
       transform: _fixes);
 
   Future<proto.FixesResponse> _fixes(proto.Source request) async {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+    if (!request.hasOffset()) {
+      throw BadRequest('Missing parameter: \'offset\'');
+    }
+
     final apiRequest = api.SourceRequest()
       ..offset = request.offset
       ..source = request.source;
@@ -178,6 +196,13 @@ class CommonServerProto {
       transform: _assists);
 
   Future<proto.AssistsResponse> _assists(proto.Source request) async {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+    if (!request.hasOffset()) {
+      throw BadRequest('Missing parameter: \'offset\'');
+    }
+
     final apiRequest = api.SourceRequest()
       ..offset = request.offset
       ..source = request.source;
@@ -228,6 +253,10 @@ class CommonServerProto {
       transform: _format);
 
   Future<proto.FormatResponse> _format(proto.Source request) async {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+
     final apiRequest = api.SourceRequest()
       ..offset = request.offset
       ..source = request.source;
@@ -246,6 +275,13 @@ class CommonServerProto {
       transform: _document);
 
   Future<proto.DocumentResponse> _document(proto.Source request) async {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+    if (!request.hasOffset()) {
+      throw BadRequest('Missing parameter: \'offset\'');
+    }
+
     final apiRequest = api.SourceRequest()
       ..offset = request.offset
       ..source = request.source;
@@ -301,7 +337,7 @@ class CommonServerProto {
         return Response(400,
             headers: {'Content-Type': PROTOBUF_CONTENT_TYPE},
             body: (proto.BadRequest.create()
-                  ..error.add(proto.ErrorMessage.create()..message = e.cause))
+                  ..error = (proto.ErrorMessage.create()..message = e.cause))
                 .writeToBuffer());
       }
     } else {
@@ -320,7 +356,7 @@ class CommonServerProto {
             headers: {'Content-Type': JSON_CONTENT_TYPE},
             encoding: utf8,
             body: json.encode((proto.BadRequest.create()
-                  ..error.add(proto.ErrorMessage.create()..message = e.cause))
+                  ..error = (proto.ErrorMessage.create()..message = e.cause))
                 .toProto3Json()));
       }
     }
