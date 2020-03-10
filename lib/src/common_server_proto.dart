@@ -7,6 +7,7 @@ library services.common_server_proto;
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:meta/meta.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
@@ -30,11 +31,11 @@ class CommonServerProto {
   CommonServerProto(this._impl);
 
   @Route.post('$PROTO_API_URL_PREFIX/analyze')
-  Future<Response> analyze(Request request) => _serve(
-        request,
-        (bytes) => _analyze(proto.Source.fromBuffer(bytes)),
-        (jsonStr) => _analyze(proto.Source.create()..mergeFromProto3Json(json.decode(jsonStr))),
-      );
+  Future<Response> analyze(Request request) => _serve(request,
+      decodeFromJSON: (json) =>
+          proto.Source.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
+      transform: _analyze);
 
   Future<proto.AnalyzeReply> _analyze(proto.Source request) async {
     final apiRequest = api.SourceRequest()
@@ -59,11 +60,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/compile')
-  Future<Response> compile(Request request) => _serve(
-        request,
-        (bytes) => _compile(proto.Compile.fromBuffer(bytes)),
-        (jsonStr) => _compile(proto.Compile.create()..mergeFromProto3Json(json.decode(jsonStr))),
-      );
+  Future<Response> compile(Request request) => _serve(request,
+      decodeFromJSON: (json) =>
+          proto.Compile.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.Compile.fromBuffer(bytes),
+      transform: _compile);
 
   Future<proto.CompileResponse> _compile(proto.Compile request) async {
     final apiRequest = api.CompileRequest()
@@ -78,14 +79,13 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/compileDDC')
-  Future<Response> compileDDC(Request request) => _serve(
-        request,
-        (bytes) => _compileDDC(proto.Compile.fromBuffer(bytes)),
-        (jsonStr) => _compileDDC(proto.Compile.create()..mergeFromProto3Json(json.decode(jsonStr))),
-      );
+  Future<Response> compileDDC(Request request) => _serve(request,
+      decodeFromJSON: (json) =>
+          proto.Compile.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.Compile.fromBuffer(bytes),
+      transform: _compileDDC);
 
-  Future<proto.CompileDDCResponse> _compileDDC(
-      proto.Compile request) async {
+  Future<proto.CompileDDCResponse> _compileDDC(proto.Compile request) async {
     final apiRequest = api.CompileRequest()
       ..source = request.source
       ..returnSourceMap = request.returnSourceMap;
@@ -97,11 +97,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/complete')
-  Future<Response> complete(Request request) => _serve(
-        request,
-        (bytes) => _complete(proto.Source.fromBuffer(bytes)),
-        (jsonStr) => _complete(proto.Source.create()..mergeFromProto3Json(json.decode(jsonStr))),
-      );
+  Future<Response> complete(Request request) => _serve(request,
+      decodeFromJSON: (json) =>
+          proto.Source.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
+      transform: _complete);
 
   Future<proto.CompleteResponse> _complete(proto.Source request) async {
     final apiRequest = api.SourceRequest()
@@ -120,11 +120,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/fixes')
-  Future<Response> fixes(Request request) => _serve(
-        request,
-        (bytes) => _fixes(proto.Source.fromBuffer(bytes)),
-        (jsonStr) => _fixes(proto.Source.create()..mergeFromProto3Json(json.decode(jsonStr))),
-      );
+  Future<Response> fixes(Request request) => _serve(request,
+      decodeFromJSON: (json) =>
+          proto.Source.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
+      transform: _fixes);
 
   Future<proto.FixesResponse> _fixes(proto.Source request) async {
     final apiRequest = api.SourceRequest()
@@ -165,11 +165,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/assists')
-  Future<Response> assists(Request request) => _serve(
-        request,
-        (bytes) => _assists(proto.Source.fromBuffer(bytes)),
-        (jsonStr) => _assists(proto.Source.create()..mergeFromProto3Json(json.decode(jsonStr))),
-      );
+  Future<Response> assists(Request request) => _serve(request,
+      decodeFromJSON: (json) =>
+          proto.Source.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
+      transform: _assists);
 
   Future<proto.AssistsResponse> _assists(proto.Source request) async {
     final apiRequest = api.SourceRequest()
@@ -210,11 +210,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/format')
-  Future<Response> format(Request request) => _serve(
-        request,
-        (bytes) => _format(proto.Source.fromBuffer(bytes)),
-        (jsonStr) => _format(proto.Source.create()..mergeFromProto3Json(json.decode(jsonStr))),
-      );
+  Future<Response> format(Request request) => _serve(request,
+      decodeFromJSON: (json) =>
+          proto.Source.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
+      transform: _format);
 
   Future<proto.FormatResponse> _format(proto.Source request) async {
     final apiRequest = api.SourceRequest()
@@ -228,11 +228,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/document')
-  Future<Response> document(Request request) => _serve(
-        request,
-        (bytes) => _document(proto.Source.fromBuffer(bytes)),
-        (jsonStr) => _document(proto.Source.create()..mergeFromProto3Json(json.decode(jsonStr))),
-      );
+  Future<Response> document(Request request) => _serve(request,
+      decodeFromJSON: (json) =>
+          proto.Source.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
+      transform: _document);
 
   Future<proto.DocumentResponse> _document(proto.Source request) async {
     final apiRequest = api.SourceRequest()
@@ -244,11 +244,11 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/version')
-  Future<Response> version(Request request) => _serve(
-        request,
-        (bytes) => _version(proto.VersionRequest.fromBuffer(bytes)),
-        (jsonStr) => _version(proto.VersionRequest.create()..mergeFromProto3Json(json.decode(jsonStr))),
-      );
+  Future<Response> version(Request request) => _serve(request,
+      decodeFromJSON: (json) =>
+          proto.VersionRequest.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.VersionRequest.fromBuffer(bytes),
+      transform: _version);
 
   Future<proto.VersionResponse> _version(proto.VersionRequest request) async {
     final apiResponse = await _impl.version();
@@ -263,24 +263,32 @@ class CommonServerProto {
 
   Router get router => _$CommonServerProtoRouter(this);
 
-  Future<Response> _serve<T extends GeneratedMessage>(
-      Request request,
-      Future<T> Function(List<int> bytes) decodeFromBuffer,
-      Future<T> Function(String json) decodeFromString) async {
+  // We are serving requests that are arriving in both Protobuf binary encoding,
+  // and Protobuf JSON encoding. To handle this we need the ability to decode
+  // the requests and encode the responses. We also need to know how to do the
+  // work the request is requesting.
+
+  Future<Response> _serve<I, O extends GeneratedMessage>(
+    Request request, {
+    @required I Function(List<int> bytes) decodeFromProto,
+    @required I Function(Object json) decodeFromJSON,
+    @required Future<O> Function(I input) transform,
+  }) async {
     if (request.mimeType == PROTOBUF_CONTENT_TYPE) {
+      // Dealing with binary Protobufs
       final body = <int>[];
       await for (final chunk in request.read()) {
         body.addAll(chunk);
       }
-      final response = await decodeFromBuffer(body);
+      final response = await transform(decodeFromProto(body));
       return Response.ok(
         response.writeToBuffer(),
         headers: {'Content-Type': PROTOBUF_CONTENT_TYPE},
       );
     } else {
-      // Assume JSON proto3 format
+      // Dealing with JSON encoded Protobufs
       final body = await request.readAsString();
-      final response = await decodeFromString(body);
+      final response = await transform(decodeFromJSON(json.decode(body)));
       return Response.ok(
         json.encode(response.toProto3Json()),
         encoding: utf8,
