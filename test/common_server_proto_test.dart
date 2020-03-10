@@ -105,7 +105,7 @@ void defineTests() {
       // happening and deal with that in warmup/init.
       {
         var decodedJson = {};
-        final jsonData = {'source': sampleCode};
+        final jsonData = {'source': sampleCodeError};
         while (decodedJson.isEmpty) {
           final response =
               await _sendPostRequest('dartservices/v2/analyze', jsonData);
@@ -136,8 +136,7 @@ void defineTests() {
           await _sendPostRequest('dartservices/v2/analyze', jsonData);
       expect(response.statusCode, 200);
       final data = await response.transform(utf8.decoder).join();
-      expect(
-          json.decode(data), {'issues': [], 'packageImports': []});
+      expect(json.decode(data), {});
     });
 
     test('analyze Flutter', () async {
@@ -147,7 +146,6 @@ void defineTests() {
       expect(response.statusCode, 200);
       final data = await response.transform(utf8.decoder).join();
       expect(json.decode(data), {
-        'issues': [],
         'packageImports': ['flutter']
       });
     });
@@ -157,8 +155,8 @@ void defineTests() {
       final response =
           await _sendPostRequest('dartservices/v2/analyze', jsonData);
       expect(response.statusCode, 200);
-      expect(
-          response.headers['content-type'], 'application/json; charset=utf-8');
+      expect(response.headers['content-type'],
+          ['application/json; charset=utf-8']);
       final data = await response.transform(utf8.decoder).join();
       final expectedJson = {
         'issues': [
@@ -171,8 +169,7 @@ void defineTests() {
             'charStart': 29,
             'charLength': 1
           }
-        ],
-        'packageImports': []
+        ]
       };
       expect(json.decode(data), expectedJson);
     });
