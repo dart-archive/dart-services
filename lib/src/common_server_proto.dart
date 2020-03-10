@@ -139,23 +139,28 @@ class CommonServerProto {
             ..length = apiFix.length
             ..fixes.addAll(
               apiFix.fixes.map(
-                (apiCandidateFix) => proto.CandidateFix()
-                  ..message = apiCandidateFix.message
-                  ..selectionOffset = apiCandidateFix.selectionOffset
-                  ..linkedEditGroups.addAll(
-                    apiCandidateFix.linkedEditGroups.map(
-                      (group) => proto.LinkedEditGroup()
-                        ..positions.addAll(group.positions)
-                        ..length = group.length
-                        ..suggestions.addAll(
-                          group.suggestions.map(
-                            (suggestion) => proto.LinkedEditSuggestion()
-                              ..value = suggestion.value
-                              ..kind = suggestion.kind,
+                (apiCandidateFix) {
+                  final fix = proto.CandidateFix()
+                    ..message = apiCandidateFix.message
+                    ..linkedEditGroups.addAll(
+                      apiCandidateFix.linkedEditGroups.map(
+                        (group) => proto.LinkedEditGroup()
+                          ..positions.addAll(group.positions)
+                          ..length = group.length
+                          ..suggestions.addAll(
+                            group.suggestions.map(
+                              (suggestion) => proto.LinkedEditSuggestion()
+                                ..value = suggestion.value
+                                ..kind = suggestion.kind,
+                            ),
                           ),
-                        ),
-                    ),
-                  ),
+                      ),
+                    );
+                  if (apiCandidateFix.selectionOffset != null) {
+                    fix.selectionOffset = apiCandidateFix.selectionOffset;
+                  }
+                  return fix;
+                },
               ),
             ),
         ),
@@ -178,31 +183,36 @@ class CommonServerProto {
     return proto.AssistsResponse()
       ..assists.addAll(
         apiResponse.assists.map(
-          (candidateFix) => proto.CandidateFix()
-            ..message = candidateFix.message
-            ..edits.addAll(
-              candidateFix.edits.map(
-                (edit) => proto.SourceEdit()
-                  ..offset = edit.offset
-                  ..length = edit.length
-                  ..replacement = edit.replacement,
-              ),
-            )
-            ..selectionOffset = candidateFix.selectionOffset
-            ..linkedEditGroups.addAll(
-              candidateFix.linkedEditGroups.map(
-                (group) => proto.LinkedEditGroup()
-                  ..positions.addAll(group.positions)
-                  ..length = group.length
-                  ..suggestions.addAll(
-                    group.suggestions.map(
-                      (suggestion) => proto.LinkedEditSuggestion()
-                        ..value = suggestion.value
-                        ..kind = suggestion.kind,
+          (candidateFix) {
+            final fix = proto.CandidateFix()
+              ..message = candidateFix.message
+              ..edits.addAll(
+                candidateFix.edits.map(
+                  (edit) => proto.SourceEdit()
+                    ..offset = edit.offset
+                    ..length = edit.length
+                    ..replacement = edit.replacement,
+                ),
+              )
+              ..linkedEditGroups.addAll(
+                candidateFix.linkedEditGroups.map(
+                  (group) => proto.LinkedEditGroup()
+                    ..positions.addAll(group.positions)
+                    ..length = group.length
+                    ..suggestions.addAll(
+                      group.suggestions.map(
+                        (suggestion) => proto.LinkedEditSuggestion()
+                          ..value = suggestion.value
+                          ..kind = suggestion.kind,
+                      ),
                     ),
-                  ),
-              ),
-            ),
+                ),
+              );
+            if (candidateFix.selectionOffset != null) {
+              fix.selectionOffset = candidateFix.selectionOffset;
+            }
+            return fix;
+          },
         ),
       );
   }
@@ -286,7 +296,8 @@ class CommonServerProto {
     } else {
       // Dealing with JSON encoded Protobufs
       final body = await request.readAsString();
-      final response = await transform(decodeFromJSON(json.decode(body)));
+      final response = await transform(
+          decodeFromJSON(body.isNotEmpty ? json.decode(body) : {}));
       return Response.ok(
         json.encode(response.toProto3Json()),
         encoding: utf8,
