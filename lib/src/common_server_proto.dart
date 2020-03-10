@@ -13,7 +13,7 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
 import 'api_classes.dart' as api;
-import 'common_server_impl.dart' show CommonServerImpl;
+import 'common_server_impl.dart' show CommonServerImpl, BadRequest;
 export 'common_server_impl.dart' show log, ServerContainer;
 import 'protos/dart_services.pb.dart' as proto;
 
@@ -141,8 +141,13 @@ class CommonServerProto {
               apiFix.fixes.map(
                 (apiCandidateFix) {
                   final fix = proto.CandidateFix()
-                    ..message = apiCandidateFix.message
-                    ..linkedEditGroups.addAll(
+                    ..message = apiCandidateFix.message;
+                  if (apiCandidateFix.selectionOffset != null) {
+                    fix.selectionOffset = apiCandidateFix.selectionOffset;
+                  }
+                  if (apiCandidateFix.linkedEditGroups != null &&
+                      apiCandidateFix.linkedEditGroups.isNotEmpty) {
+                    fix.linkedEditGroups.addAll(
                       apiCandidateFix.linkedEditGroups.map(
                         (group) => proto.LinkedEditGroup()
                           ..positions.addAll(group.positions)
@@ -156,8 +161,6 @@ class CommonServerProto {
                           ),
                       ),
                     );
-                  if (apiCandidateFix.selectionOffset != null) {
-                    fix.selectionOffset = apiCandidateFix.selectionOffset;
                   }
                   return fix;
                 },
@@ -288,21 +291,38 @@ class CommonServerProto {
       await for (final chunk in request.read()) {
         body.addAll(chunk);
       }
-      final response = await transform(decodeFromProto(body));
-      return Response.ok(
-        response.writeToBuffer(),
-        headers: {'Content-Type': PROTOBUF_CONTENT_TYPE},
-      );
+      try {
+        final response = await transform(decodeFromProto(body));
+        return Response.ok(
+          response.writeToBuffer(),
+          headers: {'Content-Type': PROTOBUF_CONTENT_TYPE},
+        );
+      } on BadRequest catch (e) {
+        return Response(400,
+            headers: {'Content-Type': PROTOBUF_CONTENT_TYPE},
+            body: (proto.BadRequest.create()
+                  ..error.add(proto.ErrorMessage.create()..message = e.cause))
+                .writeToBuffer());
+      }
     } else {
       // Dealing with JSON encoded Protobufs
       final body = await request.readAsString();
-      final response = await transform(
-          decodeFromJSON(body.isNotEmpty ? json.decode(body) : {}));
-      return Response.ok(
-        json.encode(response.toProto3Json()),
-        encoding: utf8,
-        headers: {'Content-Type': JSON_CONTENT_TYPE},
-      );
+      try {
+        final response = await transform(
+            decodeFromJSON(body.isNotEmpty ? json.decode(body) : {}));
+        return Response.ok(
+          json.encode(response.toProto3Json()),
+          encoding: utf8,
+          headers: {'Content-Type': JSON_CONTENT_TYPE},
+        );
+      } on BadRequest catch (e) {
+        return Response(400,
+            headers: {'Content-Type': JSON_CONTENT_TYPE},
+            encoding: utf8,
+            body: json.encode((proto.BadRequest.create()
+                  ..error.add(proto.ErrorMessage.create()..message = e.cause))
+                .toProto3Json()));
+      }
     }
   }
 }

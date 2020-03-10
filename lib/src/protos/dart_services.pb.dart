@@ -95,6 +95,7 @@ class AnalyzeReply extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('AnalyzeReply', package: const $pb.PackageName('dart_services.api'), createEmptyInstance: create)
     ..pc<AnalysisIssue>(1, 'issues', $pb.PbFieldType.PM, subBuilder: AnalysisIssue.create)
     ..pPS(2, 'packageImports', protoName: 'packageImports')
+    ..pc<ErrorMessage>(99, 'error', $pb.PbFieldType.PM, subBuilder: ErrorMessage.create)
     ..hasRequiredFields = false
   ;
 
@@ -118,6 +119,9 @@ class AnalyzeReply extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(2)
   $core.List<$core.String> get packageImports => $_getList(1);
+
+  @$pb.TagNumber(99)
+  $core.List<ErrorMessage> get error => $_getList(2);
 }
 
 class AnalysisIssue extends $pb.GeneratedMessage {
@@ -236,6 +240,7 @@ class CompileResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('CompileResponse', package: const $pb.PackageName('dart_services.api'), createEmptyInstance: create)
     ..aOS(1, 'result')
     ..aOS(2, 'sourceMap', protoName: 'sourceMap')
+    ..pc<ErrorMessage>(99, 'error', $pb.PbFieldType.PM, subBuilder: ErrorMessage.create)
     ..hasRequiredFields = false
   ;
 
@@ -271,12 +276,16 @@ class CompileResponse extends $pb.GeneratedMessage {
   $core.bool hasSourceMap() => $_has(1);
   @$pb.TagNumber(2)
   void clearSourceMap() => clearField(2);
+
+  @$pb.TagNumber(99)
+  $core.List<ErrorMessage> get error => $_getList(2);
 }
 
 class CompileDDCResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('CompileDDCResponse', package: const $pb.PackageName('dart_services.api'), createEmptyInstance: create)
     ..aOS(1, 'result')
     ..aOS(2, 'modulesBaseUrl', protoName: 'modulesBaseUrl')
+    ..pc<ErrorMessage>(99, 'error', $pb.PbFieldType.PM, subBuilder: ErrorMessage.create)
     ..hasRequiredFields = false
   ;
 
@@ -312,11 +321,15 @@ class CompileDDCResponse extends $pb.GeneratedMessage {
   $core.bool hasModulesBaseUrl() => $_has(1);
   @$pb.TagNumber(2)
   void clearModulesBaseUrl() => clearField(2);
+
+  @$pb.TagNumber(99)
+  $core.List<ErrorMessage> get error => $_getList(2);
 }
 
 class DocumentResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('DocumentResponse', package: const $pb.PackageName('dart_services.api'), createEmptyInstance: create)
     ..m<$core.String, $core.String>(1, 'info', entryClassName: 'DocumentResponse.InfoEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('dart_services.api'))
+    ..pc<ErrorMessage>(99, 'error', $pb.PbFieldType.PM, subBuilder: ErrorMessage.create)
     ..hasRequiredFields = false
   ;
 
@@ -337,6 +350,9 @@ class DocumentResponse extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(1)
   $core.Map<$core.String, $core.String> get info => $_getMap(0);
+
+  @$pb.TagNumber(99)
+  $core.List<ErrorMessage> get error => $_getList(1);
 }
 
 class CompleteResponse extends $pb.GeneratedMessage {
@@ -344,6 +360,7 @@ class CompleteResponse extends $pb.GeneratedMessage {
     ..a<$core.int>(1, 'replacementOffset', $pb.PbFieldType.O3, protoName: 'replacementOffset')
     ..a<$core.int>(2, 'replacementLength', $pb.PbFieldType.O3, protoName: 'replacementLength')
     ..pc<Completion>(3, 'completions', $pb.PbFieldType.PM, subBuilder: Completion.create)
+    ..pc<ErrorMessage>(99, 'error', $pb.PbFieldType.PM, subBuilder: ErrorMessage.create)
     ..hasRequiredFields = false
   ;
 
@@ -382,6 +399,9 @@ class CompleteResponse extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(3)
   $core.List<Completion> get completions => $_getList(2);
+
+  @$pb.TagNumber(99)
+  $core.List<ErrorMessage> get error => $_getList(3);
 }
 
 class Completion extends $pb.GeneratedMessage {
@@ -412,6 +432,7 @@ class Completion extends $pb.GeneratedMessage {
 class FixesResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('FixesResponse', package: const $pb.PackageName('dart_services.api'), createEmptyInstance: create)
     ..pc<ProblemAndFixes>(1, 'fixes', $pb.PbFieldType.PM, subBuilder: ProblemAndFixes.create)
+    ..pc<ErrorMessage>(99, 'error', $pb.PbFieldType.PM, subBuilder: ErrorMessage.create)
     ..hasRequiredFields = false
   ;
 
@@ -432,6 +453,9 @@ class FixesResponse extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(1)
   $core.List<ProblemAndFixes> get fixes => $_getList(0);
+
+  @$pb.TagNumber(99)
+  $core.List<ErrorMessage> get error => $_getList(1);
 }
 
 class ProblemAndFixes extends $pb.GeneratedMessage {
@@ -673,6 +697,7 @@ class FormatResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('FormatResponse', package: const $pb.PackageName('dart_services.api'), createEmptyInstance: create)
     ..aOS(1, 'newString', protoName: 'newString')
     ..a<$core.int>(2, 'offset', $pb.PbFieldType.O3)
+    ..pc<ErrorMessage>(99, 'error', $pb.PbFieldType.PM, subBuilder: ErrorMessage.create)
     ..hasRequiredFields = false
   ;
 
@@ -708,11 +733,15 @@ class FormatResponse extends $pb.GeneratedMessage {
   $core.bool hasOffset() => $_has(1);
   @$pb.TagNumber(2)
   void clearOffset() => clearField(2);
+
+  @$pb.TagNumber(99)
+  $core.List<ErrorMessage> get error => $_getList(2);
 }
 
 class AssistsResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('AssistsResponse', package: const $pb.PackageName('dart_services.api'), createEmptyInstance: create)
     ..pc<CandidateFix>(1, 'assists', $pb.PbFieldType.PM, subBuilder: CandidateFix.create)
+    ..pc<ErrorMessage>(99, 'error', $pb.PbFieldType.PM, subBuilder: ErrorMessage.create)
     ..hasRequiredFields = false
   ;
 
@@ -733,6 +762,9 @@ class AssistsResponse extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(1)
   $core.List<CandidateFix> get assists => $_getList(0);
+
+  @$pb.TagNumber(99)
+  $core.List<ErrorMessage> get error => $_getList(1);
 }
 
 class VersionResponse extends $pb.GeneratedMessage {
@@ -742,6 +774,7 @@ class VersionResponse extends $pb.GeneratedMessage {
     ..aOS(3, 'runtimeVersion', protoName: 'runtimeVersion')
     ..aOS(4, 'appEngineVersion', protoName: 'appEngineVersion')
     ..aOS(5, 'servicesVersion', protoName: 'servicesVersion')
+    ..pc<ErrorMessage>(99, 'error', $pb.PbFieldType.PM, subBuilder: ErrorMessage.create)
     ..hasRequiredFields = false
   ;
 
@@ -804,5 +837,64 @@ class VersionResponse extends $pb.GeneratedMessage {
   $core.bool hasServicesVersion() => $_has(4);
   @$pb.TagNumber(5)
   void clearServicesVersion() => clearField(5);
+
+  @$pb.TagNumber(99)
+  $core.List<ErrorMessage> get error => $_getList(5);
+}
+
+class BadRequest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('BadRequest', package: const $pb.PackageName('dart_services.api'), createEmptyInstance: create)
+    ..pc<ErrorMessage>(99, 'error', $pb.PbFieldType.PM, subBuilder: ErrorMessage.create)
+    ..hasRequiredFields = false
+  ;
+
+  BadRequest._() : super();
+  factory BadRequest() => create();
+  factory BadRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory BadRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  BadRequest clone() => BadRequest()..mergeFromMessage(this);
+  BadRequest copyWith(void Function(BadRequest) updates) => super.copyWith((message) => updates(message as BadRequest));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static BadRequest create() => BadRequest._();
+  BadRequest createEmptyInstance() => create();
+  static $pb.PbList<BadRequest> createRepeated() => $pb.PbList<BadRequest>();
+  @$core.pragma('dart2js:noInline')
+  static BadRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<BadRequest>(create);
+  static BadRequest _defaultInstance;
+
+  @$pb.TagNumber(99)
+  $core.List<ErrorMessage> get error => $_getList(0);
+}
+
+class ErrorMessage extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo('ErrorMessage', package: const $pb.PackageName('dart_services.api'), createEmptyInstance: create)
+    ..aOS(1, 'message')
+    ..hasRequiredFields = false
+  ;
+
+  ErrorMessage._() : super();
+  factory ErrorMessage() => create();
+  factory ErrorMessage.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ErrorMessage.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  ErrorMessage clone() => ErrorMessage()..mergeFromMessage(this);
+  ErrorMessage copyWith(void Function(ErrorMessage) updates) => super.copyWith((message) => updates(message as ErrorMessage));
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ErrorMessage create() => ErrorMessage._();
+  ErrorMessage createEmptyInstance() => create();
+  static $pb.PbList<ErrorMessage> createRepeated() => $pb.PbList<ErrorMessage>();
+  @$core.pragma('dart2js:noInline')
+  static ErrorMessage getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ErrorMessage>(create);
+  static ErrorMessage _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get message => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set message($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasMessage() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearMessage() => clearField(1);
 }
 
