@@ -38,7 +38,7 @@ pub global install protoc_plugin
 To run the server, run:
 
 ```bash
-    dart bin/server_dev.dart --port 8082
+dart bin/server_dev.dart --port 8082
 ```
 
 The server will run from port 8082 and export several JSON APIs, like
@@ -67,7 +67,7 @@ Modify `warmup.dart` to point the BASE_URI to your AppEngine project.
 Then run
 
 ```bash
-    ./tool/deploy.sh
+./tool/deploy.sh
 ```
 
 The will deploy the server, and run the warmup sequence and sanity checks.
