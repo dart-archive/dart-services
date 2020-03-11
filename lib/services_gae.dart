@@ -98,7 +98,7 @@ class GaeServer {
               'Access-Control-Allow-Origin': '*',
               'Access-Control-Allow-Methods': 'POST, OPTIONS',
               'Access-Control-Allow-Headers':
-                  'Origin, X-Requested-With, Content-Type, Accept, x-goog-api-client'
+                  'Origin, X-Requested-With, Content-Type, Accept'
             },
           )))
         .addHandler(commonServerProto.router.handler);
