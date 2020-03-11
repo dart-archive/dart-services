@@ -333,10 +333,10 @@ void defineTests() {
       final jsonData = {
         'source': '''void main() {
   for (int i = 0; i < 4; i++) {
-    print('hello \${i}')
+    print('hello \$i')
   }
 }''',
-        'offset': 69,
+        'offset': 67,
       };
       final response =
           await _sendPostRequest('dartservices/v2/fixes', jsonData);
@@ -349,12 +349,12 @@ void defineTests() {
               {
                 'message': "Insert ';'",
                 'edits': [
-                  {'offset': 69, 'length': 0, 'replacement': ';'}
+                  {'offset': 67, 'length': 0, 'replacement': ';'}
                 ]
               }
             ],
             'problemMessage': "Expected to find ';'.",
-            'offset': 68,
+            'offset': 66,
             'length': 1
           }
         ]
