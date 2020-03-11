@@ -24,7 +24,7 @@ import 'src/flutter_web.dart';
 import 'src/server_cache.dart';
 import 'src/shelf_cors.dart' as shelf_cors;
 
-Logger _logger = Logger('services');
+final Logger _logger = Logger('services');
 
 void main(List<String> args) {
   final parser = ArgParser();
@@ -134,10 +134,12 @@ class EndpointsServer {
         .addMiddleware(logRequests())
         .addMiddleware(_createCustomCorsHeadersMiddleware());
 
-    handler = pipeline.addHandler(Cascade()
-        .add(_apiHandler)
-        .add(commonServerProto.router.handler)
-        .handler);
+    handler = pipeline.addHandler(Cascade().add((request) {
+      if (request.requestedUri.path.startsWith(PROTO_API_URL_PREFIX)) {
+        return commonServerProto.router.handler(request);
+      }
+      return _apiHandler(request);
+    }).handler);
   }
 
   Future<Response> _apiHandler(Request request) {

@@ -291,7 +291,14 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/version')
-  Future<Response> version(Request request) => _serve(request,
+  Future<Response> versionPost(Request request) => _serve(request,
+      decodeFromJSON: (json) =>
+          proto.VersionRequest.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.VersionRequest.fromBuffer(bytes),
+      transform: _version);
+
+  @Route.get('$PROTO_API_URL_PREFIX/version')
+  Future<Response> versionGet(Request request) => _serve(request,
       decodeFromJSON: (json) =>
           proto.VersionRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.VersionRequest.fromBuffer(bytes),

@@ -4,15 +4,12 @@
 
 library services_server.apitest;
 
+import 'dart:convert';
 import 'dart:html';
-
 import 'package:codemirror/codemirror.dart';
-
-import '../doc/generated/dartservices.dart' as services;
 import 'services_utils.dart' as utils;
 
 utils.SanitizingBrowserClient client;
-services.DartservicesApi servicesApi;
 
 void main() {
   setupAnalyze();
@@ -25,7 +22,6 @@ void main() {
 
 void _setupClients() {
   client = utils.SanitizingBrowserClient();
-  servicesApi = services.DartservicesApi(client, rootUrl: _uriBase);
 }
 
 void setupAnalyze() {
@@ -34,12 +30,16 @@ void setupAnalyze() {
   final button = querySelector('#analyzeSection button') as ButtonElement;
   button.onClick.listen((e) {
     _setupClients();
-    final srcRequest = services.SourceRequest()
-      ..source = editor.getDoc().getValue();
+    final source = {'source': editor.getDoc().getValue()};
     final sw = Stopwatch()..start();
-    servicesApi.analyze(srcRequest).then((results) {
-      output.text = '${_formatTiming(sw)}${results.toJson()}';
-    });
+    client
+        .post(
+          '${_uriBase}/dartservices/v2/analyze',
+          encoding: utf8,
+          body: json.encode(source),
+        )
+        .then(
+            (response) => output.text = '${_formatTiming(sw)}${response.body}');
   });
 }
 
@@ -51,13 +51,16 @@ void setupCompile() {
     final source = editor.getDoc().getValue();
 
     _setupClients();
-    final compileRequest = services.CompileRequest();
-    compileRequest.source = source;
-
+    final compile = {'source': source};
     final sw = Stopwatch()..start();
-    servicesApi.compile(compileRequest).then((results) {
-      output.text = '${_formatTiming(sw)}${results.toJson()}';
-    });
+    client
+        .post(
+          '${_uriBase}/dartservices/v2/compile',
+          encoding: utf8,
+          body: json.encode(compile),
+        )
+        .then(
+            (response) => output.text = '${_formatTiming(sw)}${response.body}');
   });
 }
 
@@ -67,11 +70,16 @@ void setupComplete() {
   final offsetElement = querySelector('#completeSection .offset');
   final button = querySelector('#completeSection button') as ButtonElement;
   button.onClick.listen((e) {
-    final sourceRequest = _getSourceRequest(editor);
+    final source = _getSourceRequest(editor);
     final sw = Stopwatch()..start();
-    servicesApi.complete(sourceRequest).then((results) {
-      output.text = '${_formatTiming(sw)}${results.toJson()}';
-    });
+    client
+        .post(
+          '$_uriBase/dartservices/v2/complete',
+          encoding: utf8,
+          body: json.encode(source),
+        )
+        .then(
+            (response) => output.text = '${_formatTiming(sw)}${response.body}');
   });
   offsetElement.text = 'offset ${_getOffset(editor)}';
   editor.onCursorActivity.listen((_) {
@@ -85,11 +93,16 @@ void setupDocument() {
   final offsetElement = querySelector('#documentSection .offset');
   final button = querySelector('#documentSection button') as ButtonElement;
   button.onClick.listen((e) {
-    final sourceRequest = _getSourceRequest(editor);
+    final source = _getSourceRequest(editor);
     final sw = Stopwatch()..start();
-    servicesApi.document(sourceRequest).then((results) {
-      output.text = '${_formatTiming(sw)}${results.toJson()}';
-    });
+    client
+        .post(
+          '$_uriBase/dartservices/v2/document',
+          encoding: utf8,
+          body: json.encode(source),
+        )
+        .then(
+            (response) => output.text = '${_formatTiming(sw)}${response.body}');
   });
   offsetElement.text = 'offset ${_getOffset(editor)}';
   editor.onCursorActivity.listen((_) {
@@ -103,11 +116,16 @@ void setupFixes() {
   final offsetElement = querySelector('#fixesSection .offset');
   final button = querySelector('#fixesSection button') as ButtonElement;
   button.onClick.listen((e) {
-    final sourceRequest = _getSourceRequest(editor);
+    final source = _getSourceRequest(editor);
     final sw = Stopwatch()..start();
-    servicesApi.fixes(sourceRequest).then((results) {
-      output.text = '${_formatTiming(sw)}${results.toJson()}';
-    });
+    client
+        .post(
+          '$_uriBase/dartservices/v2/fixes',
+          encoding: utf8,
+          body: json.encode(source),
+        )
+        .then(
+            (response) => output.text = '${_formatTiming(sw)}${response.body}');
   });
   offsetElement.text = 'offset ${_getOffset(editor)}';
 
@@ -121,9 +139,8 @@ void setupVersion() {
   final button = querySelector('#versionSection button') as ButtonElement;
   button.onClick.listen((e) {
     final sw = Stopwatch()..start();
-    servicesApi.version().then((results) {
-      output.text = '${_formatTiming(sw)}${results.toJson()}';
-    });
+    client.get('$_uriBase/dartservices/v2/version').then(
+        (response) => output.text = '${_formatTiming(sw)}${response.body}');
   });
 }
 
@@ -153,12 +170,10 @@ int _getOffset(CodeMirror editor) {
   return editor.getDoc().indexFromPos(pos);
 }
 
-services.SourceRequest _getSourceRequest(CodeMirror editor) {
-  final srcRequest = services.SourceRequest()
-    ..source = editor.getDoc().getValue()
-    ..offset = _getOffset(editor);
-  return srcRequest;
-}
+Map<String, dynamic> _getSourceRequest(CodeMirror editor) => {
+      'source': editor.getDoc().getValue(),
+      'offset': _getOffset(editor),
+    };
 
 final String _text = r'''
 void main() {

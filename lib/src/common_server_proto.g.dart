@@ -16,6 +16,7 @@ Router _$CommonServerProtoRouter(CommonServerProto service) {
   router.add('POST', r'/api/dartservices/v2/assists', service.assists);
   router.add('POST', r'/api/dartservices/v2/format', service.format);
   router.add('POST', r'/api/dartservices/v2/document', service.document);
-  router.add('POST', r'/api/dartservices/v2/version', service.version);
+  router.add('POST', r'/api/dartservices/v2/version', service.versionPost);
+  router.add('GET', r'/api/dartservices/v2/version', service.versionGet);
   return router;
 }

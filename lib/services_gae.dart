@@ -21,6 +21,7 @@ import 'src/flutter_web.dart';
 import 'src/server_cache.dart';
 
 const String _API = '/api';
+const String _API_V1_PREFIX  = '/api/dartservices/v1';
 const String _healthCheck = '/_ah/health';
 const String _readynessCheck = '/_ah/ready';
 
@@ -111,7 +112,7 @@ class GaeServer {
       await _processReadynessRequest(request);
     } else if (request.uri.path == _healthCheck) {
       await _processHealthRequest(request);
-    } else if (request.uri.path.startsWith(_API)) {
+    } else if (request.uri.path.startsWith(_API_V1_PREFIX)) {
       await _processApiRequest(request);
     } else if (request.uri.path.startsWith(PROTO_API_URL_PREFIX)) {
       await shelf_io.handleRequest(request, commonServerProto.router.handler);
