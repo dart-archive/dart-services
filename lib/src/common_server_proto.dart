@@ -338,11 +338,11 @@ class CommonServerProto {
         final response = await transform(decodeFromProto(body));
         return Response.ok(
           response.writeToBuffer(),
-          headers: {'Content-Type': PROTOBUF_CONTENT_TYPE},
+          headers: _PROTOBUF_HEADERS,
         );
       } on BadRequest catch (e) {
         return Response(400,
-            headers: {'Content-Type': PROTOBUF_CONTENT_TYPE},
+            headers: _PROTOBUF_HEADERS,
             body: (proto.BadRequest.create()
                   ..error = (proto.ErrorMessage.create()..message = e.cause))
                 .writeToBuffer());
@@ -356,11 +356,11 @@ class CommonServerProto {
         return Response.ok(
           json.encode(response.toProto3Json()),
           encoding: utf8,
-          headers: {'Content-Type': JSON_CONTENT_TYPE},
+          headers: _JSON_HEADERS,
         );
       } on BadRequest catch (e) {
         return Response(400,
-            headers: {'Content-Type': JSON_CONTENT_TYPE},
+            headers: _JSON_HEADERS,
             encoding: utf8,
             body: json.encode((proto.BadRequest.create()
                   ..error = (proto.ErrorMessage.create()..message = e.cause))
@@ -368,4 +368,14 @@ class CommonServerProto {
       }
     }
   }
+
+  static const _JSON_HEADERS = {
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': JSON_CONTENT_TYPE
+  };
+
+  static const _PROTOBUF_HEADERS = {
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': PROTOBUF_CONTENT_TYPE
+  };
 }
