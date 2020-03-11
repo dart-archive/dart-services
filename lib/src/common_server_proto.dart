@@ -369,7 +369,7 @@ class CommonServerProto {
     }
   }
 
-  final JsonEncoder jsonEncoder = JsonEncoder.withIndent('  ');
+  final JsonEncoder jsonEncoder = JsonEncoder.withIndent(' ');
 
   static const _JSON_HEADERS = {
     'Access-Control-Allow-Origin': '*',

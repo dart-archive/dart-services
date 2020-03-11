@@ -134,12 +134,12 @@ class EndpointsServer {
         .addMiddleware(logRequests())
         .addMiddleware(_createCustomCorsHeadersMiddleware());
 
-    handler = pipeline.addHandler(Cascade().add((request) {
+    handler = pipeline.addHandler((request) {
       if (request.requestedUri.path.startsWith(PROTO_API_URL_PREFIX)) {
         return commonServerProto.router.handler(request);
       }
       return _apiHandler(request);
-    }).handler);
+    });
   }
 
   Future<Response> _apiHandler(Request request) {
