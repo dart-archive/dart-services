@@ -11,6 +11,7 @@ import 'package:appengine/appengine.dart' as ae;
 import 'package:dart_services/src/sdk_manager.dart';
 import 'package:logging/logging.dart';
 import 'package:rpc/rpc.dart' as rpc;
+import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
 import 'src/common.dart';
@@ -19,9 +20,10 @@ import 'src/common_server_impl.dart';
 import 'src/common_server_proto.dart';
 import 'src/flutter_web.dart';
 import 'src/server_cache.dart';
+import 'src/shelf_cors.dart' as shelf_cors;
 
 const String _API = '/api';
-const String _API_V1_PREFIX  = '/api/dartservices/v1';
+const String _API_V1_PREFIX = '/api/dartservices/v1';
 const String _healthCheck = '/_ah/health';
 const String _readynessCheck = '/_ah/ready';
 
@@ -67,7 +69,7 @@ class GaeServer {
   FlutterWebManager flutterWebManager;
   CommonServer commonServer;
   CommonServerImpl commonServerImpl;
-  CommonServerProto commonServerProto;
+  FutureOr<shelf.Response> Function(shelf.Request) protoHandler;
 
   GaeServer(this.sdkPath, this.redisServerUri) {
     hierarchicalLoggingEnabled = true;
@@ -89,7 +91,18 @@ class GaeServer {
             ),
     );
     commonServer = CommonServer(commonServerImpl);
-    commonServerProto = CommonServerProto(commonServerImpl);
+    final commonServerProto = CommonServerProto(commonServerImpl);
+    protoHandler = (shelf.Pipeline()
+          ..addMiddleware(shelf_cors.createCorsHeadersMiddleware(
+            corsHeaders: <String, String>{
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'POST, OPTIONS',
+              'Access-Control-Allow-Headers':
+                  'Origin, X-Requested-With, Content-Type, Accept, x-goog-api-client'
+            },
+          )))
+        .addHandler(commonServerProto.router.handler);
+
     // Enabled pretty printing of returned json for debuggability.
     apiServer = rpc.ApiServer(apiPrefix: _API, prettyPrint: true)
       ..addApi(commonServer);
@@ -115,7 +128,7 @@ class GaeServer {
     } else if (request.uri.path.startsWith(_API_V1_PREFIX)) {
       await _processApiRequest(request);
     } else if (request.uri.path.startsWith(PROTO_API_URL_PREFIX)) {
-      await shelf_io.handleRequest(request, commonServerProto.router.handler);
+      await shelf_io.handleRequest(request, protoHandler);
     } else {
       await _processDefaultRequest(request);
     }
