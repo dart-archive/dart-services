@@ -354,7 +354,7 @@ class CommonServerProto {
         final response = await transform(
             decodeFromJSON(body.isNotEmpty ? json.decode(body) : {}));
         return Response.ok(
-          json.encode(response.toProto3Json()),
+          jsonEncoder.convert(response.toProto3Json()),
           encoding: utf8,
           headers: _JSON_HEADERS,
         );
@@ -362,12 +362,14 @@ class CommonServerProto {
         return Response(400,
             headers: _JSON_HEADERS,
             encoding: utf8,
-            body: json.encode((proto.BadRequest.create()
+            body: jsonEncoder.convert((proto.BadRequest.create()
                   ..error = (proto.ErrorMessage.create()..message = e.cause))
                 .toProto3Json()));
       }
     }
   }
+
+  final JsonEncoder jsonEncoder = JsonEncoder.withIndent('  ');
 
   static const _JSON_HEADERS = {
     'Access-Control-Allow-Origin': '*',
