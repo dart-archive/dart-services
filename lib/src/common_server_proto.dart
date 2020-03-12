@@ -156,33 +156,7 @@ class CommonServerProto {
             ..offset = apiFix.offset
             ..length = apiFix.length
             ..fixes.addAll(
-              apiFix.fixes.map(
-                (apiCandidateFix) {
-                  final fix = proto.CandidateFix()
-                    ..message = apiCandidateFix.message;
-                  if (apiCandidateFix.selectionOffset != null) {
-                    fix.selectionOffset = apiCandidateFix.selectionOffset;
-                  }
-                  if (apiCandidateFix.linkedEditGroups != null &&
-                      apiCandidateFix.linkedEditGroups.isNotEmpty) {
-                    fix.linkedEditGroups.addAll(
-                      apiCandidateFix.linkedEditGroups.map(
-                        (group) => proto.LinkedEditGroup()
-                          ..positions.addAll(group.positions)
-                          ..length = group.length
-                          ..suggestions.addAll(
-                            group.suggestions.map(
-                              (suggestion) => proto.LinkedEditSuggestion()
-                                ..value = suggestion.value
-                                ..kind = suggestion.kind,
-                            ),
-                          ),
-                      ),
-                    );
-                  }
-                  return fix;
-                },
-              ),
+              apiFix.fixes.map(_transformCandidateFix),
             ),
         ),
       );
@@ -210,38 +184,7 @@ class CommonServerProto {
 
     return proto.AssistsResponse()
       ..assists.addAll(
-        apiResponse.assists.map(
-          (candidateFix) {
-            final fix = proto.CandidateFix()
-              ..message = candidateFix.message
-              ..edits.addAll(
-                candidateFix.edits.map(
-                  (edit) => proto.SourceEdit()
-                    ..offset = edit.offset
-                    ..length = edit.length
-                    ..replacement = edit.replacement,
-                ),
-              )
-              ..linkedEditGroups.addAll(
-                candidateFix.linkedEditGroups.map(
-                  (group) => proto.LinkedEditGroup()
-                    ..positions.addAll(group.positions)
-                    ..length = group.length
-                    ..suggestions.addAll(
-                      group.suggestions.map(
-                        (suggestion) => proto.LinkedEditSuggestion()
-                          ..value = suggestion.value
-                          ..kind = suggestion.kind,
-                      ),
-                    ),
-                ),
-              );
-            if (candidateFix.selectionOffset != null) {
-              fix.selectionOffset = candidateFix.selectionOffset;
-            }
-            return fix;
-          },
-        ),
+        apiResponse.assists.map(_transformCandidateFix),
       );
   }
 
@@ -315,6 +258,40 @@ class CommonServerProto {
       ..servicesVersion = apiResponse.servicesVersion;
   }
 
+  proto.CandidateFix _transformCandidateFix(api.CandidateFix candidateFix) {
+    final result = proto.CandidateFix()..message = candidateFix.message;
+    if (candidateFix.edits != null) {
+      result.edits.addAll(
+        candidateFix.edits.map(
+          (edit) => proto.SourceEdit()
+            ..offset = edit.offset
+            ..length = edit.length
+            ..replacement = edit.replacement,
+        ),
+      );
+    }
+    if (candidateFix.linkedEditGroups != null) {
+      result.linkedEditGroups.addAll(
+        candidateFix.linkedEditGroups.map(
+          (group) => proto.LinkedEditGroup()
+            ..positions.addAll(group.positions)
+            ..length = group.length
+            ..suggestions.addAll(
+              group.suggestions.map(
+                (suggestion) => proto.LinkedEditSuggestion()
+                  ..value = suggestion.value
+                  ..kind = suggestion.kind,
+              ),
+            ),
+        ),
+      );
+    }
+    if (candidateFix.selectionOffset != null) {
+      result.selectionOffset = candidateFix.selectionOffset;
+    }
+    return result;
+  }
+
   Router get router => _$CommonServerProtoRouter(this);
 
   // We are serving requests that are arriving in both Protobuf binary encoding,
@@ -354,7 +331,7 @@ class CommonServerProto {
         final response = await transform(
             decodeFromJSON(body.isNotEmpty ? json.decode(body) : {}));
         return Response.ok(
-          jsonEncoder.convert(response.toProto3Json()),
+          _jsonEncoder.convert(response.toProto3Json()),
           encoding: utf8,
           headers: _JSON_HEADERS,
         );
@@ -362,14 +339,14 @@ class CommonServerProto {
         return Response(400,
             headers: _JSON_HEADERS,
             encoding: utf8,
-            body: jsonEncoder.convert((proto.BadRequest.create()
+            body: _jsonEncoder.convert((proto.BadRequest.create()
                   ..error = (proto.ErrorMessage.create()..message = e.cause))
                 .toProto3Json()));
       }
     }
   }
 
-  final JsonEncoder jsonEncoder = JsonEncoder.withIndent(' ');
+  final JsonEncoder _jsonEncoder = JsonEncoder.withIndent(' ');
 
   static const _JSON_HEADERS = {
     'Access-Control-Allow-Origin': '*',

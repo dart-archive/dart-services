@@ -327,6 +327,40 @@ void defineTests() {
       expect(problemAndFix['problemMessage'], isNotNull);
     });
 
+    test('fixes completeness', () async {
+      final jsonData = {
+        'source': '''
+void main() {
+  for (int i = 0; i < 4; i++) {
+    print('hello \$i')
+  }
+}
+''',
+        'offset': 67,
+      };
+      final response =
+          await _sendPostRequest('dartservices/v1/fixes', jsonData);
+      expect(response.status, 200);
+      final data = json.decode(utf8.decode(await response.body.first));
+      expect(data, {
+        'fixes': [
+          {
+            'fixes': [
+              {
+                'message': "Insert ';'",
+                'edits': [
+                  {'offset': 67, 'length': 0, 'replacement': ';'}
+                ]
+              }
+            ],
+            'problemMessage': "Expected to find ';'.",
+            'offset': 66,
+            'length': 1
+          }
+        ]
+      });
+    });
+
     test('assist', () async {
       final jsonData = {'source': assistCode, 'offset': 15};
       final response =

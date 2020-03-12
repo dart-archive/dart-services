@@ -329,13 +329,15 @@ void defineTests() {
       expect(problemAndFix['problemMessage'], isNotNull);
     });
 
-    test('fix completeness', () async {
+    test('fixes completeness', () async {
       final jsonData = {
-        'source': '''void main() {
+        'source': '''
+void main() {
   for (int i = 0; i < 4; i++) {
     print('hello \$i')
   }
-}''',
+}
+''',
         'offset': 67,
       };
       final response =
