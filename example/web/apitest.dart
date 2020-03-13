@@ -15,6 +15,7 @@ utils.SanitizingBrowserClient client;
 
 void main() {
   setupAnalyze();
+  setupAssists();
   setupCompile();
   setupCompileDDC();
   setupComplete();
@@ -46,6 +47,33 @@ void setupAnalyze() {
           )
           .then((response) =>
               output.text = '${_formatTiming(sw)}${response.body}');
+    });
+  });
+}
+
+void setupAssists() {
+  versions.forEach((version) {
+    final editor =
+        createEditor(querySelector('#assistsSection-$version .editor'));
+    final output = querySelector('#assistsSection-$version .output');
+    final offsetElement = querySelector('#assistsSection-$version .offset');
+    final button =
+        querySelector('#assistsSection-$version button') as ButtonElement;
+    button.onClick.listen((e) {
+      final source = _getSourceRequest(editor);
+      final sw = Stopwatch()..start();
+      client
+          .post(
+            '$_uriBase/dartservices/$version/assists',
+            encoding: utf8,
+            body: json.encode(source),
+          )
+          .then((response) =>
+              output.text = '${_formatTiming(sw)}${response.body}');
+    });
+    offsetElement.text = 'offset ${_getOffset(editor)}';
+    editor.onCursorActivity.listen((_) {
+      offsetElement.text = 'offset ${_getOffset(editor)}';
     });
   });
 }
