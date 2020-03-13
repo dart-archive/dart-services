@@ -64,7 +64,6 @@ class GaeServer {
 
   bool discoveryEnabled;
   rpc.ApiServer apiServer;
-  FlutterWebManager flutterWebManager;
   CommonServer commonServer;
   CommonServerImpl commonServerImpl;
   CommonServerProto commonServerProto;
@@ -76,7 +75,7 @@ class GaeServer {
     _logger.level = Level.ALL;
 
     discoveryEnabled = false;
-    flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
+    final flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
     commonServerImpl = CommonServerImpl(
       sdkPath,
       flutterWebManager,
