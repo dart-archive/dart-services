@@ -29,7 +29,7 @@ class CommonServerProto {
   CommonServerProto(this._impl);
 
   @Route.post('$PROTO_API_URL_PREFIX/analyze')
-  Future<Response> analyze(Request request) => _serve(request,
+  Future<Response> analyze(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.Source.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
@@ -62,7 +62,7 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/compile')
-  Future<Response> compile(Request request) => _serve(request,
+  Future<Response> compile(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.Compile.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.Compile.fromBuffer(bytes),
@@ -81,7 +81,7 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/compileDDC')
-  Future<Response> compileDDC(Request request) => _serve(request,
+  Future<Response> compileDDC(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.Compile.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.Compile.fromBuffer(bytes),
@@ -99,7 +99,7 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/complete')
-  Future<Response> complete(Request request) => _serve(request,
+  Future<Response> complete(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.Source.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
@@ -129,7 +129,7 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/fixes')
-  Future<Response> fixes(Request request) => _serve(request,
+  Future<Response> fixes(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.Source.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
@@ -163,7 +163,7 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/assists')
-  Future<Response> assists(Request request) => _serve(request,
+  Future<Response> assists(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.Source.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
@@ -189,7 +189,7 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/format')
-  Future<Response> format(Request request) => _serve(request,
+  Future<Response> format(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.Source.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
@@ -211,7 +211,7 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/document')
-  Future<Response> document(Request request) => _serve(request,
+  Future<Response> document(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.Source.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
@@ -234,14 +234,14 @@ class CommonServerProto {
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/version')
-  Future<Response> versionPost(Request request) => _serve(request,
+  Future<Response> versionPost(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.VersionRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.VersionRequest.fromBuffer(bytes),
       transform: _version);
 
   @Route.get('$PROTO_API_URL_PREFIX/version')
-  Future<Response> versionGet(Request request) => _serve(request,
+  Future<Response> versionGet(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.VersionRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.VersionRequest.fromBuffer(bytes),
@@ -299,7 +299,7 @@ class CommonServerProto {
   // the requests and encode the responses. We also need to know how to do the
   // work the request is requesting.
 
-  Future<Response> _serve<I, O extends GeneratedMessage>(
+  Future<Response> _processRequest<I, O extends GeneratedMessage>(
     Request request, {
     @required I Function(List<int> bytes) decodeFromProto,
     @required I Function(Object json) decodeFromJSON,

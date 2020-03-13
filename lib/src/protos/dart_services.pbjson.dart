@@ -26,7 +26,7 @@ const AnalyzeReply$json = const {
   '2': const [
     const {'1': 'issues', '3': 1, '4': 3, '5': 11, '6': '.dart_services.api.AnalysisIssue', '10': 'issues'},
     const {'1': 'packageImports', '3': 2, '4': 3, '5': 9, '10': 'packageImports'},
-    const {'1': 'error', '3': 99, '4': 3, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
+    const {'1': 'error', '3': 99, '4': 1, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
   ],
 };
 
@@ -52,7 +52,7 @@ const CompileResponse$json = const {
   '2': const [
     const {'1': 'result', '3': 1, '4': 1, '5': 9, '10': 'result'},
     const {'1': 'sourceMap', '3': 2, '4': 1, '5': 9, '10': 'sourceMap'},
-    const {'1': 'error', '3': 99, '4': 3, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
+    const {'1': 'error', '3': 99, '4': 1, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
   ],
 };
 
@@ -61,7 +61,7 @@ const CompileDDCResponse$json = const {
   '2': const [
     const {'1': 'result', '3': 1, '4': 1, '5': 9, '10': 'result'},
     const {'1': 'modulesBaseUrl', '3': 2, '4': 1, '5': 9, '10': 'modulesBaseUrl'},
-    const {'1': 'error', '3': 99, '4': 3, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
+    const {'1': 'error', '3': 99, '4': 1, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
   ],
 };
 
@@ -69,7 +69,7 @@ const DocumentResponse$json = const {
   '1': 'DocumentResponse',
   '2': const [
     const {'1': 'info', '3': 1, '4': 3, '5': 11, '6': '.dart_services.api.DocumentResponse.InfoEntry', '10': 'info'},
-    const {'1': 'error', '3': 99, '4': 3, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
+    const {'1': 'error', '3': 99, '4': 1, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
   ],
   '3': const [DocumentResponse_InfoEntry$json],
 };
@@ -89,7 +89,7 @@ const CompleteResponse$json = const {
     const {'1': 'replacementOffset', '3': 1, '4': 1, '5': 5, '10': 'replacementOffset'},
     const {'1': 'replacementLength', '3': 2, '4': 1, '5': 5, '10': 'replacementLength'},
     const {'1': 'completions', '3': 3, '4': 3, '5': 11, '6': '.dart_services.api.Completion', '10': 'completions'},
-    const {'1': 'error', '3': 99, '4': 3, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
+    const {'1': 'error', '3': 99, '4': 1, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
   ],
 };
 
@@ -114,7 +114,7 @@ const FixesResponse$json = const {
   '1': 'FixesResponse',
   '2': const [
     const {'1': 'fixes', '3': 1, '4': 3, '5': 11, '6': '.dart_services.api.ProblemAndFixes', '10': 'fixes'},
-    const {'1': 'error', '3': 99, '4': 3, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
+    const {'1': 'error', '3': 99, '4': 1, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
   ],
 };
 
@@ -169,7 +169,7 @@ const FormatResponse$json = const {
   '2': const [
     const {'1': 'newString', '3': 1, '4': 1, '5': 9, '10': 'newString'},
     const {'1': 'offset', '3': 2, '4': 1, '5': 5, '10': 'offset'},
-    const {'1': 'error', '3': 99, '4': 3, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
+    const {'1': 'error', '3': 99, '4': 1, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
   ],
 };
 
@@ -177,7 +177,7 @@ const AssistsResponse$json = const {
   '1': 'AssistsResponse',
   '2': const [
     const {'1': 'assists', '3': 1, '4': 3, '5': 11, '6': '.dart_services.api.CandidateFix', '10': 'assists'},
-    const {'1': 'error', '3': 99, '4': 3, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
+    const {'1': 'error', '3': 99, '4': 1, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
   ],
 };
 
@@ -189,7 +189,7 @@ const VersionResponse$json = const {
     const {'1': 'runtimeVersion', '3': 3, '4': 1, '5': 9, '10': 'runtimeVersion'},
     const {'1': 'appEngineVersion', '3': 4, '4': 1, '5': 9, '10': 'appEngineVersion'},
     const {'1': 'servicesVersion', '3': 5, '4': 1, '5': 9, '10': 'servicesVersion'},
-    const {'1': 'error', '3': 99, '4': 3, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
+    const {'1': 'error', '3': 99, '4': 1, '5': 11, '6': '.dart_services.api.ErrorMessage', '10': 'error'},
   ],
 };
 

@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library services.common_server_protos_test;
+library services.common_server_api_v2_protobuf_test;
 
 import 'dart:async';
 import 'dart:convert';
@@ -14,8 +14,10 @@ import 'package:dart_services/src/common_server_proto.dart';
 import 'package:dart_services/src/flutter_web.dart';
 import 'package:dart_services/src/sdk_manager.dart';
 import 'package:dart_services/src/server_cache.dart';
+import 'package:dart_services/src/protos/dart_services.pb.dart' as proto;
 import 'package:logging/logging.dart';
 import 'package:mock_request/mock_request.dart';
+import 'package:protobuf/protobuf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:test/test.dart';
 
@@ -64,13 +66,13 @@ void defineTests() {
 
   Future<MockHttpResponse> _sendPostRequest(
     String path,
-    dynamic jsonData,
+    GeneratedMessage message,
   ) async {
     assert(commonServerProto != null);
     final uri = Uri.parse('/api/$path');
     final request = MockHttpRequest('POST', uri);
     request.headers.add('content-type', JSON_CONTENT_TYPE);
-    request.add(utf8.encode(json.encode(jsonData)));
+    request.add(utf8.encode(json.encode(message.toProto3Json())));
     await request.close();
     await shelf_io.handleRequest(request, commonServerProto.router.handler);
     return request.response;
@@ -105,7 +107,7 @@ void defineTests() {
       // happening and deal with that in warmup/init.
       {
         var decodedJson = {};
-        final jsonData = {'source': sampleCodeError};
+        final jsonData = proto.Source()..source = sampleCodeError;
         while (decodedJson.isEmpty) {
           final response =
               await _sendPostRequest('dartservices/v2/analyze', jsonData);
@@ -131,253 +133,264 @@ void defineTests() {
     tearDown(log.clearListeners);
 
     test('analyze Dart', () async {
-      final jsonData = {'source': sampleCode};
+      final request = proto.Source()..source = sampleCode;
       final response =
-          await _sendPostRequest('dartservices/v2/analyze', jsonData);
+          await _sendPostRequest('dartservices/v2/analyze', request);
       expect(response.statusCode, 200);
-      final data = await response.transform(utf8.decoder).join();
-      expect(json.decode(data), {});
+      final data = json.decode(await response.transform(utf8.decoder).join());
+      final reply = proto.AnalyzeReply()..mergeFromProto3Json(data);
+      expect(reply.issues, isEmpty);
+      expect(reply.packageImports, isEmpty);
     });
 
     test('analyze Flutter', () async {
-      final jsonData = {'source': sampleCodeFlutter};
+      final request = proto.Source()..source = sampleCodeFlutter;
       final response =
-          await _sendPostRequest('dartservices/v2/analyze', jsonData);
+          await _sendPostRequest('dartservices/v2/analyze', request);
       expect(response.statusCode, 200);
-      final data = await response.transform(utf8.decoder).join();
-      expect(json.decode(data), {
-        'packageImports': ['flutter']
-      });
+      final data = json.decode(await response.transform(utf8.decoder).join());
+      final reply = proto.AnalyzeReply()..mergeFromProto3Json(data);
+      expect(reply.issues, isEmpty);
+      expect(reply.packageImports, ['flutter']);
     });
 
     test('analyze errors', () async {
-      final jsonData = {'source': sampleCodeError};
+      final request = proto.Source()..source = sampleCodeError;
       final response =
-          await _sendPostRequest('dartservices/v2/analyze', jsonData);
+          await _sendPostRequest('dartservices/v2/analyze', request);
       expect(response.statusCode, 200);
       expect(response.headers['content-type'],
           ['application/json; charset=utf-8']);
-      final data = await response.transform(utf8.decoder).join();
-      final expectedJson = {
-        'issues': [
-          {
-            'kind': 'error',
-            'line': 2,
-            'sourceName': 'main.dart',
-            'message': "Expected to find ';'.",
-            'hasFixes': true,
-            'charStart': 29,
-            'charLength': 1
-          }
-        ]
-      };
-      expect(json.decode(data), expectedJson);
+      final data = json.decode(await response.transform(utf8.decoder).join());
+      final reply = proto.AnalyzeReply()..mergeFromProto3Json(data);
+      expect(reply.issues[0].kind, 'error');
+      expect(reply.issues[0].line, 2);
+      expect(reply.issues[0].sourceName, 'main.dart');
+      expect(reply.issues[0].message, "Expected to find ';'.");
+      expect(reply.issues[0].hasFixes, true);
+      expect(reply.issues[0].charStart, 29);
+      expect(reply.issues[0].charLength, 1);
     });
 
     test('analyze negative-test noSource', () async {
-      final jsonData = {};
+      final request = proto.Source();
       final response =
-          await _sendPostRequest('dartservices/v2/analyze', jsonData);
+          await _sendPostRequest('dartservices/v2/analyze', request);
       expect(response.statusCode, 400);
     });
 
     test('compile', () async {
-      final jsonData = {'source': sampleCode};
+      final request = proto.Compile()..source = sampleCode;
       final response =
-          await _sendPostRequest('dartservices/v2/compile', jsonData);
+          await _sendPostRequest('dartservices/v2/compile', request);
       expect(response.statusCode, 200);
-      final data = await response.transform(utf8.decoder).join();
-      expect(json.decode(data), isNotEmpty);
+      final data = json.decode(await response.transform(utf8.decoder).join());
+      final reply = proto.CompileResponse()..mergeFromProto3Json(data);
+      expect(reply.result, isNotEmpty);
     });
 
     test('compile error', () async {
-      final jsonData = {'source': sampleCodeError};
+      final request = proto.Compile()..source = sampleCodeError;
       final response =
-          await _sendPostRequest('dartservices/v2/compile', jsonData);
+          await _sendPostRequest('dartservices/v2/compile', request);
       expect(response.statusCode, 400);
       final data = json.decode(await response.transform(utf8.decoder).join());
-      expect(data, isNotEmpty);
-      expect(data['error']['message'], contains('Error: Expected'));
+      final reply = proto.CompileResponse()..mergeFromProto3Json(data);
+      expect(reply.error.message, contains('Error: Expected'));
     });
 
     test('compile negative-test noSource', () async {
-      final jsonData = {};
+      final request = proto.Compile();
       final response =
-          await _sendPostRequest('dartservices/v2/compile', jsonData);
+          await _sendPostRequest('dartservices/v2/compile', request);
       expect(response.statusCode, 400);
     });
 
     test('compileDDC', () async {
-      final jsonData = {'source': sampleCode};
+      final request = proto.Compile()..source = sampleCode;
       final response =
-          await _sendPostRequest('dartservices/v2/compileDDC', jsonData);
+          await _sendPostRequest('dartservices/v2/compileDDC', request);
       expect(response.statusCode, 200);
-      final data = await response.transform(utf8.decoder).join();
-      expect(json.decode(data), isNotEmpty);
+      final data = json.decode(await response.transform(utf8.decoder).join());
+      final reply = proto.CompileDDCResponse()..mergeFromProto3Json(data);
+      expect(reply.result, isNotEmpty);
     });
 
     test('complete', () async {
-      final jsonData = {'source': 'void main() {print("foo");}', 'offset': 1};
+      final request = proto.Source()
+        ..source = 'void main() {print("foo");}'
+        ..offset = 1;
       final response =
-          await _sendPostRequest('dartservices/v2/complete', jsonData);
+          await _sendPostRequest('dartservices/v2/complete', request);
       expect(response.statusCode, 200);
       final data = json.decode(await response.transform(utf8.decoder).join());
-      expect(data, isNotEmpty);
+      final reply = proto.CompleteResponse()..mergeFromProto3Json(data);
+      expect(reply.completions, isNotEmpty);
     });
 
     test('complete no data', () async {
-      final response = await _sendPostRequest('dartservices/v2/complete', {});
-      expect(response.statusCode, 400);
+      final request =
+          await _sendPostRequest('dartservices/v2/complete', proto.Source());
+      expect(request.statusCode, 400);
     });
 
     test('complete param missing', () async {
-      final jsonData = {'offset': 1};
+      final request = proto.Source()..offset = 1;
       final response =
-          await _sendPostRequest('dartservices/v2/complete', jsonData);
+          await _sendPostRequest('dartservices/v2/complete', request);
       expect(response.statusCode, 400);
+      final data = json.decode(await response.transform(utf8.decoder).join());
+      final reply = proto.CompleteResponse()..mergeFromProto3Json(data);
+      expect(reply.error.message, 'Missing parameter: \'source\'');
     });
 
     test('complete param missing 2', () async {
-      final jsonData = {'source': 'void main() {print("foo");}'};
+      final request = proto.Source()..source = 'void main() {print("foo");}';
       final response =
-          await _sendPostRequest('dartservices/v2/complete', jsonData);
+          await _sendPostRequest('dartservices/v2/complete', request);
       expect(response.statusCode, 400);
       final data = json.decode(await response.transform(utf8.decoder).join());
-      expect(data['error']['message'], 'Missing parameter: \'offset\'');
+      final reply = proto.CompleteResponse()..mergeFromProto3Json(data);
+      expect(reply.error.message, 'Missing parameter: \'offset\'');
     });
 
     test('document', () async {
-      final jsonData = {'source': 'void main() {print("foo");}', 'offset': 17};
+      final request = proto.Source()
+        ..source = 'void main() {print("foo");}'
+        ..offset = 17;
       final response =
-          await _sendPostRequest('dartservices/v2/document', jsonData);
+          await _sendPostRequest('dartservices/v2/document', request);
       expect(response.statusCode, 200);
       final data = json.decode(await response.transform(utf8.decoder).join());
-      expect(data, isNotEmpty);
+      final reply = proto.DocumentResponse()..mergeFromProto3Json(data);
+      expect(reply.info, isNotEmpty);
     });
 
     test('document little data', () async {
-      final jsonData = {'source': 'void main() {print("foo");}', 'offset': 2};
+      final request = proto.Source()
+        ..source = 'void main() {print("foo");}'
+        ..offset = 2;
       final response =
-          await _sendPostRequest('dartservices/v2/document', jsonData);
+          await _sendPostRequest('dartservices/v2/document', request);
       expect(response.statusCode, 200);
       final data = json.decode(await response.transform(utf8.decoder).join());
-      expect(data, {
-        'info': {},
-      });
+      final reply = proto.DocumentResponse()..mergeFromProto3Json(data);
+      expect(reply.info, isEmpty);
     });
 
     test('document no data', () async {
-      final jsonData = {'source': 'void main() {print("foo");}', 'offset': 12};
+      final request = proto.Source()
+        ..source = 'void main() {print("foo");}'
+        ..offset = 12;
       final response =
-          await _sendPostRequest('dartservices/v2/document', jsonData);
+          await _sendPostRequest('dartservices/v2/document', request);
       expect(response.statusCode, 200);
       final data = json.decode(await response.transform(utf8.decoder).join());
-      expect(data, {'info': {}});
+      final reply = proto.DocumentResponse()..mergeFromProto3Json(data);
+      expect(reply.info, isEmpty);
     });
 
     test('document negative-test noSource', () async {
-      final jsonData = {'offset': 12};
+      final request = proto.Source()..offset = 12;
       final response =
-          await _sendPostRequest('dartservices/v2/document', jsonData);
+          await _sendPostRequest('dartservices/v2/document', request);
       expect(response.statusCode, 400);
     });
 
     test('document negative-test noOffset', () async {
-      final jsonData = {'source': 'void main() {print("foo");}'};
+      final request = proto.Source()..source = 'void main() {print("foo");}';
       final response =
-          await _sendPostRequest('dartservices/v2/document', jsonData);
+          await _sendPostRequest('dartservices/v2/document', request);
       expect(response.statusCode, 400);
     });
 
     test('format', () async {
-      final jsonData = {'source': preFormattedCode};
+      final request = proto.Source()..source = preFormattedCode;
       final response =
-          await _sendPostRequest('dartservices/v2/format', jsonData);
+          await _sendPostRequest('dartservices/v2/format', request);
       expect(response.statusCode, 200);
       final data = json.decode(await response.transform(utf8.decoder).join());
-      expect(data['newString'], postFormattedCode);
+      final reply = proto.FormatResponse()..mergeFromProto3Json(data);
+      expect(reply.newString, postFormattedCode);
     });
 
     test('format bad code', () async {
-      final jsonData = {'source': formatBadCode};
+      final request = proto.Source()..source = formatBadCode;
       final response =
-          await _sendPostRequest('dartservices/v2/format', jsonData);
+          await _sendPostRequest('dartservices/v2/format', request);
       expect(response.statusCode, 200);
       final data = json.decode(await response.transform(utf8.decoder).join());
-      expect(data['newString'], formatBadCode);
+      final reply = proto.FormatResponse()..mergeFromProto3Json(data);
+      expect(reply.newString, formatBadCode);
     });
 
     test('format position', () async {
-      final jsonData = {'source': preFormattedCode, 'offset': 21};
+      final request = proto.Source()
+        ..source = preFormattedCode
+        ..offset = 21;
       final response =
-          await _sendPostRequest('dartservices/v2/format', jsonData);
+          await _sendPostRequest('dartservices/v2/format', request);
       expect(response.statusCode, 200);
       final data = json.decode(await response.transform(utf8.decoder).join());
-      expect(data['newString'], postFormattedCode);
-      expect(data['offset'], 24);
+      final reply = proto.FormatResponse()..mergeFromProto3Json(data);
+      expect(reply.newString, postFormattedCode);
+      expect(reply.offset, 24);
     });
 
     test('fix', () async {
-      final jsonData = {'source': quickFixesCode, 'offset': 10};
-      final response =
-          await _sendPostRequest('dartservices/v2/fixes', jsonData);
+      final request = proto.Source()
+        ..source = quickFixesCode
+        ..offset = 10;
+      final response = await _sendPostRequest('dartservices/v2/fixes', request);
       expect(response.statusCode, 200);
       final data = json.decode(await response.transform(utf8.decoder).join());
-      final fixes = data['fixes'];
+      final reply = proto.FixesResponse()..mergeFromProto3Json(data);
+      final fixes = reply.fixes;
       expect(fixes.length, 1);
       final problemAndFix = fixes[0];
-      expect(problemAndFix['problemMessage'], isNotNull);
+      expect(problemAndFix.problemMessage, isNotNull);
     });
 
     test('fixes completeness', () async {
-      final jsonData = {
-        'source': '''
+      final request = proto.Source()
+        ..source = '''
 void main() {
   for (int i = 0; i < 4; i++) {
     print('hello \$i')
   }
 }
-''',
-        'offset': 67,
-      };
-      final response =
-          await _sendPostRequest('dartservices/v2/fixes', jsonData);
+'''
+        ..offset = 67;
+      final response = await _sendPostRequest('dartservices/v2/fixes', request);
       expect(response.statusCode, 200);
       final data = json.decode(await response.transform(utf8.decoder).join());
-      expect(data, {
-        'fixes': [
-          {
-            'fixes': [
-              {
-                'message': "Insert ';'",
-                'edits': [
-                  {'offset': 67, 'length': 0, 'replacement': ';'}
-                ]
-              }
-            ],
-            'problemMessage': "Expected to find ';'.",
-            'offset': 66,
-            'length': 1
-          }
-        ]
-      });
+      final reply = proto.FixesResponse()..mergeFromProto3Json(data);
+      expect(reply.fixes[0].fixes[0].message, "Insert ';'");
+      expect(reply.fixes[0].fixes[0].edits[0].offset, 67);
+      expect(reply.fixes[0].fixes[0].edits[0].length, 0);
+      expect(reply.fixes[0].fixes[0].edits[0].replacement, ';');
+      expect(reply.fixes[0].problemMessage, "Expected to find ';'.");
+      expect(reply.fixes[0].offset, 66);
+      expect(reply.fixes[0].length, 1);
     });
 
     test('assist', () async {
-      final jsonData = {'source': assistCode, 'offset': 15};
+      final request = proto.Source()
+        ..source = assistCode
+        ..offset = 15;
       final response =
-          await _sendPostRequest('dartservices/v2/assists', jsonData);
+          await _sendPostRequest('dartservices/v2/assists', request);
       expect(response.statusCode, 200);
-
       final data = json.decode(await response.transform(utf8.decoder).join());
-      final assists = data['assists'] as List;
+      final reply = proto.AssistsResponse()..mergeFromProto3Json(data);
+      final assists = reply.assists;
       expect(assists, hasLength(2));
-      expect(assists.first['edits'], isNotNull);
-      expect(assists.first['edits'], hasLength(1));
-      expect(assists.where((m) {
-        final map = m as Map<String, dynamic>;
-        return map['message'] == 'Remove type annotation';
-      }), isNotEmpty);
+      expect(assists.first.edits, isNotNull);
+      expect(assists.first.edits, hasLength(1));
+      expect(
+          assists.where((candidateFix) =>
+              candidateFix.message == 'Remove type annotation'),
+          isNotEmpty);
     });
 
     test('version', () async {

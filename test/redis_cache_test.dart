@@ -18,7 +18,6 @@ import 'package:test/test.dart';
 void main() => defineTests();
 
 void defineTests() {
-
   /// Integration tests for the RedisCache implementation.
   ///
   /// We basically assume that redis and dartis work correctly -- this is

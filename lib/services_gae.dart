@@ -21,7 +21,7 @@ import 'src/flutter_web.dart';
 import 'src/server_cache.dart';
 
 const String _API = '/api';
-const String _API_V1_PREFIX  = '/api/dartservices/v1';
+const String _API_V1_PREFIX = '/api/dartservices/v1';
 const String _healthCheck = '/_ah/health';
 const String _readynessCheck = '/_ah/ready';
 

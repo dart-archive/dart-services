@@ -21,13 +21,12 @@ This project is built with [grinder](https://pub.dev/packages/grinder). To insta
 pub global activate grinder
 ```
 
-The dart-services v2 API is defined in terms of Protobuf, so we need to install the Protobuf `protoc` compiler. For Mac:
+The dart-services v2 API is defined in terms of Protobuf, which requires the installation of 
+the Protobuf `protoc` compiler. Please see [Protocol Buffers]()https://developers.google.com/protocol-buffers/)
+for detailed instalation instructions.
 
-```bash
-brew install protobuf
-```
-
-We also need the Dart protoc plugin for the above `protoc` compiler to generate Dart code. To install, please run:
+The Dart protoc plugin is also required for the above `protoc` compiler to generate Dart code. 
+To install, please run:
 
 ```bash
 pub global install protoc_plugin

@@ -240,14 +240,14 @@ void fuzz() {
 }
 
 @Task('Update discovery files and run all checks prior to deployment')
-@Depends(setupFlutterSubmodule, updateDockerVersion, protobuf, discovery,
+@Depends(setupFlutterSubmodule, updateDockerVersion, generateProtos, discovery,
     analyze, test, fuzz, validateStorageArtifacts)
 void deploy() {
   log('Run: gcloud app deploy --project=dart-services --no-promote');
 }
 
 @Task()
-@Depends(protobuf, discovery, analyze, fuzz, buildStorageArtifacts)
+@Depends(generateProtos, discovery, analyze, fuzz, buildStorageArtifacts)
 void buildbot() => null;
 
 @Task('Generate the discovery doc and Dart library from the annotated API')
@@ -274,7 +274,7 @@ void discovery() {
 }
 
 @Task('Generate Protobuf classes')
-void protobuf() {
+void generateProtos() {
   final result = Process.runSync(
     'protoc',
     ['--dart_out=lib/src', 'protos/dart_services.proto'],
