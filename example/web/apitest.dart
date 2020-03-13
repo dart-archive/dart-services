@@ -16,6 +16,7 @@ utils.SanitizingBrowserClient client;
 void main() {
   setupAnalyze();
   setupCompile();
+  setupCompileDDC();
   setupComplete();
   setupDocument();
   setupFixes();
@@ -65,6 +66,31 @@ void setupCompile() {
       client
           .post(
             '${_uriBase}/dartservices/$version/compile',
+            encoding: utf8,
+            body: json.encode(compile),
+          )
+          .then((response) =>
+              output.text = '${_formatTiming(sw)}${response.body}');
+    });
+  });
+}
+
+void setupCompileDDC() {
+  versions.forEach((version) {
+    final editor =
+        createEditor(querySelector('#compileDDCSection-$version .editor'));
+    final output = querySelector('#compileDDCSection-$version .output');
+    final button =
+        querySelector('#compileDDCSection-$version button') as ButtonElement;
+    button.onClick.listen((e) {
+      final source = editor.getDoc().getValue();
+
+      _setupClients();
+      final compile = {'source': source};
+      final sw = Stopwatch()..start();
+      client
+          .post(
+            '${_uriBase}/dartservices/$version/compileDDC',
             encoding: utf8,
             body: json.encode(compile),
           )
