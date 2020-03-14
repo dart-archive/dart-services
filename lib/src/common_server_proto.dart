@@ -31,11 +31,11 @@ class CommonServerProto {
   @Route.post('$PROTO_API_URL_PREFIX/analyze')
   Future<Response> analyze(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
-          proto.Source.create()..mergeFromProto3Json(json),
-      decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
+          proto.SourceRequest.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
       transform: _analyze);
 
-  Future<proto.AnalyzeReply> _analyze(proto.Source request) async {
+  Future<proto.AnalysisResults> _analyze(proto.SourceRequest request) async {
     if (!request.hasSource()) {
       throw BadRequest('Missing parameter: \'source\'');
     }
@@ -45,7 +45,7 @@ class CommonServerProto {
       ..offset = request.offset;
     final apiResponse = await _impl.analyze(apiRequest);
 
-    return proto.AnalyzeReply()
+    return proto.AnalysisResults()
       ..packageImports.addAll(apiResponse.packageImports)
       ..issues.addAll(
         apiResponse.issues.map(
@@ -64,11 +64,11 @@ class CommonServerProto {
   @Route.post('$PROTO_API_URL_PREFIX/compile')
   Future<Response> compile(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
-          proto.Compile.create()..mergeFromProto3Json(json),
-      decodeFromProto: (bytes) => proto.Compile.fromBuffer(bytes),
+          proto.CompileRequest.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.CompileRequest.fromBuffer(bytes),
       transform: _compile);
 
-  Future<proto.CompileResponse> _compile(proto.Compile request) async {
+  Future<proto.CompileResponse> _compile(proto.CompileRequest request) async {
     final apiRequest = api.CompileRequest()
       ..source = request.source
       ..returnSourceMap = request.returnSourceMap;
@@ -83,11 +83,11 @@ class CommonServerProto {
   @Route.post('$PROTO_API_URL_PREFIX/compileDDC')
   Future<Response> compileDDC(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
-          proto.Compile.create()..mergeFromProto3Json(json),
-      decodeFromProto: (bytes) => proto.Compile.fromBuffer(bytes),
+          proto.CompileRequest.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.CompileRequest.fromBuffer(bytes),
       transform: _compileDDC);
 
-  Future<proto.CompileDDCResponse> _compileDDC(proto.Compile request) async {
+  Future<proto.CompileDDCResponse> _compileDDC(proto.CompileRequest request) async {
     final apiRequest = api.CompileRequest()
       ..source = request.source
       ..returnSourceMap = request.returnSourceMap;
@@ -101,11 +101,11 @@ class CommonServerProto {
   @Route.post('$PROTO_API_URL_PREFIX/complete')
   Future<Response> complete(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
-          proto.Source.create()..mergeFromProto3Json(json),
-      decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
+          proto.SourceRequest.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
       transform: _complete);
 
-  Future<proto.CompleteResponse> _complete(proto.Source request) async {
+  Future<proto.CompleteResponse> _complete(proto.SourceRequest request) async {
     if (!request.hasSource()) {
       throw BadRequest('Missing parameter: \'source\'');
     }
@@ -131,11 +131,11 @@ class CommonServerProto {
   @Route.post('$PROTO_API_URL_PREFIX/fixes')
   Future<Response> fixes(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
-          proto.Source.create()..mergeFromProto3Json(json),
-      decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
+          proto.SourceRequest.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
       transform: _fixes);
 
-  Future<proto.FixesResponse> _fixes(proto.Source request) async {
+  Future<proto.FixesResponse> _fixes(proto.SourceRequest request) async {
     if (!request.hasSource()) {
       throw BadRequest('Missing parameter: \'source\'');
     }
@@ -165,11 +165,11 @@ class CommonServerProto {
   @Route.post('$PROTO_API_URL_PREFIX/assists')
   Future<Response> assists(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
-          proto.Source.create()..mergeFromProto3Json(json),
-      decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
+          proto.SourceRequest.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
       transform: _assists);
 
-  Future<proto.AssistsResponse> _assists(proto.Source request) async {
+  Future<proto.AssistsResponse> _assists(proto.SourceRequest request) async {
     if (!request.hasSource()) {
       throw BadRequest('Missing parameter: \'source\'');
     }
@@ -191,11 +191,11 @@ class CommonServerProto {
   @Route.post('$PROTO_API_URL_PREFIX/format')
   Future<Response> format(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
-          proto.Source.create()..mergeFromProto3Json(json),
-      decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
+          proto.SourceRequest.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
       transform: _format);
 
-  Future<proto.FormatResponse> _format(proto.Source request) async {
+  Future<proto.FormatResponse> _format(proto.SourceRequest request) async {
     if (!request.hasSource()) {
       throw BadRequest('Missing parameter: \'source\'');
     }
@@ -213,11 +213,11 @@ class CommonServerProto {
   @Route.post('$PROTO_API_URL_PREFIX/document')
   Future<Response> document(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
-          proto.Source.create()..mergeFromProto3Json(json),
-      decodeFromProto: (bytes) => proto.Source.fromBuffer(bytes),
+          proto.SourceRequest.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
       transform: _document);
 
-  Future<proto.DocumentResponse> _document(proto.Source request) async {
+  Future<proto.DocumentResponse> _document(proto.SourceRequest request) async {
     if (!request.hasSource()) {
       throw BadRequest('Missing parameter: \'source\'');
     }
