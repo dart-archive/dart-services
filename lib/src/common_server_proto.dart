@@ -260,7 +260,6 @@ class CommonServerProto {
       ..flutterVersion = apiResponse.flutterVersion;
   }
 
-
   proto.CandidateFix _transformCandidateFix(api.CandidateFix candidateFix) {
     final result = proto.CandidateFix()..message = candidateFix.message;
     if (candidateFix.edits != null) {
