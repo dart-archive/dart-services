@@ -87,7 +87,8 @@ class CommonServerProto {
       decodeFromProto: (bytes) => proto.CompileRequest.fromBuffer(bytes),
       transform: _compileDDC);
 
-  Future<proto.CompileDDCResponse> _compileDDC(proto.CompileRequest request) async {
+  Future<proto.CompileDDCResponse> _compileDDC(
+      proto.CompileRequest request) async {
     final apiRequest = api.CompileRequest()
       ..source = request.source
       ..returnSourceMap = request.returnSourceMap;
@@ -255,8 +256,10 @@ class CommonServerProto {
       ..sdkVersionFull = apiResponse.sdkVersionFull
       ..runtimeVersion = apiResponse.runtimeVersion
       ..appEngineVersion = apiResponse.appEngineVersion
-      ..servicesVersion = apiResponse.servicesVersion;
+      ..servicesVersion = apiResponse.servicesVersion
+      ..flutterVersion = apiResponse.flutterVersion;
   }
+
 
   proto.CandidateFix _transformCandidateFix(api.CandidateFix candidateFix) {
     final result = proto.CandidateFix()..message = candidateFix.message;

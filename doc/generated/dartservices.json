@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "3782b4a662b81bc2c7a01a7d5e7e9021a4debd44",
+ "etag": "1d62b563af1174ad133d322031f17547520255de",
  "discoveryVersion": "v1",
  "id": "dartservices:v1",
  "name": "dartservices",
@@ -321,6 +321,10 @@
     "servicesVersion": {
      "type": "string",
      "description": "The dart-services backend version."
+    },
+    "flutterVersion": {
+     "type": "string",
+     "description": "The Flutter SDK version."
     }
    }
   }

@@ -170,6 +170,9 @@ message VersionResponse {
   // The dart-services backend version.
   string servicesVersion = 5;
 
+  // The Flutter SDK version
+  string flutterVersion = 6;
+
   // Make this response compatible with BadRequest
   ErrorMessage error = 99;
 }
