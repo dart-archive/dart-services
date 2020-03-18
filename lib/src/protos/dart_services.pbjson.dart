@@ -329,6 +329,20 @@ const VersionResponse$json = {
     {'1': 'servicesVersion', '3': 5, '4': 1, '5': 9, '10': 'servicesVersion'},
     {'1': 'flutterVersion', '3': 6, '4': 1, '5': 9, '10': 'flutterVersion'},
     {
+      '1': 'flutterDartVersion',
+      '3': 7,
+      '4': 1,
+      '5': 9,
+      '10': 'flutterDartVersion'
+    },
+    {
+      '1': 'flutterDartVersionFull',
+      '3': 8,
+      '4': 1,
+      '5': 9,
+      '10': 'flutterDartVersionFull'
+    },
+    {
       '1': 'error',
       '3': 99,
       '4': 1,

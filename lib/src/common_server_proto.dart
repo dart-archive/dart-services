@@ -257,6 +257,8 @@ class CommonServerProto {
       ..runtimeVersion = apiResponse.runtimeVersion
       ..appEngineVersion = apiResponse.appEngineVersion
       ..servicesVersion = apiResponse.servicesVersion
+      ..flutterDartVersion = apiResponse.flutterDartVersion
+      ..flutterDartVersionFull = apiResponse.flutterDartVersionFull
       ..flutterVersion = apiResponse.flutterVersion;
   }
 

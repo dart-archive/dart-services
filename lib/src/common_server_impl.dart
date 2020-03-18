@@ -330,7 +330,9 @@ class CommonServerImpl {
       runtimeVersion: vmVersion,
       servicesVersion: servicesVersion,
       appEngineVersion: container.version,
-      flutterVersion: SdkManager.flutterSdk.version);
+      flutterDartVersion: SdkManager.flutterSdk.version,
+      flutterDartVersionFull: SdkManager.flutterSdk.versionFull,
+      flutterVersion: SdkManager.flutterSdk.flutterVersion);
 
   Future<CompleteResponse> _complete(String source, int offset) async {
     if (source == null) {
