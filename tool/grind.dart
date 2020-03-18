@@ -87,12 +87,12 @@ Future _validateExists(String url) async {
 }
 
 @Task('build the sdk compilation artifacts for upload to google storage')
-void buildStorageArtifacts() {
+void buildStorageArtifacts() async {
   // build and copy dart_sdk.js, flutter_web.js, and flutter_web.dill
   final temp = Directory.systemTemp.createTempSync('flutter_web_sample');
 
   try {
-    _buildStorageArtifacts(temp);
+    await _buildStorageArtifacts(temp);
   } finally {
     temp.deleteSync(recursive: true);
   }
@@ -272,7 +272,7 @@ void discovery() {
 void generateProtos() async {
   await runWithLogging(
     'protoc',
-    arguments:['--dart_out=lib/src', 'protos/dart_services.proto'],
+    arguments: ['--dart_out=lib/src', 'protos/dart_services.proto'],
   );
 
   // reformat generated classes so travis dartfmt test doesn't fail
