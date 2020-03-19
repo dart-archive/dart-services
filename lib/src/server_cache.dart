@@ -12,7 +12,7 @@ import 'package:pedantic/pedantic.dart';
 import 'package:quiver/cache.dart';
 
 import 'sdk_manager.dart';
-import 'common_server.dart' show log;
+import 'common_server_impl.dart' show log;
 
 abstract class ServerCache {
   Future<String> get(String key);

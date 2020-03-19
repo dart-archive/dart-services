@@ -2,7 +2,7 @@
 # See https://dart.dev/tools/pub/glossary#lockfile
 packages:
   _discoveryapis_commons:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: _discoveryapis_commons
       url: "https://pub.dartlang.org"
@@ -197,13 +197,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.0"
-  discoveryapis_generator:
-    dependency: "direct dev"
-    description:
-      name: discoveryapis_generator
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.9.11"
   fixnum:
     dependency: transitive
     description:
@@ -477,13 +470,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2+1"
-  rpc:
-    dependency: "direct main"
-    description:
-      name: rpc
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.2"
   shelf:
     dependency: "direct main"
     description:
@@ -638,20 +624,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.6"
-  uri:
-    dependency: transitive
-    description:
-      name: uri
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.11.3+1"
-  utf:
-    dependency: transitive
-    description:
-      name: utf
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.9.0+5"
   uuid:
     dependency: "direct main"
     description:

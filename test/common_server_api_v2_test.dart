@@ -8,7 +8,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dart_services/src/common.dart';
-import 'package:dart_services/src/common_server.dart';
 import 'package:dart_services/src/common_server_impl.dart';
 import 'package:dart_services/src/common_server_proto.dart';
 import 'package:dart_services/src/flutter_web.dart';

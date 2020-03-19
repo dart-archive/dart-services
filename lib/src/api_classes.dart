@@ -7,12 +7,10 @@ library services.api_classes;
 
 import 'dart:convert';
 
-import 'package:rpc/rpc.dart';
 
 class AnalysisResults {
   final List<AnalysisIssue> issues;
 
-  @ApiProperty(description: 'The package imports parsed from the source.')
   final List<String> packageImports;
 
   AnalysisResults(this.issues, this.packageImports);
@@ -53,21 +51,16 @@ class AnalysisIssue implements Comparable<AnalysisIssue> {
 }
 
 class SourceRequest {
-  @ApiProperty(required: true, description: 'The Dart source.')
   String source;
 
-  @ApiProperty(description: 'An optional offset into the source code.')
   int offset;
 }
 
 class SourcesRequest {
-  @ApiProperty(required: true, description: 'Map of names to Sources.')
   Map<String, String> sources;
 
-  @ApiProperty(description: 'An optional location in the source code.')
   Location location;
 
-  @ApiProperty(description: 'Ignored: always treated as true.')
   @deprecated
   bool strongMode;
 }
@@ -82,12 +75,8 @@ class Location {
 }
 
 class CompileRequest {
-  @ApiProperty(required: true, description: 'The Dart source.')
   String source;
 
-  @ApiProperty(
-      description:
-          'Return the Dart to JS source map; optional (defaults to false).')
   bool returnSourceMap;
 }
 
@@ -99,7 +88,6 @@ class CompileResponse {
 }
 
 class CompileDDCRequest {
-  @ApiProperty(required: true, description: 'The Dart source.')
   String source;
 }
 
@@ -111,7 +99,6 @@ class CompileDDCResponse {
 }
 
 class CounterRequest {
-  @ApiProperty(required: true)
   String name;
 }
 
@@ -128,11 +115,8 @@ class DocumentResponse {
 }
 
 class CompleteResponse {
-  @ApiProperty(
-      description: 'The offset of the start of the text to be replaced.')
   final int replacementOffset;
 
-  @ApiProperty(description: 'The length of the text to be replaced.')
   final int replacementLength;
 
   final List<Map<String, String>> completions;
@@ -180,31 +164,18 @@ class ProblemAndFixes {
 }
 
 class LinkedEditSuggestion {
-  @ApiProperty(
-      description: 'The value that could be used to replace all of the linked '
-          'edit regions.')
   final String value;
 
-  @ApiProperty(description: 'The kind of value being proposed.')
   final String kind;
 
   LinkedEditSuggestion(this.value, this.kind);
 }
 
 class LinkedEditGroup {
-  @ApiProperty(
-      description: 'The positions of the regions that should be edited '
-          'simultaneously.')
   final List<int> positions;
 
-  @ApiProperty(
-      description: 'The length of the regions that should be edited '
-          'simultaneously.')
   final int length;
 
-  @ApiProperty(
-      description: 'Pre-computed suggestions for what every region might want '
-          'to be changed to.')
   final List<LinkedEditSuggestion> suggestions;
 
   LinkedEditGroup(this.positions, this.length, this.suggestions);
@@ -229,11 +200,8 @@ class CandidateFix {
 
 /// Represents a reformatting of the code.
 class FormatResponse {
-  @ApiProperty(description: 'The formatted source code.')
   final String newString;
 
-  @ApiProperty(
-      description: 'The (optional) new offset of the cursor; can be `null`.')
   final int offset;
 
   FormatResponse(this.newString, [this.offset = 0]);
@@ -271,35 +239,20 @@ class AssistsResponse {
 
 /// The response from the `/version` service call.
 class VersionResponse {
-  @ApiProperty(
-      description: 'The Dart SDK version that DartServices is compatible with. '
-          'This will be a semver string.')
   final String sdkVersion;
 
-  @ApiProperty(
-      description:
-          'The full Dart SDK version that DartServices is compatible with.')
   final String sdkVersionFull;
 
-  @ApiProperty(
-      description: 'The Dart SDK version that the server is running on. This '
-          'will start with a semver string, and have a space and other build '
-          'details appended.')
   final String runtimeVersion;
 
-  @ApiProperty(description: 'The App Engine version.')
   final String appEngineVersion;
 
-  @ApiProperty(description: 'The dart-services backend version.')
   final String servicesVersion;
 
-  @ApiProperty(description: 'The Flutter SDK version.')
   final String flutterVersion;
 
-  @ApiProperty(description: "The Flutter SDK's Dart version.")
   final String flutterDartVersion;
 
-  @ApiProperty(description: "The Flutter SDK's full Dart version.")
   final String flutterDartVersionFull;
 
   VersionResponse(
