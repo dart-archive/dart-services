@@ -20,7 +20,7 @@ part 'common_server_proto.g.dart'; // generated with 'pub run build_runner build
 
 const PROTOBUF_CONTENT_TYPE = 'application/x-protobuf';
 const JSON_CONTENT_TYPE = 'application/json; charset=utf-8';
-const PROTO_API_URL_PREFIX = '/api/dartservices/v2';
+const PROTO_API_URL_PREFIX = '/api/dartservices/<apiVersion>';
 
 class CommonServerProto {
   final CommonServerImpl _impl;
@@ -28,70 +28,70 @@ class CommonServerProto {
   CommonServerProto(this._impl);
 
   @Route.post('$PROTO_API_URL_PREFIX/analyze')
-  Future<Response> analyze(Request request) => _processRequest(request,
+  Future<Response> analyze(Request request, String apiVersion) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.SourceRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
       transform: _impl.analyze);
 
   @Route.post('$PROTO_API_URL_PREFIX/compile')
-  Future<Response> compile(Request request) => _processRequest(request,
+  Future<Response> compile(Request request, String apiVersion) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.CompileRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.CompileRequest.fromBuffer(bytes),
       transform: _impl.compile);
 
   @Route.post('$PROTO_API_URL_PREFIX/compileDDC')
-  Future<Response> compileDDC(Request request) => _processRequest(request,
+  Future<Response> compileDDC(Request request, String apiVersion) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.CompileDDCRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.CompileDDCRequest.fromBuffer(bytes),
       transform: _impl.compileDDC);
 
   @Route.post('$PROTO_API_URL_PREFIX/complete')
-  Future<Response> complete(Request request) => _processRequest(request,
+  Future<Response> complete(Request request, String apiVersion) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.SourceRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
       transform: _impl.complete);
 
   @Route.post('$PROTO_API_URL_PREFIX/fixes')
-  Future<Response> fixes(Request request) => _processRequest(request,
+  Future<Response> fixes(Request request, String apiVersion) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.SourceRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
       transform: _impl.fixes);
 
   @Route.post('$PROTO_API_URL_PREFIX/assists')
-  Future<Response> assists(Request request) => _processRequest(request,
+  Future<Response> assists(Request request, String apiVersion) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.SourceRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
       transform: _impl.assists);
 
   @Route.post('$PROTO_API_URL_PREFIX/format')
-  Future<Response> format(Request request) => _processRequest(request,
+  Future<Response> format(Request request, String apiVersion) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.SourceRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
       transform: _impl.format);
 
   @Route.post('$PROTO_API_URL_PREFIX/document')
-  Future<Response> document(Request request) => _processRequest(request,
+  Future<Response> document(Request request, String apiVersion) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.SourceRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
       transform: _impl.document);
 
   @Route.post('$PROTO_API_URL_PREFIX/version')
-  Future<Response> versionPost(Request request) => _processRequest(request,
+  Future<Response> versionPost(Request request, String apiVersion) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.VersionRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.VersionRequest.fromBuffer(bytes),
       transform: _impl.version);
 
   @Route.get('$PROTO_API_URL_PREFIX/version')
-  Future<Response> versionGet(Request request) => _processRequest(request,
+  Future<Response> versionGet(Request request, String apiVersion) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.VersionRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.VersionRequest.fromBuffer(bytes),

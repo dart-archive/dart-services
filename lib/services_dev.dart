@@ -69,12 +69,10 @@ class EndpointsServer {
   Pipeline pipeline;
   Handler handler;
 
-  bool discoveryEnabled;
   CommonServerProto commonServerProto;
   FlutterWebManager flutterWebManager;
 
   EndpointsServer._(String sdkPath, this.port) {
-    discoveryEnabled = false;
 
     flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
     final commonServerImpl = CommonServerImpl(
