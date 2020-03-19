@@ -235,8 +235,7 @@ class CommonServerImpl {
       final resultObj = JsonDecoder().convert(result);
       return proto.CompileResponse()
         ..result = resultObj['compiledJS'] as String
-        ..sourceMap = returnSourceMap ? resultObj['sourceMap'] as String : null
-        ..freeze();
+        ..sourceMap = returnSourceMap ? resultObj['sourceMap'] as String : null;
     }
 
     log.info('CACHE: MISS for compileDart2js');
@@ -264,7 +263,7 @@ class CommonServerImpl {
         if (sourceMap != null) {
           compileResponse.sourceMap = sourceMap;
         }
-        return compileResponse..freeze();
+        return compileResponse;
       } else {
         final problems = results.problems;
         final errors = problems.map(_printCompileProblem).join('\n');
@@ -290,8 +289,7 @@ class CommonServerImpl {
       final resultObj = JsonDecoder().convert(result);
       return proto.CompileDDCResponse()
         ..result = resultObj['compiledJS'] as String
-        ..modulesBaseUrl = resultObj['modulesBaseUrl'] as String
-        ..freeze();
+        ..modulesBaseUrl = resultObj['modulesBaseUrl'] as String;
     }
 
     log.info('CACHE: MISS for compileDDC');
@@ -313,8 +311,7 @@ class CommonServerImpl {
         unawaited(setCache(memCacheKey, cachedResult));
         return proto.CompileDDCResponse()
           ..result = results.compiledJS
-          ..modulesBaseUrl = results.modulesBaseUrl
-          ..freeze();
+          ..modulesBaseUrl = results.modulesBaseUrl;
       } else {
         final problems = results.problems;
         final errors = problems.map(_printCompileProblem).join('\n');
@@ -337,9 +334,7 @@ class CommonServerImpl {
           await getCorrectAnalysisServer(source).dartdoc(source, offset);
       docInfo ??= <String, String>{};
       log.info('PERF: Computed dartdoc in ${watch.elapsedMilliseconds}ms.');
-      return proto.DocumentResponse()
-        ..info.addAll(docInfo)
-        ..freeze();
+      return proto.DocumentResponse()..info.addAll(docInfo);
     } catch (e, st) {
       log.severe('Error during dartdoc', e, st);
       await restart();
@@ -355,8 +350,7 @@ class CommonServerImpl {
     ..appEngineVersion = container.version
     ..flutterDartVersion = SdkManager.flutterSdk.version
     ..flutterDartVersionFull = SdkManager.flutterSdk.versionFull
-    ..flutterVersion = SdkManager.flutterSdk.flutterVersion
-    ..freeze();
+    ..flutterVersion = SdkManager.flutterSdk.flutterVersion;
 
   Future<proto.CompleteResponse> _complete(String source, int offset) async {
     await _checkPackageReferencesInitFlutterWeb(source);

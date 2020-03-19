@@ -32,33 +32,7 @@ class CommonServerProto {
       decodeFromJSON: (json) =>
           proto.SourceRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
-      transform: _analyze);
-
-  Future<proto.AnalysisResults> _analyze(proto.SourceRequest request) async {
-    if (!request.hasSource()) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-
-    final apiRequest = proto.SourceRequest()
-      ..source = request.source
-      ..offset = request.offset;
-    final apiResponse = await _impl.analyze(apiRequest);
-
-    return proto.AnalysisResults()
-      ..packageImports.addAll(apiResponse.packageImports)
-      ..issues.addAll(
-        apiResponse.issues.map(
-          (issue) => proto.AnalysisIssue()
-            ..kind = issue.kind
-            ..line = issue.line
-            ..message = issue.message
-            ..sourceName = issue.sourceName
-            ..hasFixes = issue.hasFixes
-            ..charStart = issue.charStart
-            ..charLength = issue.charLength,
-        ),
-      );
-  }
+      transform: _impl.analyze);
 
   @Route.post('$PROTO_API_URL_PREFIX/compile')
   Future<Response> compile(Request request) => _processRequest(request,
@@ -86,21 +60,7 @@ class CommonServerProto {
       decodeFromJSON: (json) =>
           proto.SourceRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
-      transform: _fixes);
-
-  Future<proto.FixesResponse> _fixes(proto.SourceRequest request) async {
-    if (!request.hasSource()) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-    if (!request.hasOffset()) {
-      throw BadRequest('Missing parameter: \'offset\'');
-    }
-
-    final apiRequest = proto.SourceRequest()
-      ..offset = request.offset
-      ..source = request.source;
-    return _impl.fixes(apiRequest);
-  }
+      transform: _impl.fixes);
 
   @Route.post('$PROTO_API_URL_PREFIX/assists')
   Future<Response> assists(Request request) => _processRequest(request,
@@ -114,39 +74,14 @@ class CommonServerProto {
       decodeFromJSON: (json) =>
           proto.SourceRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
-      transform: _format);
-
-  Future<proto.FormatResponse> _format(proto.SourceRequest request) async {
-    if (!request.hasSource()) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-
-    final apiRequest = proto.SourceRequest()
-      ..offset = request.offset
-      ..source = request.source;
-    return _impl.format(apiRequest);
-  }
+      transform: _impl.format);
 
   @Route.post('$PROTO_API_URL_PREFIX/document')
   Future<Response> document(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.SourceRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
-      transform: _document);
-
-  Future<proto.DocumentResponse> _document(proto.SourceRequest request) async {
-    if (!request.hasSource()) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-    if (!request.hasOffset()) {
-      throw BadRequest('Missing parameter: \'offset\'');
-    }
-
-    final apiRequest = proto.SourceRequest()
-      ..offset = request.offset
-      ..source = request.source;
-    return _impl.document(apiRequest);
-  }
+      transform: _impl.document);
 
   @Route.post('$PROTO_API_URL_PREFIX/version')
   Future<Response> versionPost(Request request) => _processRequest(request,

@@ -196,14 +196,12 @@ class AnalysisServerWrapper {
 
       return proto.FormatResponse()
         ..newString = src
-        ..offset = editResult.selectionOffset
-        ..freeze();
+        ..offset = editResult.selectionOffset;
     }).catchError((dynamic error) {
       _logger.fine('format error: $error');
       return proto.FormatResponse()
         ..newString = src
-        ..offset = offset
-        ..freeze();
+        ..offset = offset;
     });
   }
 
@@ -270,8 +268,7 @@ class AnalysisServerWrapper {
           ..sourceName = path.basename(error.location.file)
           ..hasFixes = error.hasFix
           ..charStart = error.location.offset
-          ..charLength = error.location.length
-          ..freeze();
+          ..charLength = error.location.length;
       }).toList();
 
       issues.sort();
@@ -285,8 +282,7 @@ class AnalysisServerWrapper {
 
       return proto.AnalysisResults()
         ..issues.addAll(issues)
-        ..packageImports.addAll(packageImports)
-        ..freeze();
+        ..packageImports.addAll(packageImports);
     }, timeoutDuration: _ANALYSIS_SERVER_TIMEOUT));
   }
 
