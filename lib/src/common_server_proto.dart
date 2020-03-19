@@ -66,29 +66,14 @@ class CommonServerProto {
       decodeFromJSON: (json) =>
           proto.CompileRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.CompileRequest.fromBuffer(bytes),
-      transform: _compile);
-
-  Future<proto.CompileResponse> _compile(proto.CompileRequest request) async {
-    final apiRequest = api.CompileRequest()
-      ..source = request.source
-      ..returnSourceMap = request.returnSourceMap;
-    return _impl.compile(apiRequest);
-  }
+      transform: _impl.compile);
 
   @Route.post('$PROTO_API_URL_PREFIX/compileDDC')
   Future<Response> compileDDC(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
-          proto.CompileRequest.create()..mergeFromProto3Json(json),
-      decodeFromProto: (bytes) => proto.CompileRequest.fromBuffer(bytes),
-      transform: _compileDDC);
-
-  Future<proto.CompileDDCResponse> _compileDDC(
-      proto.CompileRequest request) async {
-    final apiRequest = api.CompileDDCRequest()
-      ..source = request.source;
-    return _impl.compileDDC(apiRequest);
-
-  }
+          proto.CompileDDCRequest.create()..mergeFromProto3Json(json),
+      decodeFromProto: (bytes) => proto.CompileDDCRequest.fromBuffer(bytes),
+      transform: _impl.compileDDC);
 
   @Route.post('$PROTO_API_URL_PREFIX/complete')
   Future<Response> complete(Request request) => _processRequest(request,

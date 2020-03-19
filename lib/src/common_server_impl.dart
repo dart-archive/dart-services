@@ -126,12 +126,12 @@ class CommonServerImpl {
     return _analyze(request.source);
   }
 
-  Future<proto.CompileResponse> compile(CompileRequest request) {
+  Future<proto.CompileResponse> compile(proto.CompileRequest request) {
     return _compileDart2js(request.source,
         returnSourceMap: request.returnSourceMap ?? false);
   }
 
-  Future<proto.CompileDDCResponse> compileDDC(CompileDDCRequest request) {
+  Future<proto.CompileDDCResponse> compileDDC(proto.CompileDDCRequest request) {
     return _compileDDC(request.source);
   }
 

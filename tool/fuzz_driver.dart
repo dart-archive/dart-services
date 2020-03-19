@@ -13,7 +13,6 @@ import 'dart:io' as io;
 import 'dart:math';
 
 import 'package:dart_services/src/analysis_server.dart' as analysis_server;
-import 'package:dart_services/src/api_classes.dart';
 import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/common_server_impl.dart';
 import 'package:dart_services/src/compiler.dart' as comp;
@@ -257,7 +256,7 @@ Future<num> testCompilation(String src, comp.Compiler compiler) async {
 
   lastOffset = null;
   if (_SERVER_BASED_CALL) {
-    final request = CompileRequest();
+    final request = proto.CompileRequest();
     request.source = src;
     await withTimeOut(commonServerImpl.compile(request));
   } else {

@@ -16,20 +16,6 @@ class Location {
   Location.from(this.sourceName, this.offset);
 }
 
-class CompileRequest {
-  String source;
-
-  bool returnSourceMap;
-}
-
-class CompileDDCRequest {
-  String source;
-}
-
-class CounterRequest {
-  String name;
-}
-
 class CompleteResponse {
   final int replacementOffset;
 
