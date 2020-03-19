@@ -13,16 +13,16 @@ import 'package:logging/logging.dart';
 import 'package:pedantic/pedantic.dart';
 
 import '../version.dart';
-import 'protos/dart_services.pb.dart' as proto;
 import 'analysis_server.dart';
 import 'common.dart';
 import 'compiler.dart';
 import 'flutter_web.dart';
+import 'protos/dart_services.pb.dart' as proto;
 import 'pub.dart';
-import 'server_cache.dart';
 import 'sdk_manager.dart';
+import 'server_cache.dart';
 
-final Duration _standardExpiration = Duration(hours: 1);
+const Duration _standardExpiration = Duration(hours: 1);
 final Logger log = Logger('common_server');
 
 class BadRequest implements Exception {
@@ -118,7 +118,7 @@ class CommonServerImpl {
       flutterAnalysisServer.shutdown(),
       compiler.dispose(),
       Future<dynamic>.sync(cache.shutdown)
-    ]).timeout(Duration(minutes: 1));
+    ]).timeout(const Duration(minutes: 1));
   }
 
   Future<proto.AnalysisResults> analyze(proto.SourceRequest request) {
@@ -232,7 +232,7 @@ class CommonServerImpl {
     final result = await checkCache(memCacheKey);
     if (result != null) {
       log.info('CACHE: Cache hit for compileDart2js');
-      final resultObj = JsonDecoder().convert(result);
+      final resultObj = const JsonDecoder().convert(result);
       return proto.CompileResponse()
         ..result = resultObj['compiledJS'] as String
         ..sourceMap = returnSourceMap ? resultObj['sourceMap'] as String : null;
@@ -252,7 +252,7 @@ class CommonServerImpl {
             '${outputSize}kb of JavaScript in ${ms}ms using dart2js.');
         final sourceMap = returnSourceMap ? results.sourceMap : null;
 
-        final cachedResult = JsonEncoder().convert(<String, String>{
+        final cachedResult = const JsonEncoder().convert(<String, String>{
           'compiledJS': results.compiledJS,
           'sourceMap': sourceMap,
         });
@@ -286,7 +286,7 @@ class CommonServerImpl {
     final result = await checkCache(memCacheKey);
     if (result != null) {
       log.info('CACHE: Cache hit for compileDDC');
-      final resultObj = JsonDecoder().convert(result);
+      final resultObj = const JsonDecoder().convert(result);
       return proto.CompileDDCResponse()
         ..result = resultObj['compiledJS'] as String
         ..modulesBaseUrl = resultObj['modulesBaseUrl'] as String;
@@ -303,7 +303,7 @@ class CommonServerImpl {
         log.info('PERF: Compiled $lineCount lines of Dart into '
             '${outputSize}kb of JavaScript in ${ms}ms using DDC.');
 
-        final cachedResult = JsonEncoder().convert(<String, String>{
+        final cachedResult = const JsonEncoder().convert(<String, String>{
           'compiledJS': results.compiledJS,
           'modulesBaseUrl': results.modulesBaseUrl,
         });

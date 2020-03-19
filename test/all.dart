@@ -6,9 +6,9 @@ library services.all_test;
 
 import 'analysis_server_test.dart' as analysis_server_test;
 import 'bench_test.dart' as bench_test;
-import 'common_server_api_test.dart' as common_server_api_test;
 import 'common_server_api_protobuf_test.dart'
     as common_server_api_protobuf_test;
+import 'common_server_api_test.dart' as common_server_api_test;
 import 'common_test.dart' as common_test;
 import 'compiler_test.dart' as compiler_test;
 import 'flutter_web_test.dart' as flutter_web_test;

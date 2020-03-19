@@ -15,8 +15,8 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
 
 import 'src/common.dart';
-import 'src/common_server_impl.dart';
 import 'src/common_server_api.dart';
+import 'src/common_server_impl.dart';
 import 'src/flutter_web.dart';
 import 'src/server_cache.dart';
 import 'src/shelf_cors.dart' as shelf_cors;
@@ -84,7 +84,7 @@ class EndpointsServer {
     commonServerApi = CommonServerApi(commonServerImpl);
     commonServerImpl.init();
 
-    pipeline = Pipeline()
+    pipeline = const Pipeline()
         .addMiddleware(logRequests())
         .addMiddleware(_createCustomCorsHeadersMiddleware());
 

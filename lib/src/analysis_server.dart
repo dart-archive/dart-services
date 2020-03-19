@@ -15,9 +15,9 @@ import 'package:path/path.dart' as path;
 
 import 'common.dart';
 import 'flutter_web.dart';
+import 'protos/dart_services.pb.dart' as proto;
 import 'pub.dart';
 import 'scheduler.dart';
-import 'protos/dart_services.pb.dart' as proto;
 
 final Logger _logger = Logger('analysis_server');
 
@@ -25,12 +25,12 @@ final Logger _logger = Logger('analysis_server');
 /// to stdout.
 bool dumpServerMessages = false;
 
-final String _WARMUP_SRC_HTML =
+const String _WARMUP_SRC_HTML =
     "import 'dart:html'; main() { int b = 2;  b++;   b. }";
-final String _WARMUP_SRC = 'main() { int b = 2;  b++;   b. }';
+const String _WARMUP_SRC = 'main() { int b = 2;  b++;   b. }';
 
 // Use very long timeouts to ensure that the server has enough time to restart.
-final Duration _ANALYSIS_SERVER_TIMEOUT = Duration(seconds: 35);
+const Duration _ANALYSIS_SERVER_TIMEOUT =  Duration(seconds: 35);
 
 class AnalysisServerWrapper {
   final String sdkPath;
@@ -112,7 +112,7 @@ class AnalysisServerWrapper {
     // Return when the analysis server exits. We introduce a delay so that when
     // we terminate the analysis server we can exit normally.
     return analysisServer.processCompleter.future.then((int code) {
-      return Future<int>.delayed(Duration(seconds: 1), () {
+      return Future<int>.delayed(const Duration(seconds: 1), () {
         return code;
       });
     });
@@ -300,7 +300,7 @@ class AnalysisServerWrapper {
       final analysisCompleter = getAnalysisCompleteCompleter();
       await _loadSources(sources);
       await analysisCompleter.future;
-      final length = 1;
+      const length = 1;
       final assists =
           await analysisServer.edit.getAssists(path, offset, length);
       await _unloadSources();
@@ -408,7 +408,7 @@ class AnalysisServerWrapper {
     // --pause-isolates-on-exit from working; fix.
     return analysisServer.server
         .shutdown()
-        .timeout(Duration(seconds: 1))
+        .timeout(const Duration(seconds: 1))
         .catchError((dynamic e) => null);
   }
 

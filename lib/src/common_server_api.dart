@@ -13,8 +13,9 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
 import 'common_server_impl.dart' show CommonServerImpl, BadRequest;
-export 'common_server_impl.dart' show log, ServerContainer;
 import 'protos/dart_services.pb.dart' as proto;
+
+export 'common_server_impl.dart' show log, ServerContainer;
 
 part 'common_server_api.g.dart'; // generated with 'pub run build_runner build'
 
@@ -151,7 +152,7 @@ class CommonServerApi {
     }
   }
 
-  final JsonEncoder _jsonEncoder = JsonEncoder.withIndent(' ');
+  final JsonEncoder _jsonEncoder = const JsonEncoder.withIndent(' ');
 
   static const _JSON_HEADERS = {
     'Access-Control-Allow-Origin': '*',

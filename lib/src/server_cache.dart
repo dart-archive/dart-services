@@ -11,8 +11,8 @@ import 'package:dartis/dartis.dart' as redis;
 import 'package:pedantic/pedantic.dart';
 import 'package:quiver/cache.dart';
 
-import 'sdk_manager.dart';
 import 'common_server_impl.dart' show log;
+import 'sdk_manager.dart';
 
 abstract class ServerCache {
   Future<String> get(String key);
@@ -121,7 +121,7 @@ class RedisCache implements ServerCache {
             _reconnect();
           });
         })
-        .timeout(Duration(milliseconds: _connectionRetryMaxMs))
+        .timeout(const Duration(milliseconds: _connectionRetryMaxMs))
         .catchError((_) {
           log.severe(
               '$_logPrefix: Unable to connect to redis server, reconnecting in ${nextRetryMs}ms ...');

@@ -4,14 +4,15 @@ analyzer:
   strong-mode:
     implicit-casts: false
   exclude:
-    - 'dart-sdk/**'
-    - 'third_party/**'
-    - 'doc/generated/**'
-    - 'flutter/**'
-    - 'lib/src/protos/**'
+    - "dart-sdk/**"
+    - "third_party/**"
+    - "doc/generated/**"
+    - "flutter/**"
+    - "lib/src/protos/**"
 
 linter:
   rules:
+    - directives_ordering
     - prefer_final_fields
     - prefer_final_in_for_each
     - prefer_final_locals
