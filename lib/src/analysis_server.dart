@@ -30,7 +30,7 @@ const String _WARMUP_SRC_HTML =
 const String _WARMUP_SRC = 'main() { int b = 2;  b++;   b. }';
 
 // Use very long timeouts to ensure that the server has enough time to restart.
-const Duration _ANALYSIS_SERVER_TIMEOUT =  Duration(seconds: 35);
+const Duration _ANALYSIS_SERVER_TIMEOUT = Duration(seconds: 35);
 
 class AnalysisServerWrapper {
   final String sdkPath;

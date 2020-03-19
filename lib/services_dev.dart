@@ -73,7 +73,6 @@ class EndpointsServer {
   FlutterWebManager flutterWebManager;
 
   EndpointsServer._(String sdkPath, this.port) {
-
     flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
     final commonServerImpl = CommonServerImpl(
       sdkPath,
