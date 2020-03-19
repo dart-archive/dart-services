@@ -87,9 +87,7 @@ class EndpointsServer {
         .addMiddleware(logRequests())
         .addMiddleware(_createCustomCorsHeadersMiddleware());
 
-    handler = pipeline.addHandler(
-      (request) => commonServerApi.router.handler(request),
-    );
+    handler = pipeline.addHandler(commonServerApi.router.handler);
   }
 
   Response printUsage(Request request, dynamic e, StackTrace stackTrace) {
