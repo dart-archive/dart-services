@@ -122,10 +122,3 @@ class SourceEdit {
     return '$pre$replacement$post';
   }
 }
-
-/// The response from the `/assists` service call.
-class AssistsResponse {
-  final List<CandidateFix> assists;
-
-  AssistsResponse(this.assists);
-}

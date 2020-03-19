@@ -167,12 +167,12 @@ class AnalysisServerWrapper {
     return api.FixesResponse(responseFixes);
   }
 
-  Future<api.AssistsResponse> getAssists(String src, int offset) async {
+  Future<proto.AssistsResponse> getAssists(String src, int offset) async {
     final sources = {kMainDart: src};
     final sourceName = api.Location.from(kMainDart, offset).sourceName;
     final results = await _getAssistsImpl(sources, sourceName, offset);
     final fixes = _convertSourceChangesToCandidateFixes(results.assists);
-    return api.AssistsResponse(fixes);
+    return proto.AssistsResponse()..assists.addAll(fixes);
   }
 
   Future<proto.FormatResponse> format(String src, int offset) {
@@ -343,9 +343,9 @@ class AnalysisServerWrapper {
         possibleFixes, problemMessage, problemOffset, problemLength);
   }
 
-  static List<api.CandidateFix> _convertSourceChangesToCandidateFixes(
+  static List<proto.CandidateFix> _convertSourceChangesToCandidateFixes(
       List<SourceChange> sourceChanges) {
-    final assists = <api.CandidateFix>[];
+    final assists = <proto.CandidateFix>[];
 
     for (final sourceChange in sourceChanges) {
       for (final sourceFileEdit in sourceChange.edits) {
@@ -353,17 +353,23 @@ class AnalysisServerWrapper {
           break;
         }
 
-        final apiSourceEdits = sourceFileEdit.edits.map((sourceEdit) {
-          return api.SourceEdit.fromChanges(
-              sourceEdit.offset, sourceEdit.length, sourceEdit.replacement);
-        }).toList();
+        final sourceEdits = sourceFileEdit.edits.map((sourceEdit) {
+          return proto.SourceEdit()
+            ..offset = sourceEdit.offset
+            ..length = sourceEdit.length
+            ..replacement = sourceEdit.replacement;
+        });
 
-        assists.add(api.CandidateFix.fromEdits(
-          sourceChange.message,
-          apiSourceEdits,
-          sourceChange.selection?.offset,
-          _convertLinkedEditGroups(sourceChange.linkedEditGroups),
-        ));
+        final candidateFix = proto.CandidateFix();
+        candidateFix.message = sourceChange.message;
+        candidateFix.edits.addAll(sourceEdits);
+        final selectionOffset = sourceChange.selection?.offset;
+        if (selectionOffset != null) {
+          candidateFix.selectionOffset = selectionOffset;
+        }
+        candidateFix.linkedEditGroups
+            .addAll(_convertLinkedEditGroups(sourceChange.linkedEditGroups));
+        assists.add(candidateFix);
       }
     }
 
@@ -372,17 +378,19 @@ class AnalysisServerWrapper {
 
   /// Convert a list of the analysis server's [LinkedEditGroup]s into the API's
   /// equivalent.
-  static List<api.LinkedEditGroup> _convertLinkedEditGroups(
-      List<LinkedEditGroup> groups) {
-    return groups?.map<api.LinkedEditGroup>((g) {
-      return api.LinkedEditGroup(
-        g.positions?.map((p) => p.offset)?.toList(),
-        g.length,
-        g.suggestions
-            ?.map((s) => api.LinkedEditSuggestion(s.value, s.kind))
-            ?.toList(),
-      );
-    })?.toList();
+  static Iterable<proto.LinkedEditGroup> _convertLinkedEditGroups(
+      Iterable<LinkedEditGroup> groups) {
+    return groups?.map<proto.LinkedEditGroup>((g) {
+          return proto.LinkedEditGroup()
+            ..positions.addAll(g.positions?.map((p) => p.offset)?.toList())
+            ..length = g.length
+            ..suggestions.addAll(g.suggestions
+                ?.map((s) => proto.LinkedEditSuggestion()
+                  ..value = s.value
+                  ..kind = s.kind)
+                ?.toList());
+        }) ??
+        [];
   }
 
   /// Cleanly shutdown the Analysis Server.

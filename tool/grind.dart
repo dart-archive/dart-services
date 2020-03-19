@@ -235,8 +235,8 @@ void fuzz() {
 }
 
 @Task('Update generated files and run all checks prior to deployment')
-@Depends(setupFlutterSubmodule, updateDockerVersion, generateProtos, 
-    analyze, test, fuzz, validateStorageArtifacts)
+@Depends(setupFlutterSubmodule, updateDockerVersion, generateProtos, analyze,
+    test, fuzz, validateStorageArtifacts)
 void deploy() {
   log('Run: gcloud app deploy --project=dart-services --no-promote');
 }

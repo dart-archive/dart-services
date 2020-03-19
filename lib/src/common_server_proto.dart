@@ -144,26 +144,7 @@ class CommonServerProto {
       decodeFromJSON: (json) =>
           proto.SourceRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.SourceRequest.fromBuffer(bytes),
-      transform: _assists);
-
-  Future<proto.AssistsResponse> _assists(proto.SourceRequest request) async {
-    if (!request.hasSource()) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-    if (!request.hasOffset()) {
-      throw BadRequest('Missing parameter: \'offset\'');
-    }
-
-    final apiRequest = proto.SourceRequest()
-      ..offset = request.offset
-      ..source = request.source;
-    final apiResponse = await _impl.assists(apiRequest);
-
-    return proto.AssistsResponse()
-      ..assists.addAll(
-        apiResponse.assists.map(_transformCandidateFix),
-      );
-  }
+      transform: _impl.assists);
 
   @Route.post('$PROTO_API_URL_PREFIX/format')
   Future<Response> format(Request request) => _processRequest(request,
@@ -181,7 +162,6 @@ class CommonServerProto {
       ..offset = request.offset
       ..source = request.source;
     return _impl.format(apiRequest);
-
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/document')

@@ -136,7 +136,7 @@ class CommonServerImpl {
   }
 
   Future<CompleteResponse> complete(proto.SourceRequest request) {
-    if (request.offset == null) {
+    if (!request.hasOffset()) {
       throw BadRequest('Missing parameter: \'offset\'');
     }
 
@@ -144,15 +144,18 @@ class CommonServerImpl {
   }
 
   Future<FixesResponse> fixes(proto.SourceRequest request) {
-    if (request.offset == null) {
+    if (!request.hasOffset()) {
       throw BadRequest('Missing parameter: \'offset\'');
     }
 
     return _fixes(request.source, request.offset);
   }
 
-  Future<AssistsResponse> assists(proto.SourceRequest request) {
-    if (request.offset == null) {
+  Future<proto.AssistsResponse> assists(proto.SourceRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+    if (!request.hasOffset()) {
       throw BadRequest('Missing parameter: \'offset\'');
     }
 
@@ -386,7 +389,7 @@ class CommonServerImpl {
     return response;
   }
 
-  Future<AssistsResponse> _assists(String source, int offset) async {
+  Future<proto.AssistsResponse> _assists(String source, int offset) async {
     if (source == null) {
       throw BadRequest('Missing parameter: \'source\'');
     }

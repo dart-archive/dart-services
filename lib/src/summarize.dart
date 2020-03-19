@@ -8,7 +8,6 @@ import 'package:crypto/crypto.dart';
 
 import 'protos/dart_services.pb.dart' as proto;
 
-
 /// Instances of this class take string input of dart code as well as an
 /// analysis result, and output a text description ofthe code's size, packages,
 /// and other useful information.
@@ -282,10 +281,10 @@ class _SummarizeToken {
   _SummarizeToken(String input, {proto.AnalysisResults analysis}) {
     linesCode = _linesOfCode(input);
     if (analysis != null) {
-      errorPresent =
-          analysis.issues.any((proto.AnalysisIssue issue) => issue.kind == 'error');
-      warningPresent =
-          analysis.issues.any((proto.AnalysisIssue issue) => issue.kind == 'warning');
+      errorPresent = analysis.issues
+          .any((proto.AnalysisIssue issue) => issue.kind == 'error');
+      warningPresent = analysis.issues
+          .any((proto.AnalysisIssue issue) => issue.kind == 'warning');
       packageCount = analysis.packageImports.length;
       packageImports = analysis.packageImports;
       errors = analysis.issues;
