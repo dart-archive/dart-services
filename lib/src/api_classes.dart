@@ -7,7 +7,6 @@ library services.api_classes;
 
 import 'dart:convert';
 
-
 class CompleteResponse {
   final int replacementOffset;
 
