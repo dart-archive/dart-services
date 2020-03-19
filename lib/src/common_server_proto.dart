@@ -12,7 +12,6 @@ import 'package:protobuf/protobuf.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
-import 'api_classes.dart' as api;
 import 'common_server_impl.dart' show CommonServerImpl, BadRequest;
 export 'common_server_impl.dart' show log, ServerContainer;
 import 'protos/dart_services.pb.dart' as proto;
@@ -100,20 +99,7 @@ class CommonServerProto {
     final apiRequest = proto.SourceRequest()
       ..offset = request.offset
       ..source = request.source;
-    final apiResponse = await _impl.fixes(apiRequest);
-
-    return proto.FixesResponse()
-      ..fixes.addAll(
-        apiResponse.fixes.map(
-          (apiFix) => proto.ProblemAndFixes()
-            ..problemMessage = apiFix.problemMessage
-            ..offset = apiFix.offset
-            ..length = apiFix.length
-            ..fixes.addAll(
-              apiFix.fixes.map(_transformCandidateFix),
-            ),
-        ),
-      );
+    return _impl.fixes(apiRequest);
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/assists')
@@ -167,62 +153,14 @@ class CommonServerProto {
       decodeFromJSON: (json) =>
           proto.VersionRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.VersionRequest.fromBuffer(bytes),
-      transform: _version);
+      transform: _impl.version);
 
   @Route.get('$PROTO_API_URL_PREFIX/version')
   Future<Response> versionGet(Request request) => _processRequest(request,
       decodeFromJSON: (json) =>
           proto.VersionRequest.create()..mergeFromProto3Json(json),
       decodeFromProto: (bytes) => proto.VersionRequest.fromBuffer(bytes),
-      transform: _version);
-
-  Future<proto.VersionResponse> _version(proto.VersionRequest request) async {
-    final apiResponse = await _impl.version();
-
-    return proto.VersionResponse()
-      ..sdkVersion = apiResponse.sdkVersion
-      ..sdkVersionFull = apiResponse.sdkVersionFull
-      ..runtimeVersion = apiResponse.runtimeVersion
-      ..appEngineVersion = apiResponse.appEngineVersion
-      ..servicesVersion = apiResponse.servicesVersion
-      ..flutterDartVersion = apiResponse.flutterDartVersion
-      ..flutterDartVersionFull = apiResponse.flutterDartVersionFull
-      ..flutterVersion = apiResponse.flutterVersion;
-  }
-
-  proto.CandidateFix _transformCandidateFix(api.CandidateFix candidateFix) {
-    final result = proto.CandidateFix()..message = candidateFix.message;
-    if (candidateFix.edits != null) {
-      result.edits.addAll(
-        candidateFix.edits.map(
-          (edit) => proto.SourceEdit()
-            ..offset = edit.offset
-            ..length = edit.length
-            ..replacement = edit.replacement,
-        ),
-      );
-    }
-    if (candidateFix.linkedEditGroups != null) {
-      result.linkedEditGroups.addAll(
-        candidateFix.linkedEditGroups.map(
-          (group) => proto.LinkedEditGroup()
-            ..positions.addAll(group.positions)
-            ..length = group.length
-            ..suggestions.addAll(
-              group.suggestions.map(
-                (suggestion) => proto.LinkedEditSuggestion()
-                  ..value = suggestion.value
-                  ..kind = suggestion.kind,
-              ),
-            ),
-        ),
-      );
-    }
-    if (candidateFix.selectionOffset != null) {
-      result.selectionOffset = candidateFix.selectionOffset;
-    }
-    return result;
-  }
+      transform: _impl.version);
 
   Router get router => _$CommonServerProtoRouter(this);
 

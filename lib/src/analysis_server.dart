@@ -13,7 +13,6 @@ import 'package:analysis_server_lib/analysis_server_lib.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
 
-import 'api_classes.dart' as api;
 import 'common.dart';
 import 'flutter_web.dart';
 import 'pub.dart';
@@ -160,19 +159,19 @@ class AnalysisServerWrapper {
             }))));
   }
 
-  Future<api.FixesResponse> getFixes(String src, int offset) {
+  Future<proto.FixesResponse> getFixes(String src, int offset) {
     return getFixesMulti(
       <String, String>{kMainDart: src},
       Location(kMainDart, offset),
     );
   }
 
-  Future<api.FixesResponse> getFixesMulti(
+  Future<proto.FixesResponse> getFixesMulti(
       Map<String, String> sources, Location location) async {
     final results =
         await _getFixesImpl(sources, location.sourceName, location.offset);
-    final responseFixes = results.fixes.map(_convertAnalysisErrorFix).toList();
-    return api.FixesResponse(responseFixes);
+    final responseFixes = results.fixes.map(_convertAnalysisErrorFix);
+    return proto.FixesResponse()..fixes.addAll(responseFixes);
   }
 
   Future<proto.AssistsResponse> getAssists(String src, int offset) async {
@@ -314,16 +313,16 @@ class AnalysisServerWrapper {
   }
 
   /// Convert between the Analysis Server type and the API protocol types.
-  static api.ProblemAndFixes _convertAnalysisErrorFix(
+  static proto.ProblemAndFixes _convertAnalysisErrorFix(
       AnalysisErrorFixes analysisFixes) {
     final problemMessage = analysisFixes.error.message;
     final problemOffset = analysisFixes.error.location.offset;
     final problemLength = analysisFixes.error.location.length;
 
-    final possibleFixes = <api.CandidateFix>[];
+    final possibleFixes = <proto.CandidateFix>[];
 
     for (final sourceChange in analysisFixes.fixes) {
-      final edits = <api.SourceEdit>[];
+      final edits = <proto.SourceEdit>[];
 
       // A fix that tries to modify other files is considered invalid.
 
@@ -337,18 +336,24 @@ class AnalysisServerWrapper {
         }
 
         for (final sourceEdit in sourceFileEdit.edits) {
-          edits.add(api.SourceEdit.fromChanges(
-              sourceEdit.offset, sourceEdit.length, sourceEdit.replacement));
+          edits.add(proto.SourceEdit()
+            ..offset = sourceEdit.offset
+            ..length = sourceEdit.length
+            ..replacement = sourceEdit.replacement);
         }
       }
       if (!invalidFix) {
-        final possibleFix =
-            api.CandidateFix.fromEdits(sourceChange.message, edits);
+        final possibleFix = proto.CandidateFix()
+          ..message = sourceChange.message
+          ..edits.addAll(edits);
         possibleFixes.add(possibleFix);
       }
     }
-    return api.ProblemAndFixes.fromList(
-        possibleFixes, problemMessage, problemOffset, problemLength);
+    return proto.ProblemAndFixes()
+      ..fixes.addAll(possibleFixes)
+      ..problemMessage = problemMessage
+      ..offset = problemOffset
+      ..length = problemLength;
   }
 
   static List<proto.CandidateFix> _convertSourceChangesToCandidateFixes(

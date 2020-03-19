@@ -15,7 +15,6 @@ import 'package:pedantic/pedantic.dart';
 import '../version.dart';
 import 'protos/dart_services.pb.dart' as proto;
 import 'analysis_server.dart';
-import 'api_classes.dart';
 import 'common.dart';
 import 'compiler.dart';
 import 'flutter_web.dart';
@@ -158,7 +157,7 @@ class CommonServerImpl {
     return _complete(request.source, request.offset);
   }
 
-  Future<FixesResponse> fixes(proto.SourceRequest request) {
+  Future<proto.FixesResponse> fixes(proto.SourceRequest request) {
     if (!request.hasSource()) {
       throw BadRequest('Missing parameter: \'source\'');
     }
@@ -199,7 +198,7 @@ class CommonServerImpl {
     return _document(request.source, request.offset);
   }
 
-  Future<proto.VersionResponse> version() =>
+  Future<proto.VersionResponse> version(proto.VersionRequest _) =>
       Future<proto.VersionResponse>.value(_version());
 
   Future<proto.AnalysisResults> _analyze(String source) async {
@@ -375,7 +374,7 @@ class CommonServerImpl {
     }
   }
 
-  Future<FixesResponse> _fixes(String source, int offset) async {
+  Future<proto.FixesResponse> _fixes(String source, int offset) async {
     if (source == null) {
       throw BadRequest('Missing parameter: \'source\'');
     }
