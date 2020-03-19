@@ -184,7 +184,7 @@ class CommonServerImpl {
       throw BadRequest('Missing parameter: \'source\'');
     }
 
-    return _format(request.source, offset: request.offset);
+    return _format(request.source, offset: request.offset ?? 0);
   }
 
   Future<proto.DocumentResponse> document(proto.SourceRequest request) {
@@ -369,13 +369,6 @@ class CommonServerImpl {
   }
 
   Future<proto.FixesResponse> _fixes(String source, int offset) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-    if (offset == null) {
-      throw BadRequest('Missing parameter: \'offset\'');
-    }
-
     await _checkPackageReferencesInitFlutterWeb(source);
 
     final watch = Stopwatch()..start();
@@ -386,13 +379,6 @@ class CommonServerImpl {
   }
 
   Future<proto.AssistsResponse> _assists(String source, int offset) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-    if (offset == null) {
-      throw BadRequest('Missing parameter: \'offset\'');
-    }
-
     await _checkPackageReferencesInitFlutterWeb(source);
 
     final watch = Stopwatch()..start();
@@ -403,11 +389,6 @@ class CommonServerImpl {
   }
 
   Future<proto.FormatResponse> _format(String source, {int offset}) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-    offset ??= 0;
-
     final watch = Stopwatch()..start();
 
     final response =
