@@ -5,36 +5,6 @@
 /// All classes exported over the RPC protocol.
 library services.api_classes;
 
-import 'dart:convert';
-
-class CompleteResponse {
-  final int replacementOffset;
-
-  final int replacementLength;
-
-  final List<Map<String, String>> completions;
-
-  CompleteResponse(this.replacementOffset, this.replacementLength,
-      List<Map<dynamic, dynamic>> completions)
-      : completions = _convert(completions);
-
-  /// Convert any non-string values from the contained maps.
-  static List<Map<String, String>> _convert(List<Map<dynamic, dynamic>> list) {
-    return list.map<Map<String, String>>((Map<dynamic, dynamic> m) {
-      final newMap = <String, String>{};
-      for (final key in m.keys.cast<String>()) {
-        dynamic data = m[key];
-        // TODO: Properly support Lists, Maps (this is a hack).
-        if (data is Map || data is List) {
-          data = json.encode(data);
-        }
-        newMap[key.toString()] = '$data';
-      }
-      return newMap;
-    }).toList();
-  }
-}
-
 class FixesResponse {
   final List<ProblemAndFixes> fixes;
 

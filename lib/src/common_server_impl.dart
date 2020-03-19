@@ -123,19 +123,34 @@ class CommonServerImpl {
   }
 
   Future<proto.AnalysisResults> analyze(proto.SourceRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+
     return _analyze(request.source);
   }
 
   Future<proto.CompileResponse> compile(proto.CompileRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+
     return _compileDart2js(request.source,
         returnSourceMap: request.returnSourceMap ?? false);
   }
 
   Future<proto.CompileDDCResponse> compileDDC(proto.CompileDDCRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+
     return _compileDDC(request.source);
   }
 
-  Future<CompleteResponse> complete(proto.SourceRequest request) {
+  Future<proto.CompleteResponse> complete(proto.SourceRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
     if (!request.hasOffset()) {
       throw BadRequest('Missing parameter: \'offset\'');
     }
@@ -144,6 +159,9 @@ class CommonServerImpl {
   }
 
   Future<FixesResponse> fixes(proto.SourceRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
     if (!request.hasOffset()) {
       throw BadRequest('Missing parameter: \'offset\'');
     }
@@ -163,10 +181,21 @@ class CommonServerImpl {
   }
 
   Future<proto.FormatResponse> format(proto.SourceRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+
     return _format(request.source, offset: request.offset);
   }
 
   Future<proto.DocumentResponse> document(proto.SourceRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+    if (!request.hasOffset()) {
+      throw BadRequest('Missing parameter: \'offset\'');
+    }
+
     return _document(request.source, request.offset);
   }
 
@@ -174,10 +203,6 @@ class CommonServerImpl {
       Future<proto.VersionResponse>.value(_version());
 
   Future<proto.AnalysisResults> _analyze(String source) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-
     await _checkPackageReferencesInitFlutterWeb(source);
 
     try {
@@ -199,10 +224,6 @@ class CommonServerImpl {
     String source, {
     bool returnSourceMap = false,
   }) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-
     await _checkPackageReferencesInitFlutterWeb(source);
 
     final sourceHash = _hashSource(source);
@@ -259,10 +280,6 @@ class CommonServerImpl {
   }
 
   Future<proto.CompileDDCResponse> _compileDDC(String source) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-
     await _checkPackageReferencesInitFlutterWeb(source);
 
     final sourceHash = _hashSource(source);
@@ -313,13 +330,6 @@ class CommonServerImpl {
   }
 
   Future<proto.DocumentResponse> _document(String source, int offset) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-    if (offset == null) {
-      throw BadRequest('Missing parameter: \'offset\'');
-    }
-
     await _checkPackageReferencesInitFlutterWeb(source);
 
     final watch = Stopwatch()..start();
@@ -349,14 +359,7 @@ class CommonServerImpl {
     ..flutterVersion = SdkManager.flutterSdk.flutterVersion
     ..freeze();
 
-  Future<CompleteResponse> _complete(String source, int offset) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-    if (offset == null) {
-      throw BadRequest('Missing parameter: \'offset\'');
-    }
-
+  Future<proto.CompleteResponse> _complete(String source, int offset) async {
     await _checkPackageReferencesInitFlutterWeb(source);
 
     final watch = Stopwatch()..start();

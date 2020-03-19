@@ -6,6 +6,7 @@
 library services.analysis_server;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:analysis_server_lib/analysis_server_lib.dart';
@@ -118,7 +119,7 @@ class AnalysisServerWrapper {
     });
   }
 
-  Future<api.CompleteResponse> complete(String src, int offset) async {
+  Future<proto.CompleteResponse> complete(String src, int offset) async {
     final sources = <String, String>{kMainDart: src};
     final location = Location(kMainDart, offset);
 
@@ -145,11 +146,18 @@ class AnalysisServerWrapper {
       }
     });
 
-    return api.CompleteResponse(
-      results.replacementOffset,
-      results.replacementLength,
-      suggestions.map((CompletionSuggestion c) => c.toMap()).toList(),
-    );
+    return proto.CompleteResponse()
+      ..replacementOffset = results.replacementOffset
+      ..replacementLength = results.replacementLength
+      ..completions
+          .addAll(suggestions.map((CompletionSuggestion c) => proto.Completion()
+            ..completion.addAll(c.toMap().map((key, value) {
+              // TODO: Properly support Lists, Maps (this is a hack).
+              if (value is Map || value is List) {
+                value = json.encode(value);
+              }
+              return MapEntry(key.toString(), value.toString());
+            }))));
   }
 
   Future<api.FixesResponse> getFixes(String src, int offset) {
@@ -467,7 +475,7 @@ class AnalysisServerWrapper {
       path.join(_sourceDirPath, sourceName);
 
   /// Warm up the analysis server to be ready for use.
-  Future<api.CompleteResponse> warmup({bool useHtml = false}) =>
+  Future<proto.CompleteResponse> warmup({bool useHtml = false}) =>
       complete(useHtml ? _WARMUP_SRC_HTML : _WARMUP_SRC, 10);
 
   final Set<String> _overlayPaths = <String>{};
