@@ -7,14 +7,6 @@ library services.api_classes;
 
 import 'dart:convert';
 
-class Location {
-  String sourceName;
-  int offset;
-
-  Location();
-
-  Location.from(this.sourceName, this.offset);
-}
 
 class CompleteResponse {
   final int replacementOffset;

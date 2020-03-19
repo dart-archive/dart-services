@@ -120,7 +120,7 @@ class AnalysisServerWrapper {
 
   Future<api.CompleteResponse> complete(String src, int offset) async {
     final sources = <String, String>{kMainDart: src};
-    final location = api.Location.from(kMainDart, offset);
+    final location = Location(kMainDart, offset);
 
     final results =
         await _completeImpl(sources, location.sourceName, location.offset);
@@ -155,12 +155,12 @@ class AnalysisServerWrapper {
   Future<api.FixesResponse> getFixes(String src, int offset) {
     return getFixesMulti(
       <String, String>{kMainDart: src},
-      api.Location.from(kMainDart, offset),
+      Location(kMainDart, offset),
     );
   }
 
   Future<api.FixesResponse> getFixesMulti(
-      Map<String, String> sources, api.Location location) async {
+      Map<String, String> sources, Location location) async {
     final results =
         await _getFixesImpl(sources, location.sourceName, location.offset);
     final responseFixes = results.fixes.map(_convertAnalysisErrorFix).toList();
@@ -169,7 +169,7 @@ class AnalysisServerWrapper {
 
   Future<proto.AssistsResponse> getAssists(String src, int offset) async {
     final sources = {kMainDart: src};
-    final sourceName = api.Location.from(kMainDart, offset).sourceName;
+    final sourceName = Location(kMainDart, offset).sourceName;
     final results = await _getAssistsImpl(sources, sourceName, offset);
     final fixes = _convertSourceChangesToCandidateFixes(results.assists);
     return proto.AssistsResponse()..assists.addAll(fixes);
@@ -576,4 +576,11 @@ class AnalysisServerWrapper {
     }
     return errors;
   }
+}
+
+class Location {
+  final String sourceName;
+  final int offset;
+
+  const Location(this.sourceName, this.offset);
 }
