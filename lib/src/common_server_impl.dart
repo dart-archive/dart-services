@@ -13,6 +13,7 @@ import 'package:logging/logging.dart';
 import 'package:pedantic/pedantic.dart';
 
 import '../version.dart';
+import 'protos/dart_services.pb.dart' as proto;
 import 'analysis_server.dart';
 import 'api_classes.dart';
 import 'common.dart';
@@ -121,20 +122,20 @@ class CommonServerImpl {
     ]).timeout(Duration(minutes: 1));
   }
 
-  Future<AnalysisResults> analyze(SourceRequest request) {
+  Future<proto.AnalysisResults> analyze(proto.SourceRequest request) {
     return _analyze(request.source);
   }
 
-  Future<CompileResponse> compile(CompileRequest request) {
+  Future<proto.CompileResponse> compile(CompileRequest request) {
     return _compileDart2js(request.source,
         returnSourceMap: request.returnSourceMap ?? false);
   }
 
-  Future<CompileDDCResponse> compileDDC(CompileRequest request) {
+  Future<proto.CompileDDCResponse> compileDDC(CompileDDCRequest request) {
     return _compileDDC(request.source);
   }
 
-  Future<CompleteResponse> complete(SourceRequest request) {
+  Future<CompleteResponse> complete(proto.SourceRequest request) {
     if (request.offset == null) {
       throw BadRequest('Missing parameter: \'offset\'');
     }
@@ -142,7 +143,7 @@ class CommonServerImpl {
     return _complete(request.source, request.offset);
   }
 
-  Future<FixesResponse> fixes(SourceRequest request) {
+  Future<FixesResponse> fixes(proto.SourceRequest request) {
     if (request.offset == null) {
       throw BadRequest('Missing parameter: \'offset\'');
     }
@@ -150,7 +151,7 @@ class CommonServerImpl {
     return _fixes(request.source, request.offset);
   }
 
-  Future<AssistsResponse> assists(SourceRequest request) {
+  Future<AssistsResponse> assists(proto.SourceRequest request) {
     if (request.offset == null) {
       throw BadRequest('Missing parameter: \'offset\'');
     }
@@ -158,18 +159,18 @@ class CommonServerImpl {
     return _assists(request.source, request.offset);
   }
 
-  Future<FormatResponse> format(SourceRequest request) {
+  Future<proto.FormatResponse> format(proto.SourceRequest request) {
     return _format(request.source, offset: request.offset);
   }
 
-  Future<DocumentResponse> document(SourceRequest request) {
+  Future<proto.DocumentResponse> document(proto.SourceRequest request) {
     return _document(request.source, request.offset);
   }
 
-  Future<VersionResponse> version() =>
-      Future<VersionResponse>.value(_version());
+  Future<proto.VersionResponse> version() =>
+      Future<proto.VersionResponse>.value(_version());
 
-  Future<AnalysisResults> _analyze(String source) async {
+  Future<proto.AnalysisResults> _analyze(String source) async {
     if (source == null) {
       throw BadRequest('Missing parameter: \'source\'');
     }
@@ -191,7 +192,7 @@ class CommonServerImpl {
     }
   }
 
-  Future<CompileResponse> _compileDart2js(
+  Future<proto.CompileResponse> _compileDart2js(
     String source, {
     bool returnSourceMap = false,
   }) async {
@@ -209,10 +210,10 @@ class CommonServerImpl {
     if (result != null) {
       log.info('CACHE: Cache hit for compileDart2js');
       final resultObj = JsonDecoder().convert(result);
-      return CompileResponse(
-        resultObj['compiledJS'] as String,
-        returnSourceMap ? resultObj['sourceMap'] as String : null,
-      );
+      return proto.CompileResponse()
+        ..result = resultObj['compiledJS'] as String
+        ..sourceMap = returnSourceMap ? resultObj['sourceMap'] as String : null
+        ..freeze();
     }
 
     log.info('CACHE: MISS for compileDart2js');
@@ -235,7 +236,12 @@ class CommonServerImpl {
         });
         // Don't block on cache set.
         unawaited(setCache(memCacheKey, cachedResult));
-        return CompileResponse(results.compiledJS, sourceMap);
+        final compileResponse = proto.CompileResponse();
+        compileResponse.result = results.compiledJS;
+        if (sourceMap != null) {
+          compileResponse.sourceMap = sourceMap;
+        }
+        return compileResponse..freeze();
       } else {
         final problems = results.problems;
         final errors = problems.map(_printCompileProblem).join('\n');
@@ -249,7 +255,7 @@ class CommonServerImpl {
     });
   }
 
-  Future<CompileDDCResponse> _compileDDC(String source) async {
+  Future<proto.CompileDDCResponse> _compileDDC(String source) async {
     if (source == null) {
       throw BadRequest('Missing parameter: \'source\'');
     }
@@ -263,10 +269,10 @@ class CommonServerImpl {
     if (result != null) {
       log.info('CACHE: Cache hit for compileDDC');
       final resultObj = JsonDecoder().convert(result);
-      return CompileDDCResponse(
-        resultObj['compiledJS'] as String,
-        resultObj['modulesBaseUrl'] as String,
-      );
+      return proto.CompileDDCResponse()
+        ..result = resultObj['compiledJS'] as String
+        ..modulesBaseUrl = resultObj['modulesBaseUrl'] as String
+        ..freeze();
     }
 
     log.info('CACHE: MISS for compileDDC');
@@ -286,7 +292,10 @@ class CommonServerImpl {
         });
         // Don't block on cache set.
         unawaited(setCache(memCacheKey, cachedResult));
-        return CompileDDCResponse(results.compiledJS, results.modulesBaseUrl);
+        return proto.CompileDDCResponse()
+          ..result = results.compiledJS
+          ..modulesBaseUrl = results.modulesBaseUrl
+          ..freeze();
       } else {
         final problems = results.problems;
         final errors = problems.map(_printCompileProblem).join('\n');
@@ -300,7 +309,7 @@ class CommonServerImpl {
     });
   }
 
-  Future<DocumentResponse> _document(String source, int offset) async {
+  Future<proto.DocumentResponse> _document(String source, int offset) async {
     if (source == null) {
       throw BadRequest('Missing parameter: \'source\'');
     }
@@ -316,7 +325,9 @@ class CommonServerImpl {
           await getCorrectAnalysisServer(source).dartdoc(source, offset);
       docInfo ??= <String, String>{};
       log.info('PERF: Computed dartdoc in ${watch.elapsedMilliseconds}ms.');
-      return DocumentResponse(docInfo);
+      return proto.DocumentResponse()
+        ..info.addAll(docInfo)
+        ..freeze();
     } catch (e, st) {
       log.severe('Error during dartdoc', e, st);
       await restart();
@@ -324,15 +335,16 @@ class CommonServerImpl {
     }
   }
 
-  VersionResponse _version() => VersionResponse(
-      sdkVersion: SdkManager.sdk.version,
-      sdkVersionFull: SdkManager.sdk.versionFull,
-      runtimeVersion: vmVersion,
-      servicesVersion: servicesVersion,
-      appEngineVersion: container.version,
-      flutterDartVersion: SdkManager.flutterSdk.version,
-      flutterDartVersionFull: SdkManager.flutterSdk.versionFull,
-      flutterVersion: SdkManager.flutterSdk.flutterVersion);
+  proto.VersionResponse _version() => proto.VersionResponse()
+    ..sdkVersion = SdkManager.sdk.version
+    ..sdkVersionFull = SdkManager.sdk.versionFull
+    ..runtimeVersion = vmVersion
+    ..servicesVersion = servicesVersion
+    ..appEngineVersion = container.version
+    ..flutterDartVersion = SdkManager.flutterSdk.version
+    ..flutterDartVersionFull = SdkManager.flutterSdk.versionFull
+    ..flutterVersion = SdkManager.flutterSdk.flutterVersion
+    ..freeze();
 
   Future<CompleteResponse> _complete(String source, int offset) async {
     if (source == null) {
@@ -391,7 +403,7 @@ class CommonServerImpl {
     return response;
   }
 
-  Future<FormatResponse> _format(String source, {int offset}) async {
+  Future<proto.FormatResponse> _format(String source, {int offset}) async {
     if (source == null) {
       throw BadRequest('Missing parameter: \'source\'');
     }

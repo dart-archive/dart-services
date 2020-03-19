@@ -40,7 +40,7 @@ class CommonServerProto {
       throw BadRequest('Missing parameter: \'source\'');
     }
 
-    final apiRequest = api.SourceRequest()
+    final apiRequest = proto.SourceRequest()
       ..source = request.source
       ..offset = request.offset;
     final apiResponse = await _impl.analyze(apiRequest);
@@ -72,12 +72,7 @@ class CommonServerProto {
     final apiRequest = api.CompileRequest()
       ..source = request.source
       ..returnSourceMap = request.returnSourceMap;
-    final apiResponse = await _impl.compile(apiRequest);
-    final response = proto.CompileResponse()..result = apiResponse.result;
-    if (apiResponse.sourceMap != null) {
-      response.sourceMap = apiResponse.sourceMap;
-    }
-    return response;
+    return _impl.compile(apiRequest);
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/compileDDC')
@@ -89,14 +84,10 @@ class CommonServerProto {
 
   Future<proto.CompileDDCResponse> _compileDDC(
       proto.CompileRequest request) async {
-    final apiRequest = api.CompileRequest()
-      ..source = request.source
-      ..returnSourceMap = request.returnSourceMap;
-    final apiResponse = await _impl.compileDDC(apiRequest);
+    final apiRequest = api.CompileDDCRequest()
+      ..source = request.source;
+    return _impl.compileDDC(apiRequest);
 
-    return proto.CompileDDCResponse()
-      ..result = apiResponse.result
-      ..modulesBaseUrl = apiResponse.modulesBaseUrl;
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/complete')
@@ -114,7 +105,7 @@ class CommonServerProto {
       throw BadRequest('Missing parameter: \'offset\'');
     }
 
-    final apiRequest = api.SourceRequest()
+    final apiRequest = proto.SourceRequest()
       ..offset = request.offset
       ..source = request.source;
     final apiResponse = await _impl.complete(apiRequest);
@@ -144,7 +135,7 @@ class CommonServerProto {
       throw BadRequest('Missing parameter: \'offset\'');
     }
 
-    final apiRequest = api.SourceRequest()
+    final apiRequest = proto.SourceRequest()
       ..offset = request.offset
       ..source = request.source;
     final apiResponse = await _impl.fixes(apiRequest);
@@ -178,7 +169,7 @@ class CommonServerProto {
       throw BadRequest('Missing parameter: \'offset\'');
     }
 
-    final apiRequest = api.SourceRequest()
+    final apiRequest = proto.SourceRequest()
       ..offset = request.offset
       ..source = request.source;
     final apiResponse = await _impl.assists(apiRequest);
@@ -201,14 +192,11 @@ class CommonServerProto {
       throw BadRequest('Missing parameter: \'source\'');
     }
 
-    final apiRequest = api.SourceRequest()
+    final apiRequest = proto.SourceRequest()
       ..offset = request.offset
       ..source = request.source;
-    final apiResponse = await _impl.format(apiRequest);
+    return _impl.format(apiRequest);
 
-    return proto.FormatResponse()
-      ..newString = apiResponse.newString
-      ..offset = apiResponse.offset;
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/document')
@@ -226,12 +214,10 @@ class CommonServerProto {
       throw BadRequest('Missing parameter: \'offset\'');
     }
 
-    final apiRequest = api.SourceRequest()
+    final apiRequest = proto.SourceRequest()
       ..offset = request.offset
       ..source = request.source;
-    final apiResponse = await _impl.document(apiRequest);
-
-    return proto.DocumentResponse()..info.addAll(apiResponse.info);
+    return _impl.document(apiRequest);
   }
 
   @Route.post('$PROTO_API_URL_PREFIX/version')

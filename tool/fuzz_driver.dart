@@ -20,6 +20,7 @@ import 'package:dart_services/src/compiler.dart' as comp;
 import 'package:dart_services/src/flutter_web.dart';
 import 'package:dart_services/src/sdk_manager.dart';
 import 'package:dart_services/src/server_cache.dart';
+import 'package:dart_services/src/protos/dart_services.pb.dart' as proto;
 
 bool _SERVER_BASED_CALL = false;
 bool _VERBOSE = false;
@@ -237,7 +238,7 @@ Future<num> testAnalysis(
 
   lastOffset = null;
   if (_SERVER_BASED_CALL) {
-    final request = SourceRequest();
+    final request = proto.SourceRequest();
     request.source = src;
     await withTimeOut(commonServerImpl.analyze(request));
     await withTimeOut(commonServerImpl.analyze(request));
@@ -277,7 +278,7 @@ Future<num> testDocument(
     if (i % 1000 == 0 && i > 0) print('INC: $i docs completed');
     lastOffset = i;
     if (_SERVER_BASED_CALL) {
-      final request = SourceRequest();
+      final request = proto.SourceRequest();
       request.source = src;
       request.offset = i;
       log(await withTimeOut(commonServerImpl.document(request)));
@@ -299,7 +300,7 @@ Future<num> testCompletions(
     if (i % 1000 == 0 && i > 0) print('INC: $i completes');
     lastOffset = i;
     if (_SERVER_BASED_CALL) {
-      final request = SourceRequest()
+      final request = proto.SourceRequest()
         ..source = src
         ..offset = i;
       await withTimeOut(commonServerImpl.complete(request));
@@ -321,7 +322,7 @@ Future<num> testFixes(
     if (i % 1000 == 0 && i > 0) print('INC: $i fixes');
     lastOffset = i;
     if (_SERVER_BASED_CALL) {
-      final request = SourceRequest();
+      final request = proto.SourceRequest();
       request.source = src;
       request.offset = i;
       await withTimeOut(commonServerImpl.fixes(request));
@@ -338,7 +339,7 @@ Future<num> testFormat(String src) async {
   final sw = Stopwatch()..start();
   final i = 0;
   lastOffset = i;
-  final request = SourceRequest();
+  final request = proto.SourceRequest();
   request.source = src;
   request.offset = i;
   log(await withTimeOut(commonServerImpl.format(request)));

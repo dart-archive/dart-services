@@ -17,6 +17,7 @@ import 'common.dart';
 import 'flutter_web.dart';
 import 'pub.dart';
 import 'scheduler.dart';
+import 'protos/dart_services.pb.dart' as proto;
 
 final Logger _logger = Logger('analysis_server');
 
@@ -174,7 +175,7 @@ class AnalysisServerWrapper {
     return api.AssistsResponse(fixes);
   }
 
-  Future<api.FormatResponse> format(String src, int offset) {
+  Future<proto.FormatResponse> format(String src, int offset) {
     return _formatImpl(src, offset).then((FormatResult editResult) {
       final edits = editResult.edits;
 
@@ -186,10 +187,16 @@ class AnalysisServerWrapper {
             edit.offset, edit.offset + edit.length, edit.replacement);
       }
 
-      return api.FormatResponse(src, editResult.selectionOffset);
+      return proto.FormatResponse()
+        ..newString = src
+        ..offset = editResult.selectionOffset
+        ..freeze();
     }).catchError((dynamic error) {
       _logger.fine('format error: $error');
-      return api.FormatResponse(src, offset);
+      return proto.FormatResponse()
+        ..newString = src
+        ..offset = offset
+        ..freeze();
     });
   }
 
@@ -232,13 +239,14 @@ class AnalysisServerWrapper {
     }, timeoutDuration: _ANALYSIS_SERVER_TIMEOUT));
   }
 
-  Future<api.AnalysisResults> analyze(String source) {
+  Future<proto.AnalysisResults> analyze(String source) {
     var sources = <String, String>{kMainDart: source};
 
     _logger
         .fine('analyzeMulti: Scheduler queue: ${serverScheduler.queueCount}');
 
-    return serverScheduler.schedule(ClosureTask<api.AnalysisResults>(() async {
+    return serverScheduler
+        .schedule(ClosureTask<proto.AnalysisResults>(() async {
       clearErrors();
 
       final analysisCompleter = getAnalysisCompleteCompleter();
@@ -248,15 +256,15 @@ class AnalysisServerWrapper {
 
       // Calculate the issues.
       final issues = getErrors().map((AnalysisError error) {
-        return api.AnalysisIssue.fromIssue(
-          error.severity.toLowerCase(),
-          error.location.startLine,
-          error.message,
-          charStart: error.location.offset,
-          charLength: error.location.length,
-          sourceName: path.basename(error.location.file),
-          hasFixes: error.hasFix,
-        );
+        return proto.AnalysisIssue()
+          ..kind = error.severity.toLowerCase()
+          ..line = error.location.startLine
+          ..message = error.message
+          ..sourceName = path.basename(error.location.file)
+          ..hasFixes = error.hasFix
+          ..charStart = error.location.offset
+          ..charLength = error.location.length
+          ..freeze();
       }).toList();
 
       issues.sort();
@@ -268,10 +276,10 @@ class AnalysisServerWrapper {
             .addAll(filterSafePackagesFromImports(getAllImportsFor(source)));
       }
 
-      return api.AnalysisResults(
-        issues,
-        packageImports.toList(),
-      );
+      return proto.AnalysisResults()
+        ..issues.addAll(issues)
+        ..packageImports.addAll(packageImports)
+        ..freeze();
     }, timeoutDuration: _ANALYSIS_SERVER_TIMEOUT));
   }
 
