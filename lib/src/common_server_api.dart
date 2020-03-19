@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library services.common_server_proto;
+library services.common_server_api;
 
 import 'dart:async';
 import 'dart:convert';
@@ -16,16 +16,16 @@ import 'common_server_impl.dart' show CommonServerImpl, BadRequest;
 export 'common_server_impl.dart' show log, ServerContainer;
 import 'protos/dart_services.pb.dart' as proto;
 
-part 'common_server_proto.g.dart'; // generated with 'pub run build_runner build'
+part 'common_server_api.g.dart'; // generated with 'pub run build_runner build'
 
 const PROTOBUF_CONTENT_TYPE = 'application/x-protobuf';
 const JSON_CONTENT_TYPE = 'application/json; charset=utf-8';
 const PROTO_API_URL_PREFIX = '/api/dartservices/<apiVersion>';
 
-class CommonServerProto {
+class CommonServerApi {
   final CommonServerImpl _impl;
 
-  CommonServerProto(this._impl);
+  CommonServerApi(this._impl);
 
   @Route.post('$PROTO_API_URL_PREFIX/analyze')
   Future<Response> analyze(Request request, String apiVersion) => _processRequest(request,
@@ -97,7 +97,7 @@ class CommonServerProto {
       decodeFromProto: (bytes) => proto.VersionRequest.fromBuffer(bytes),
       transform: _impl.version);
 
-  Router get router => _$CommonServerProtoRouter(this);
+  Router get router => _$CommonServerApiRouter(this);
 
   // We are serving requests that are arriving in both Protobuf binary encoding,
   // and Protobuf JSON encoding. To handle this we need the ability to decode

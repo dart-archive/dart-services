@@ -16,7 +16,7 @@ import 'package:shelf/shelf_io.dart' as shelf;
 
 import 'src/common.dart';
 import 'src/common_server_impl.dart';
-import 'src/common_server_proto.dart';
+import 'src/common_server_api.dart';
 import 'src/flutter_web.dart';
 import 'src/server_cache.dart';
 import 'src/shelf_cors.dart' as shelf_cors;
@@ -69,7 +69,7 @@ class EndpointsServer {
   Pipeline pipeline;
   Handler handler;
 
-  CommonServerProto commonServerProto;
+  CommonServerApi commonServerApi;
   FlutterWebManager flutterWebManager;
 
   EndpointsServer._(String sdkPath, this.port) {
@@ -81,7 +81,7 @@ class EndpointsServer {
       _ServerContainer(),
       _Cache(),
     );
-    commonServerProto = CommonServerProto(commonServerImpl);
+    commonServerApi = CommonServerApi(commonServerImpl);
     commonServerImpl.init();
 
     pipeline = Pipeline()
@@ -89,7 +89,7 @@ class EndpointsServer {
         .addMiddleware(_createCustomCorsHeadersMiddleware());
 
     handler = pipeline.addHandler(
-      (request) => commonServerProto.router.handler(request),
+      (request) => commonServerApi.router.handler(request),
     );
   }
 

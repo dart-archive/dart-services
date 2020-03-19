@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of services.common_server_proto;
+part of services.common_server_api;
 
 // **************************************************************************
 // ShelfRouterGenerator
 // **************************************************************************
 
-Router _$CommonServerProtoRouter(CommonServerProto service) {
+Router _$CommonServerApiRouter(CommonServerApi service) {
   final router = Router();
   router.add(
       'POST', r'/api/dartservices/<apiVersion>/analyze', service.analyze);

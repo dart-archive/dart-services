@@ -14,7 +14,7 @@ import 'package:shelf/shelf_io.dart' as shelf_io;
 
 import 'src/common.dart';
 import 'src/common_server_impl.dart';
-import 'src/common_server_proto.dart';
+import 'src/common_server_api.dart';
 import 'src/flutter_web.dart';
 import 'src/server_cache.dart';
 
@@ -61,7 +61,7 @@ class GaeServer {
 
   bool discoveryEnabled;
   CommonServerImpl commonServerImpl;
-  CommonServerProto commonServerProto;
+  CommonServerApi commonServerApi;
 
   GaeServer(this.sdkPath, this.redisServerUri) {
     hierarchicalLoggingEnabled = true;
@@ -82,7 +82,7 @@ class GaeServer {
               io.Platform.environment['GAE_VERSION'],
             ),
     );
-    commonServerProto = CommonServerProto(commonServerImpl);
+    commonServerApi = CommonServerApi(commonServerImpl);
   }
 
   Future<dynamic> start([int gaePort = 8080]) async {
@@ -103,7 +103,7 @@ class GaeServer {
     } else if (request.uri.path == _healthCheck) {
       await _processHealthRequest(request);
     } else if (request.uri.path.startsWith(_API_PREFIX)) {
-      await shelf_io.handleRequest(request, commonServerProto.router.handler);
+      await shelf_io.handleRequest(request, commonServerApi.router.handler);
     } else {
       await _processDefaultRequest(request);
     }
