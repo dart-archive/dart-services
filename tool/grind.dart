@@ -106,7 +106,8 @@ void _buildStorageArtifacts(Directory dir) async {
 
   // run flutter pub get
   await runWithLogging(
-    path.join(flutterSdkPath.path, 'bin/flutter'),
+    path.join(flutterSdkPath.path, 'bin',
+        Platform.isWindows ? 'flutter.bat' : 'flutter'),
     arguments: ['pub', 'get'],
     workingDirectory: dir.path,
   );
@@ -142,7 +143,8 @@ void _buildStorageArtifacts(Directory dir) async {
   // Make sure flutter/bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk.dill
   // is installed.
   await runWithLogging(
-    path.join(flutterSdkPath.path, 'bin/flutter'),
+    path.join(flutterSdkPath.path, 'bin',
+        Platform.isWindows ? 'flutter.bat' : 'flutter'),
     arguments: ['precache', '--web'],
     workingDirectory: dir.path,
   );
@@ -150,10 +152,10 @@ void _buildStorageArtifacts(Directory dir) async {
   // Build the artifacts using DDC:
   // dart-sdk/bin/dartdevc -s kernel/flutter_ddc_sdk.dill
   //     --modules=amd package:flutter_web/animation.dart ...
-  final compilerPath =
-      path.join(flutterSdkPath.path, 'bin/cache/dart-sdk/bin/dartdevc');
-  final dillPath = path.join(flutterSdkPath.path,
-      'bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk.dill');
+  final compilerPath = path.join(
+      flutterSdkPath.path, 'bin', 'cache', 'dart-sdk', 'bin', 'dartdevc');
+  final dillPath = path.join(flutterSdkPath.path, 'bin', 'cache',
+      'flutter_web_sdk', 'flutter_web_sdk', 'kernel', 'flutter_ddc_sdk.dill');
 
   final args = <String>[
     '-s',
@@ -174,8 +176,8 @@ void _buildStorageArtifacts(Directory dir) async {
   final artifactsDir = getDir('artifacts');
   await artifactsDir.create();
 
-  final sdkJsPath = path.join(flutterSdkPath.path,
-      'bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/amd/dart_sdk.js');
+  final sdkJsPath = path.join(flutterSdkPath.path, 'bin', 'cache',
+      'flutter_web_sdk', 'flutter_web_sdk', 'kernel', 'amd', 'dart_sdk.js');
 
   copy(getFile(sdkJsPath), artifactsDir);
   copy(joinFile(dir, ['flutter_web.js']), artifactsDir);
@@ -205,17 +207,20 @@ void setupFlutterSubmodule() async {
   // Set up the submodule's copy of the Flutter SDK the way dart-services needs
   // it.
   await runWithLogging(
-    path.join(flutterDir.path, 'bin/flutter'),
+    path.join(
+        flutterDir.path, 'bin', Platform.isWindows ? 'flutter.bat' : 'flutter'),
     arguments: ['doctor'],
   );
 
   await runWithLogging(
-    path.join(flutterDir.path, 'bin/flutter'),
+    path.join(
+        flutterDir.path, 'bin', Platform.isWindows ? 'flutter.bat' : 'flutter'),
     arguments: ['config', '--enable-web'],
   );
 
   await runWithLogging(
-    path.join(flutterDir.path, 'bin/flutter'),
+    path.join(
+        flutterDir.path, 'bin', Platform.isWindows ? 'flutter.bat' : 'flutter'),
     arguments: [
       'precache',
       '--web',
