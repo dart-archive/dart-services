@@ -282,8 +282,8 @@ void generateProtos() async {
 
   // reformat generated classes so travis dartfmt test doesn't fail
   await runWithLogging(
-    'dartfmt',
-    arguments: ['--fix', '-w', 'lib/src/protos'],
+    Platform.isWindows ? 'dartfmt.bat' : 'dartfmt',
+    arguments: ['--fix', '-w', path.join('lib', 'src', 'protos')],
   );
 
   // generate common_server_proto.g.dart
@@ -310,8 +310,8 @@ Future<void> runWithLogging(String executable,
       includeParentEnvironment: runOptions.includeParentEnvironment,
       runInShell: runOptions.runInShell);
 
-  proc.stdout.listen((out)=>log(runOptions.stdoutEncoding.decode(out)));
-  proc.stderr.listen((err)=>log(runOptions.stdoutEncoding.decode(err)));
+  proc.stdout.listen((out) => log(runOptions.stdoutEncoding.decode(out)));
+  proc.stderr.listen((err) => log(runOptions.stdoutEncoding.decode(err)));
   final exitCode = await proc.exitCode;
 
   if (exitCode != 0) {
