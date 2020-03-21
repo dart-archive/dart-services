@@ -326,7 +326,8 @@ class AnalysisServerWrapper {
       for (final sourceFileEdit in sourceChange.edits) {
         // TODO(lukechurch): replace this with a more reliable test based on the
         // psuedo file name in Analysis Server
-        if (!sourceFileEdit.file.endsWith('/main.dart')) {
+        if (!sourceFileEdit.file
+            .endsWith(Platform.isWindows ? '\\main.dart' : '/main.dart')) {
           invalidFix = true;
           break;
         }
