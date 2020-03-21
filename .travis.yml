@@ -15,12 +15,11 @@ sudo: false
 branches:
   only: [master]
 before_script:
-  - git submodule init
-  - git submodule update
-  - export PATH=$PATH:$PWD/flutter/bin
-  - flutter doctor
-  - flutter config --enable-web
-  - flutter precache --web --no-android --no-ios --no-linux --no-windows --no-macos --no-fuchsia
+  - git submodule update --init --checkout
+  - $PWD/flutter/bin/flutter doctor
+  - $PWD/flutter/bin/flutter channel dev
+  - $PWD/flutter/bin/flutter config --enable-web
+  - $PWD/flutter/bin/flutter precache --web --no-android --no-ios --no-linux --no-windows --no-macos --no-fuchsia
   - wget https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-x86_64.zip
   - unzip protoc-3.11.4-linux-x86_64.zip -d protoc
   - export PATH=$PATH:$PWD/protoc/bin
