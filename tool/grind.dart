@@ -152,8 +152,8 @@ void _buildStorageArtifacts(Directory dir) async {
   // Build the artifacts using DDC:
   // dart-sdk/bin/dartdevc -s kernel/flutter_ddc_sdk.dill
   //     --modules=amd package:flutter_web/animation.dart ...
-  final compilerPath = path.join(
-      flutterSdkPath.path, 'bin', 'cache', 'dart-sdk', 'bin', 'dartdevc');
+  final compilerPath = path.join(flutterSdkPath.path, 'bin', 'cache',
+      'dart-sdk', 'bin', Platform.isWindows ? 'dartdevc.bat' : 'dartdevc');
   final dillPath = path.join(flutterSdkPath.path, 'bin', 'cache',
       'flutter_web_sdk', 'flutter_web_sdk', 'kernel', 'flutter_ddc_sdk.dill');
 
@@ -215,7 +215,7 @@ void setupFlutterSubmodule() async {
   await runWithLogging(
     path.join(
         flutterDir.path, 'bin', Platform.isWindows ? 'flutter.bat' : 'flutter'),
-    arguments: ['channel','dev'],
+    arguments: ['channel', 'dev'],
   );
 
   await runWithLogging(
