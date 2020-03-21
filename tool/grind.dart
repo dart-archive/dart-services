@@ -215,6 +215,12 @@ void setupFlutterSubmodule() async {
   await runWithLogging(
     path.join(
         flutterDir.path, 'bin', Platform.isWindows ? 'flutter.bat' : 'flutter'),
+    arguments: ['channel','dev'],
+  );
+
+  await runWithLogging(
+    path.join(
+        flutterDir.path, 'bin', Platform.isWindows ? 'flutter.bat' : 'flutter'),
     arguments: ['config', '--enable-web'],
   );
 
