@@ -9,7 +9,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:dart_services/src/sdk_manager.dart';
 import 'package:logging/logging.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
@@ -18,6 +17,7 @@ import 'src/common.dart';
 import 'src/common_server_api.dart';
 import 'src/common_server_impl.dart';
 import 'src/flutter_web.dart';
+import 'src/sdk_manager.dart';
 import 'src/server_cache.dart';
 import 'src/shelf_cors.dart' as shelf_cors;
 
