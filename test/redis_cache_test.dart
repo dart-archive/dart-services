@@ -152,7 +152,8 @@ void defineTests() {
               logMessages.join('\n'),
               stringContainsInOrder([
                 'reconnecting to redis://localhost:9503...\n',
-                'Unable to connect to redis server, reconnecting in',
+                if (!Platform.isWindows)
+                  'Unable to connect to redis server, reconnecting in',
               ]));
 
           // Start a redis server.
@@ -229,6 +230,6 @@ void defineTests() {
           await redisCacheHealing.shutdown();
         }
       });
-    });
+    }, onPlatform: {'windows': Skip('Test is broken on windows')});
   });
 }
