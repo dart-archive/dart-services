@@ -18,7 +18,7 @@ pub run grinder validate-storage-artifacts
 
 # Enforce dart formatting on lib, test and tool directories.
 echo -n "Files that need dartfmt: "
-dartfmt --dry-run --set-exit-if-changed lib test tool 
+dartfmt --dry-run --set-exit-if-changed lib test tool
 echo "All clean"
 
 # Gather coverage and upload to Coveralls.
