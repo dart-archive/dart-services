@@ -382,9 +382,11 @@ packages:
   mock_request:
     dependency: "direct dev"
     description:
-      path: "third_party/mock_request"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "7a21837c234f9328df8de0e0cf74893d4a82df93"
+      url: "https://github.com/domesticmouse/mock_request.git"
+    source: git
     version: "1.0.7"
   multi_server_socket:
     dependency: transitive
