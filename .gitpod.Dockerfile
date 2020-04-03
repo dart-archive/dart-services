@@ -18,5 +18,5 @@ RUN sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/l
 RUN sudo apt-get update
 RUN sudo apt-get install dart
 RUN echo "export PATH=\"\$PATH:/usr/lib/dart/bin:\$HOME/.pub-cache/bin\"" >> $HOME/.bashrc
-RUN pub global activate grinder
-RUN pub global activate protoc_plugin
+RUN /usr/lib/dart/bin/pub global activate grinder
+RUN /usr/lib/dart/bin/pub global activate protoc_plugin
