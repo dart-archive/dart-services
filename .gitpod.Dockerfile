@@ -17,6 +17,6 @@ RUN sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub 
 RUN sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list'
 RUN sudo apt-get update
 RUN sudo apt-get install dart
-RUN sudo echo "export PATH=\"\$PATH:/usr/lib/dart/bin:\$HOME/.pub-cache/bin\"" >> /etc/bash.bashrc
+RUN echo "export PATH=\"\$PATH:/usr/lib/dart/bin:\$HOME/.pub-cache/bin\"" >> $HOME/.bashrc
 RUN pub global activate grinder
 RUN pub global activate protoc_plugin
