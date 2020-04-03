@@ -13,7 +13,7 @@ USER gitpod
 
 RUN sudo apt-get update
 RUN sudo apt-get install apt-transport-https
-RUN sudo apt install protobuf-compiler
+RUN sudo apt-get install protobuf-compiler
 RUN sudo apt-get install redis
 RUN sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
 RUN sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list'
