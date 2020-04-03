@@ -14,6 +14,7 @@ RUN sudo apt-get update && \
     echo "export PATH=\"\$PATH:/usr/lib/dart/bin:\$HOME/.pub-cache/bin\":$PWD/protoc/bin" >> $HOME/.bashrc && \
     /usr/lib/dart/bin/pub global activate grinder && \
     /usr/lib/dart/bin/pub global activate protoc_plugin && \
+    /usr/lib/dart/bin/pub global activate webdev && \
     wget https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-x86_64.zip && \
     unzip protoc-3.11.4-linux-x86_64.zip -d protoc && \
     sudo rm -rf /var/lib/apt/lists/*
