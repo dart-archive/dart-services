@@ -58,6 +58,34 @@ const formatWithIssues = '''
 void main() { foo() }
 ''';
 
+const sampleNNBDCode = '''
+void main() {
+  int? a = null;
+  print(a);
+}
+''';
+
+const sampleNNBDFailureCode = '''
+void main() {
+  int a = null;
+  print(a);
+}
+''';
+
+const sampleNNBDCoreLibraryCode = '''
+void main() {
+  int a = <String, int>{'a': 1}['a']!;
+  print(a);
+}
+''';
+
+const sampleNNBDCoreLibraryFailureCode = '''
+void main() {
+  int a = <String, int>{'a': 1}['a'];
+  print(a);
+}
+''';
+
 void main() => defineTests();
 
 void defineTests() {
@@ -212,6 +240,39 @@ void defineTests() {
     test('analyze working Flutter code', () async {
       final results = await analysisServer.analyze(sampleCode);
       expect(results.issues, isEmpty);
+    });
+  });
+
+  group('Local NNBD SDK analysis_server', () {
+    setUp(() async {
+      flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
+      analysisServer = AnalysisServerWrapper(sdkPath, flutterWebManager);
+      await analysisServer.init();
+    });
+    tearDown(() => analysisServer.shutdown());
+    test('analyze working Dart code', () async {
+      final results = await analysisServer.analyze(sampleCode);
+      expect(results.issues, isEmpty);
+    });
+    test('analyze working NNBD Dart code', () async {
+      final results = await analysisServer.analyze(sampleNNBDCode);
+      expect(results.issues, isEmpty);
+    });
+    test('analyze working NNBD Dart with core library code', () async {
+      final results = await analysisServer.analyze(sampleNNBDCoreLibraryCode);
+      expect(results.issues, isEmpty);
+    });
+    test('analyze broken NNBD Dart code', () async {
+      final results = await analysisServer.analyze(sampleNNBDFailureCode);
+      expect(results.issues.length, equals(1));
+      expect(results.issues[0].message,
+          'A value of type \'Null\' can\'t be assigned to a variable of type \'int\'.');
+    });
+    test('analyze broken NNBD Dart with core library code', () async {
+      final results =
+          await analysisServer.analyze(sampleNNBDCoreLibraryFailureCode);
+      expect(results.issues.length, equals(1));
+      expect(results.issues[0].message, startsWith('A value of type \'int?\''));
     });
   });
 }

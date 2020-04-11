@@ -14,10 +14,12 @@ automatic_scaling:
     target_utilization: 0.6
 
 env_variables:
-  REDIS_SERVER_URI: 'redis://10.0.0.4:6379'
+#  Removing this environment variable will cause the server
+#  to spin up without attempting to connect to redis.
+#  REDIS_SERVER_URI: 'redis://10.0.0.4:6379'
 
-network:
-  name: vpc-dart-services
+#network:
+#  name: vpc-dart-services
 
 skip_files:
 - ^\.git/.*$

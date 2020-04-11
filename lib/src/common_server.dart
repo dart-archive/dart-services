@@ -33,7 +33,8 @@ class CommonServer {
       description: 'Compile the given Dart source code and return the '
           'resulting JavaScript; this uses the dart2js compiler.')
   Future<CompileResponse> compile(CompileRequest request) =>
-      _convertBadRequest(() => _impl.compile(request));
+      throw UnimplementedError();
+  //_convertBadRequest(() => _impl.compile(request));
 
   @ApiMethod(
       method: 'POST',
@@ -41,7 +42,8 @@ class CommonServer {
       description: 'Compile the given Dart source code and return the '
           'resulting JavaScript; this uses the DDC compiler.')
   Future<CompileDDCResponse> compileDDC(CompileRequest request) =>
-      _convertBadRequest(() => _impl.compileDDC(request));
+      throw UnimplementedError();
+  //_convertBadRequest(() => _impl.compileDDC(request));
 
   @ApiMethod(
       method: 'POST',
