@@ -4,6 +4,9 @@ build/
 .packages
 .pub/
 
+# Local Dart SDK
+dart-sdk/
+
 # Or the files created by dart2js.
 *.dart.js
 *.js.deps

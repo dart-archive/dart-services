@@ -2,3 +2,4 @@
 # since the Docker container is likely running a different OS than the
 # developer's machine.
 flutter
+dart-sdk
