@@ -23,8 +23,8 @@ env_variables:
 
 skip_files:
 - ^\.git/.*$
-- dart-sdk
-- flutter
+- dart-sdk/
+- flutter/
 
 liveness_check:
   path: /_ah/health
