@@ -9,6 +9,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bazel_worker/driver.dart';
+import 'package:dart_services/src/common_server_impl.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
 
@@ -32,7 +33,7 @@ class Compiler {
       : _dartdevcPath = path.join(_flutterSdk.sdkPath, 'bin', 'dartdevc'),
         _ddcDriver = BazelWorkerDriver(
             () => Process.start(
-                  path.join(_flutterSdk.sdkPath, 'bin', 'dartdevc'),
+                  path.join(_sdk.sdkPath, 'bin', 'dartdevc'),
                   <String>['--persistent_worker'],
                 ),
             maxWorkers: 1);
@@ -127,6 +128,11 @@ class Compiler {
     try {
       final usingFlutter = _flutterWebManager.usesFlutterWeb(imports);
 
+      if (usingFlutter) {
+        throw BadRequest('This version of DartPad does not compile Flutter '
+            'code.');
+      }
+
       final mainPath = path.join(temp.path, kMainDart);
       final bootstrapPath = path.join(temp.path, kBootstrapDart);
       final bootstrapContents =
@@ -137,14 +143,15 @@ class Compiler {
 
       final arguments = <String>[
         '--modules=amd',
-        if (usingFlutter) ...[
-          '-s',
-          _flutterWebManager.summaryFilePath,
-          '-s',
-          '${_flutterSdk.flutterBinPath}/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk.dill'
-        ],
+//        if (usingFlutter) ...[
+//          '-s',
+//          _flutterWebManager.summaryFilePath,
+//          '-s',
+//          '${_flutterSdk.flutterBinPath}/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk.dill'
+//        ],
         ...['-o', path.join(temp.path, '$kMainDart.js')],
         ...['--module-name', 'dartpad_main'],
+        '--enable-experiment=non-nullable',
         bootstrapPath,
         '--packages=${_flutterWebManager.packagesFilePath}',
       ];
@@ -173,8 +180,8 @@ class Compiler {
 
         final results = DDCCompilationResults(
           compiledJS: processedJs,
-          modulesBaseUrl: 'https://storage.googleapis.com/'
-              'compilation_artifacts/${_flutterSdk.versionFull}/',
+          modulesBaseUrl:
+              'https://storage.googleapis.com/nnbd_artifacts/2.8.0/',
         );
         return results;
       }
