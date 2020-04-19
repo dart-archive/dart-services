@@ -9,11 +9,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bazel_worker/driver.dart';
-import 'package:dart_services/src/common_server_impl.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
 
 import 'common.dart';
+import 'common_server_impl.dart';
 import 'flutter_web.dart';
 import 'pub.dart';
 import 'sdk_manager.dart';
@@ -24,6 +24,7 @@ Logger _logger = Logger('compiler');
 /// compile at a time.
 class Compiler {
   final Sdk _sdk;
+  // ignore: unused_field
   final FlutterSdk _flutterSdk;
   final FlutterWebManager _flutterWebManager;
   final String _dartdevcPath;

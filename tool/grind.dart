@@ -238,7 +238,7 @@ void fuzz() {
 @Depends(setupFlutterSubmodule, updateDockerVersion, generateProtos, discovery,
     analyze, test, fuzz, validateStorageArtifacts)
 void deploy() {
-  log('Run: gcloud app deploy --project=dart-services --no-promote');
+  log('Run: gcloud app deploy --project=dart-services-beta-0 --no-promote');
 }
 
 @Task()
