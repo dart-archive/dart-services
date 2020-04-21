@@ -271,7 +271,7 @@ class AnalysisServerWrapper {
           ..charLength = error.location.length;
       }).toList();
 
-      issues.sort((a,b){
+      issues.sort((a, b) {
         // Order issues by character position of the bug/warning.
         return a.charStart.compareTo(b.charStart);
       });
