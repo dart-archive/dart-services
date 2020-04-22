@@ -45,10 +45,8 @@ RUN flutter/bin/flutter precache --web --no-android --no-ios --no-linux \
 # Build the dill file
 RUN pub run grinder build-storage-artifacts validate-storage-artifacts
 
-EXPOSE 8080
-
 # Clear out any arguments the base images might have set and ensure we start
 # the Dart app using custom script enabling debug modes.
 CMD []
 
-ENTRYPOINT /dart_runtime/dart_cloud_run.sh
+ENTRYPOINT ["/dart_runtime/dart_cloud_run.sh", "--port", "${PORT}", "--server-url", "http://0.0.0.0"]
