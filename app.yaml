@@ -1,6 +1,5 @@
 runtime: custom
 env: flex
-service: dart28
 
 resources:
   cpu: 1
@@ -8,8 +7,8 @@ resources:
   disk_size_gb: 50
 
 automatic_scaling:
-  min_num_instances: 1
-  max_num_instances: 4
+  min_num_instances: 12
+  max_num_instances: 40
   cool_down_period_sec: 60
   cpu_utilization:
     target_utilization: 0.6
