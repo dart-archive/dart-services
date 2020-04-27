@@ -315,7 +315,7 @@ packages:
       name: intl
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.15.8"
+    version: "0.16.1"
   io:
     dependency: transitive
     description:
@@ -604,7 +604,7 @@ packages:
       name: tuneup
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.6+1"
+    version: "0.3.6+2"
   typed_data:
     dependency: transitive
     description:
@@ -653,6 +653,6 @@ packages:
       name: yaml
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.0"
+    version: "2.2.1"
 sdks:
   dart: ">=2.8.0-20.11.beta <3.0.0"
