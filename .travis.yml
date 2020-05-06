@@ -4,8 +4,7 @@ install:
 dart:
   # Keep this value aligned with min SDK value in pubspec.yaml and FROM line of Dockerfile
   - "2.8.1"
-  # TODO(domesticmouse): re-enable when beta >= 2.8.1
-  # - beta
+  - beta
 
 # Speed up builds by using containerization. Disable this if you need to use
 # sudo in your scripts.
