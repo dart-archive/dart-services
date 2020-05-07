@@ -15,6 +15,7 @@ branches:
 before_script:
   - sudo apt-get update
   - sudo apt-get -y install protobuf-compiler
+  - which protoc
   - git submodule init
   - git submodule update
   - export PATH=$PATH:$PWD/flutter/bin
