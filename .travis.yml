@@ -6,22 +6,17 @@ dart:
   - "2.8.1"
   - beta
 
-# Speed up builds by using containerization. Disable this if you need to use
-# sudo in your scripts.
-sudo: false
-
 branches:
   only: [master]
 before_script:
+  - sudo apt-get update
+  - sudo apt-get -y install protobuf-compiler
   - git submodule init
   - git submodule update
   - export PATH=$PATH:$PWD/flutter/bin
   - flutter doctor
   - flutter config --enable-web
   - flutter precache --web --no-android --no-ios --no-linux --no-windows --no-macos --no-fuchsia
-  - wget https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-x86_64.zip
-  - unzip protoc-3.11.4-linux-x86_64.zip -d protoc
-  - export PATH=$PATH:$PWD/protoc/bin
   - pub global activate protoc_plugin
   - export PATH=$PATH:$HOME/.pub-cache/bin
 script: ./tool/travis.sh
