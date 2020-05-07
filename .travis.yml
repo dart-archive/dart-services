@@ -6,6 +6,10 @@ dart:
   - "2.8.1"
   - beta
 
+# Use Ubuntu 18.04 (Bionic Beaver) 
+# https://docs.travis-ci.com/user/reference/overview/#virtualization-environments
+dist: bionic
+
 branches:
   only: [master]
 before_script:
