@@ -7,7 +7,6 @@ USER gitpod
 
 RUN sudo apt-get update && \
     wget https://storage.googleapis.com/dart-archive/channels/stable/release/2.8.1/linux_packages/dart_2.8.1-1_amd64.deb && \
-    ls -l && \
     sudo dpkg -i dart_2.8.1-1_amd64.deb && \
     sudo apt-get install -y protobuf-compiler redis && \
     sudo apt-get update && \
