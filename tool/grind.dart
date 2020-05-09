@@ -281,6 +281,6 @@ Future<void> runWithLogging(String executable,
   final exitCode = await proc.exitCode;
 
   if (exitCode != 0) {
-    fail('Failed to exec $executable, failed with code $exitCode');
+    fail('Unable to exec $executable, failed with code $exitCode');
   }
 }
