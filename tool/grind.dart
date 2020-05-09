@@ -247,6 +247,8 @@ void buildbot() => null;
 
 @Task('Generate Protobuf classes')
 void generateProtos() async {
+  await runWithLogging('which', arguments: ['protoc']);
+
   await runWithLogging(
     'protoc',
     arguments: ['--dart_out=lib/src', 'protos/dart_services.proto'],
