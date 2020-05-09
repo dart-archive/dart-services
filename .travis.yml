@@ -5,6 +5,11 @@ dart:
   # Keep this value aligned with min SDK value in pubspec.yaml and FROM line of Dockerfile
   - "2.9.0-7.0.dev"
 
+# Use Ubuntu 18.04 (Bionic Beaver) 
+# https://docs.travis-ci.com/user/reference/overview/#virtualization-environments
+dist: bionic
+os: linux
+
 branches:
   only: [master]
 before_script:
