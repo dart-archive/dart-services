@@ -6,9 +6,11 @@ resources:
   memory_gb: 4
   disk_size_gb: 50
 
+service: dart29
+
 automatic_scaling:
-  min_num_instances: 12
-  max_num_instances: 40
+  min_num_instances: 1
+  max_num_instances: 4
   cool_down_period_sec: 60
   cpu_utilization:
     target_utilization: 0.6
