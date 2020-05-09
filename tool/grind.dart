@@ -247,19 +247,24 @@ void buildbot() => null;
 
 @Task('Generate Protobuf classes')
 void generateProtos() async {
-  await runWithLogging(
-    'protoc',
-    arguments: ['--dart_out=lib/src', 'protos/dart_services.proto'],
-  );
+  try {
+    await runWithLogging(
+      'protoc',
+      arguments: ['--dart_out=lib/src', 'protos/dart_services.proto'],
+    );
 
-  // reformat generated classes so travis dartfmt test doesn't fail
-  await runWithLogging(
-    'dartfmt',
-    arguments: ['--fix', '-w', 'lib/src/protos'],
-  );
+    // reformat generated classes so travis dartfmt test doesn't fail
+    await runWithLogging(
+      'dartfmt',
+      arguments: ['--fix', '-w', 'lib/src/protos'],
+    );
 
-  // generate common_server_proto.g.dart
-  Pub.run('build_runner', arguments: ['build', '--delete-conflicting-outputs']);
+    // generate common_server_proto.g.dart
+    Pub.run('build_runner',
+        arguments: ['build', '--delete-conflicting-outputs']);
+  } on RunWithLoggingException catch (e) {
+    fail('Failed to exec ${e.executable}, failed with code ${e.exitCode}');
+  }
 }
 
 class RunWithLoggingException implements Exception {
