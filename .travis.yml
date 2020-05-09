@@ -3,7 +3,7 @@ install:
   - gem install coveralls-lcov
 dart:
   # Keep this value aligned with min SDK value in pubspec.yaml and FROM line of Dockerfile
-  - "2.9.0-5.0.dev"
+  - "2.9.0-7.0.dev"
 
 branches:
   only: [master]
