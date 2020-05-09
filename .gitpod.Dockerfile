@@ -7,7 +7,8 @@ USER gitpod
 
 RUN sudo apt-get update && \
     wget https://storage.googleapis.com/dart-archive/channels/stable/release/2.8.1/linux_packages/dart_2.8.1-1_amd64.deb && \
-    sudo apt-get install -f dart_2.8.1-1_amd64.deb && \
+    ls -l && \
+    sudo dpkg -i dart_2.8.1-1_amd64.deb && \
     sudo apt-get install -y protobuf-compiler redis && \
     sudo apt-get update && \
     echo "export PATH=\"\$PATH:/usr/lib/dart/bin:\$HOME/.pub-cache/bin\"" >> $HOME/.bashrc && \
