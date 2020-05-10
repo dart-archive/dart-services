@@ -32,8 +32,8 @@ Future<void> main(List<String> args) async {
 
   // Cloud Run supplies the port to bind to in the environment.
   // Allow command line arg to override environment.
-  final port = int.tryParse(result['port'] as String) ??
-      int.tryParse(Platform.environment['PORT']);
+  final port = int.tryParse(result['port'] as String ?? '') ??
+      int.tryParse(Platform.environment['PORT'] ?? '');
   if (port == null) {
     stdout.writeln('Could not parse port value from either environment '
         '"PORT" or from command line argument "--port".');
