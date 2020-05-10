@@ -35,9 +35,8 @@ void main(List<String> args) {
   final port = int.tryParse(result['port'] as String) ??
       int.tryParse(Platform.environment['PORT']);
   if (port == null) {
-    stdout.writeln(
-        'Could not parse port value from either environment "PORT" or '
-        'from command line argument "--port".');
+    stdout.writeln('Could not parse port value from either environment '
+        '"PORT" or from command line argument "--port".');
     exit(1);
   }
 
