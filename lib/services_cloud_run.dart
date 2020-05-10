@@ -25,17 +25,22 @@ final Logger _logger = Logger('services');
 
 void main(List<String> args) {
   final parser = ArgParser();
-  parser.addOption('port', abbr: 'p', defaultsTo: '8080');
+  parser.addOption('port', abbr: 'p');
   parser.addOption('server-url', defaultsTo: 'http://localhost');
   parser.addOption('redis-url');
-
   final result = parser.parse(args);
-  final port = int.tryParse(result['port'] as String);
+
+  // Cloud Run supplies the port to bind to in the environment.
+  // Allow command line arg to override environment.
+  final port = int.tryParse(result['port'] as String) ??
+      int.tryParse(Platform.environment['PORT']);
   if (port == null) {
     stdout.writeln(
-        'Could not parse port value "${result['port']}" into a number.');
+        'Could not parse port value from either environment "PORT" or '
+        'from command line argument "--port".');
     exit(1);
   }
+
   final redisServerUri = result['redis-url'] as String;
   final sdk = sdkPath;
 
@@ -44,6 +49,16 @@ void main(List<String> args) {
     print(record);
     if (record.stackTrace != null) print(record.stackTrace);
   });
+
+  log.info('''Initializing dart-services:
+    port: $port
+    sdkPath: $sdkPath
+    redisServerUri: $redisServerUri
+    Cloud Run Environment vars:
+    K_SERVICE: ${Platform.environment['K_SERVICE']}
+    K_REVISION: ${Platform.environment['K_REVISION']}
+    K_CONFIGURATION: ${Platform.environment['K_CONFIGURATION']}
+  ''');
 
   EndpointsServer.serve(sdk, port, redisServerUri)
       .then((EndpointsServer server) {
