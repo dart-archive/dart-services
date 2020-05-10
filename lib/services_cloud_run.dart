@@ -23,7 +23,7 @@ import 'src/shelf_cors.dart' as shelf_cors;
 
 final Logger _logger = Logger('services');
 
-void main(List<String> args) {
+Future<void> main(List<String> args) async {
   final parser = ArgParser();
   parser.addOption('port', abbr: 'p');
   parser.addOption('server-url', defaultsTo: 'http://localhost');
@@ -49,7 +49,7 @@ void main(List<String> args) {
     if (record.stackTrace != null) print(record.stackTrace);
   });
 
-  log.info('''Initializing dart-services:
+  _logger.info('''Initializing dart-services:
     port: $port
     sdkPath: $sdkPath
     redisServerUri: $redisServerUri
@@ -59,10 +59,8 @@ void main(List<String> args) {
     K_CONFIGURATION: ${Platform.environment['K_CONFIGURATION']}
   ''');
 
-  EndpointsServer.serve(sdk, port, redisServerUri)
-      .then((EndpointsServer server) {
-    _logger.info('Listening on port ${server.port}');
-  });
+  final server = await EndpointsServer.serve(sdk, port, redisServerUri);
+  _logger.info('Listening on port ${server.port}');
 }
 
 class EndpointsServer {
