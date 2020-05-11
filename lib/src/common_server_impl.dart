@@ -49,8 +49,9 @@ class CommonServerImpl {
       analysisServer.analysisServer != null &&
       flutterAnalysisServer.analysisServer != null;
 
-  // If non-null, this value indicates that server is restarting and holds the
-  // time at which it made the decision to restart.
+  // If non-null, this value indicates that the server is starting/restarting
+  // and holds the time at which that process began. If null, the server is
+  // ready to handle requests.
   DateTime _restartingSince = DateTime.now();
 
   bool get isRestarting => (_restartingSince != null);
