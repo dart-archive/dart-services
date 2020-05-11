@@ -117,7 +117,7 @@ class GaeServer {
   }
 
   Future _processReadynessRequest(io.HttpRequest request) async {
-    if (commonServerImpl.running) {
+    if (!commonServerImpl.isRestarting) {
       request.response.statusCode = io.HttpStatus.ok;
     } else {
       request.response.statusCode = io.HttpStatus.internalServerError;
@@ -128,7 +128,7 @@ class GaeServer {
   }
 
   Future _processHealthRequest(io.HttpRequest request) async {
-    if (commonServerImpl.running && !commonServerImpl.analysisServersRunning) {
+    if (!commonServerImpl.isHealthy) {
       _logger.severe('CommonServer running without analysis servers. '
           'Intentionally failing healthcheck.');
       request.response.statusCode = io.HttpStatus.internalServerError;
