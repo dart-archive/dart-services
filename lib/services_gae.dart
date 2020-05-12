@@ -123,7 +123,8 @@ class GaeServer {
   }
 
   Future _processReadynessRequest(io.HttpRequest request) async {
-    if (!commonServerImpl.isRestarting && DateTime.now().isBefore(_serveUntil)) {
+    if (!commonServerImpl.isRestarting &&
+        DateTime.now().isBefore(_serveUntil)) {
       request.response.statusCode = io.HttpStatus.ok;
     } else {
       request.response.statusCode = io.HttpStatus.internalServerError;
