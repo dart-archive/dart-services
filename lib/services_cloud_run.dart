@@ -59,8 +59,7 @@ Future<void> main(List<String> args) async {
     sdkPath: $sdkPath
     redisServerUri: $redisServerUri
     Cloud Run Environment variables:
-    $cloudRunEnvVars
-  ''');
+    $cloudRunEnvVars''');
 
   final server = await EndpointsServer.serve(sdk, port, redisServerUri);
   _logger.info('Listening on port ${server.port}');
