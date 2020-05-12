@@ -49,14 +49,17 @@ Future<void> main(List<String> args) async {
     if (record.stackTrace != null) print(record.stackTrace);
   });
 
+  final cloudRunEnvVars = Platform.environment.entries
+      .where((entry) => entry.key.startsWith('K_'))
+      .map((entry) => '${entry.key}: ${entry.value}')
+      .join('\n');
+
   _logger.info('''Initializing dart-services:
     port: $port
     sdkPath: $sdkPath
     redisServerUri: $redisServerUri
-    Cloud Run Environment vars:
-    K_SERVICE: ${Platform.environment['K_SERVICE']}
-    K_REVISION: ${Platform.environment['K_REVISION']}
-    K_CONFIGURATION: ${Platform.environment['K_CONFIGURATION']}
+    Cloud Run Environment variables:
+    $cloudRunEnvVars
   ''');
 
   final server = await EndpointsServer.serve(sdk, port, redisServerUri);
