@@ -22,9 +22,8 @@ import 'src/server_cache.dart';
 const String _API_PREFIX = '/api/dartservices/';
 const String _healthCheck = '/_ah/health';
 const String _readynessCheck = '/_ah/ready';
-final DateTime _startedAt = DateTime.now();
 // Serve content for 4 hours, +- 1 hour.
-final DateTime _serveUntil = _startedAt
+final DateTime _serveUntil = DateTime.now()
     .add(Duration(hours: 3))
     .add(Duration(minutes: Random().nextInt(120)));
 
