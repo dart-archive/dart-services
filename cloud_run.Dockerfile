@@ -1,12 +1,12 @@
 # Keep aligned with min SDK in pubspec.yaml and Dart test version in .travis.yml
-FROM google/dart:2.9.0-7.0.dev
+FROM google/dart:2.9.0-9.0.dev
 
 # The specific commit that dart-services should use. This should be kept
 # in sync with the flutter submodule in the dart-services repo.
 # To retrieve this value, please run the following in your closest shell:
 #
 # $ (cd flutter && git rev-parse HEAD)
-ARG FLUTTER_COMMIT=e6b34c2b5c96bb95325269a29a84e83ed8909b5f
+ARG FLUTTER_COMMIT=2738a1148ba6c9a6114df62358109407c3ef2553
 
 # We install unzip and remove the apt-index again to keep the
 # docker image diff small.
@@ -51,4 +51,4 @@ CMD []
 
 ENTRYPOINT ["/dart_runtime/dart_cloud_run.sh", "--port", "${PORT}", \
             "--server-url", "http://0.0.0.0", \
-            "--services_cloud_run", "redis://10.0.0.4:6379"]
+            "--redis-url", "redis://10.0.0.4:6379"]

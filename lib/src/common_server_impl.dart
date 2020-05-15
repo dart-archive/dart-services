@@ -27,6 +27,7 @@ final Logger log = Logger('common_server');
 
 class BadRequest implements Exception {
   String cause;
+
   BadRequest(this.cause);
 }
 
@@ -48,8 +49,17 @@ class CommonServerImpl {
       analysisServer.analysisServer != null &&
       flutterAnalysisServer.analysisServer != null;
 
-  bool _running = false;
-  bool get running => _running;
+  // If non-null, this value indicates that the server is starting/restarting
+  // and holds the time at which that process began. If null, the server is
+  // ready to handle requests.
+  DateTime _restartingSince = DateTime.now();
+
+  bool get isRestarting => (_restartingSince != null);
+
+  // If the server has been trying and failing to restart for more than a half
+  // hour, something is seriously wrong.
+  bool get isHealthy => (_restartingSince == null ||
+      DateTime.now().difference(_restartingSince).inMinutes < 30);
 
   CommonServerImpl(
     this.sdkPath,
@@ -90,14 +100,12 @@ class CommonServerImpl {
       }
     }));
 
-    _running = true;
-  }
+    _restartingSince = null;
 
-  Future<void> warmup({bool useHtml = false}) async {
     await flutterWebManager.warmup();
-    await compiler.warmup(useHtml: useHtml);
-    await analysisServer.warmup(useHtml: useHtml);
-    await flutterAnalysisServer.warmup(useHtml: useHtml);
+    await compiler.warmup();
+    await analysisServer.warmup();
+    await flutterAnalysisServer.warmup();
   }
 
   Future<void> restart() async {
@@ -106,13 +114,12 @@ class CommonServerImpl {
     log.info('Analysis Servers shutdown');
 
     await init();
-    await warmup();
-
     log.warning('Restart complete');
   }
 
   Future<dynamic> shutdown() {
-    _running = false;
+    _restartingSince = DateTime.now();
+
     return Future.wait(<Future<dynamic>>[
       analysisServer.shutdown(),
       flutterAnalysisServer.shutdown(),
@@ -184,7 +191,7 @@ class CommonServerImpl {
       throw BadRequest('Missing parameter: \'source\'');
     }
 
-    return _format(request.source, offset: request.offset ?? 0);
+    return _format(request.source, request.offset ?? 0);
   }
 
   Future<proto.DocumentResponse> document(proto.SourceRequest request) {
@@ -213,7 +220,7 @@ class CommonServerImpl {
       log.info('PERF: Analyzed $lineCount lines of Dart in ${ms}ms.');
       return results;
     } catch (e, st) {
-      log.severe('Error during analyze', e, st);
+      log.severe('Error during _analyze on "$source"', e, st);
       await restart();
       rethrow;
     }
@@ -223,30 +230,31 @@ class CommonServerImpl {
     String source, {
     bool returnSourceMap = false,
   }) async {
-    await _checkPackageReferencesInitFlutterWeb(source);
+    try {
+      await _checkPackageReferencesInitFlutterWeb(source);
 
-    final sourceHash = _hashSource(source);
-    final memCacheKey = '%%COMPILE:v0'
-        ':returnSourceMap:$returnSourceMap:source:$sourceHash';
+      final sourceHash = _hashSource(source);
+      final memCacheKey = '%%COMPILE:v0'
+          ':returnSourceMap:$returnSourceMap:source:$sourceHash';
 
-    final result = await checkCache(memCacheKey);
-    if (result != null) {
-      log.info('CACHE: Cache hit for compileDart2js');
-      final resultObj = const JsonDecoder().convert(result);
-      final response = proto.CompileResponse()
-        ..result = resultObj['compiledJS'] as String;
-      if (resultObj['sourceMap'] != null) {
-        response.sourceMap = resultObj['sourceMap'] as String;
+      final result = await checkCache(memCacheKey);
+      if (result != null) {
+        log.info('CACHE: Cache hit for compileDart2js');
+        final resultObj = const JsonDecoder().convert(result);
+        final response = proto.CompileResponse()
+          ..result = resultObj['compiledJS'] as String;
+        if (resultObj['sourceMap'] != null) {
+          response.sourceMap = resultObj['sourceMap'] as String;
+        }
+        return response;
       }
-      return response;
-    }
 
-    log.info('CACHE: MISS for compileDart2js');
-    final watch = Stopwatch()..start();
+      log.info('CACHE: MISS for compileDart2js');
+      final watch = Stopwatch()..start();
 
-    return compiler
-        .compile(source, returnSourceMap: returnSourceMap)
-        .then((CompilationResults results) {
+      final results =
+          await compiler.compile(source, returnSourceMap: returnSourceMap);
+
       if (results.hasOutput) {
         final lineCount = source.split('\n').length;
         final outputSize = (results.compiledJS.length / 1024).ceil();
@@ -272,33 +280,35 @@ class CommonServerImpl {
         final errors = problems.map(_printCompileProblem).join('\n');
         throw BadRequest(errors);
       }
-    }).catchError((dynamic e, dynamic st) {
+    } catch (e, st) {
       if (e is! BadRequest) {
-        log.severe('Error during compile (dart2js): $e\n$st');
+        log.severe('Error during compile (dart2js) on "$source"', e, st);
       }
-      throw e;
-    });
+      rethrow;
+    }
   }
 
   Future<proto.CompileDDCResponse> _compileDDC(String source) async {
-    await _checkPackageReferencesInitFlutterWeb(source);
+    try {
+      await _checkPackageReferencesInitFlutterWeb(source);
 
-    final sourceHash = _hashSource(source);
-    final memCacheKey = '%%COMPILE_DDC:v0:source:$sourceHash';
+      final sourceHash = _hashSource(source);
+      final memCacheKey = '%%COMPILE_DDC:v0:source:$sourceHash';
 
-    final result = await checkCache(memCacheKey);
-    if (result != null) {
-      log.info('CACHE: Cache hit for compileDDC');
-      final resultObj = const JsonDecoder().convert(result);
-      return proto.CompileDDCResponse()
-        ..result = resultObj['compiledJS'] as String
-        ..modulesBaseUrl = resultObj['modulesBaseUrl'] as String;
-    }
+      final result = await checkCache(memCacheKey);
+      if (result != null) {
+        log.info('CACHE: Cache hit for compileDDC');
+        final resultObj = const JsonDecoder().convert(result);
+        return proto.CompileDDCResponse()
+          ..result = resultObj['compiledJS'] as String
+          ..modulesBaseUrl = resultObj['modulesBaseUrl'] as String;
+      }
 
-    log.info('CACHE: MISS for compileDDC');
-    final watch = Stopwatch()..start();
+      log.info('CACHE: MISS for compileDDC');
+      final watch = Stopwatch()..start();
 
-    return compiler.compileDDC(source).then((DDCCompilationResults results) {
+      final results = await compiler.compileDDC(source);
+
       if (results.hasOutput) {
         final lineCount = source.split('\n').length;
         final outputSize = (results.compiledJS.length / 1024).ceil();
@@ -320,12 +330,12 @@ class CommonServerImpl {
         final errors = problems.map(_printCompileProblem).join('\n');
         throw BadRequest(errors);
       }
-    }).catchError((dynamic e, dynamic st) {
+    } catch (e, st) {
       if (e is! BadRequest) {
-        log.severe('Error during compile (DDC): $e\n$st');
+        log.severe('Error during compile (DDC) on "$source"', e, st);
       }
-      throw e;
-    });
+      rethrow;
+    }
   }
 
   Future<proto.DocumentResponse> _document(String source, int offset) async {
@@ -339,7 +349,7 @@ class CommonServerImpl {
       log.info('PERF: Computed dartdoc in ${watch.elapsedMilliseconds}ms.');
       return proto.DocumentResponse()..info.addAll(docInfo);
     } catch (e, st) {
-      log.severe('Error during dartdoc', e, st);
+      log.severe('Error during _document on "$source" at $offset', e, st);
       await restart();
       rethrow;
     }
@@ -365,39 +375,57 @@ class CommonServerImpl {
       log.info('PERF: Computed completions in ${watch.elapsedMilliseconds}ms.');
       return response;
     } catch (e, st) {
-      log.severe('Error during _complete', e, st);
+      log.severe('Error during _complete on "$source" at $offset', e, st);
       await restart();
       rethrow;
     }
   }
 
   Future<proto.FixesResponse> _fixes(String source, int offset) async {
-    await _checkPackageReferencesInitFlutterWeb(source);
+    try {
+      await _checkPackageReferencesInitFlutterWeb(source);
 
-    final watch = Stopwatch()..start();
-    final response =
-        await getCorrectAnalysisServer(source).getFixes(source, offset);
-    log.info('PERF: Computed fixes in ${watch.elapsedMilliseconds}ms.');
-    return response;
+      final watch = Stopwatch()..start();
+      final response =
+          await getCorrectAnalysisServer(source).getFixes(source, offset);
+      log.info('PERF: Computed fixes in ${watch.elapsedMilliseconds}ms.');
+      return response;
+    } catch (e, st) {
+      log.severe('Error during _fixes on "$source" at $offset', e, st);
+      await restart();
+      rethrow;
+    }
   }
 
   Future<proto.AssistsResponse> _assists(String source, int offset) async {
-    await _checkPackageReferencesInitFlutterWeb(source);
+    try {
+      await _checkPackageReferencesInitFlutterWeb(source);
 
-    final watch = Stopwatch()..start();
-    final response =
-        await getCorrectAnalysisServer(source).getAssists(source, offset);
-    log.info('PERF: Computed assists in ${watch.elapsedMilliseconds}ms.');
-    return response;
+      final watch = Stopwatch()..start();
+      final response =
+          await getCorrectAnalysisServer(source).getAssists(source, offset);
+      log.info('PERF: Computed assists in ${watch.elapsedMilliseconds}ms.');
+      return response;
+    } catch (e, st) {
+      log.severe('Error during _assists on "$source" at $offset', e, st);
+      await restart();
+      rethrow;
+    }
   }
 
-  Future<proto.FormatResponse> _format(String source, {int offset}) async {
-    final watch = Stopwatch()..start();
+  Future<proto.FormatResponse> _format(String source, int offset) async {
+    try {
+      final watch = Stopwatch()..start();
 
-    final response =
-        await getCorrectAnalysisServer(source).format(source, offset);
-    log.info('PERF: Computed format in ${watch.elapsedMilliseconds}ms.');
-    return response;
+      final response =
+          await getCorrectAnalysisServer(source).format(source, offset);
+      log.info('PERF: Computed format in ${watch.elapsedMilliseconds}ms.');
+      return response;
+    } catch (e, st) {
+      log.severe('Error during _format on "$source" at $offset', e, st);
+      await restart();
+      rethrow;
+    }
   }
 
   Future<String> checkCache(String query) => cache.get(query);
