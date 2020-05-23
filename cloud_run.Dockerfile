@@ -6,13 +6,12 @@ FROM google/dart:2.8.2
 # To retrieve this value, please run the following in your closest shell:
 #
 # $ (cd flutter && git rev-parse HEAD)
-ARG FLUTTER_COMMIT=8f7327f83a3e094285163ae402c6f94190fc1674
-ARG NNBD_SDK_VERSION=2.8.0
+ARG FLUTTER_COMMIT=2738a1148ba6c9a6114df62358109407c3ef2553
 
 # We install unzip and remove the apt-index again to keep the
 # docker image diff small.
 RUN apt-get update && \
-  apt-get install -y unzip wget && \
+  apt-get install -y unzip && \
   rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -24,17 +23,14 @@ RUN chown dart:dart /app
 # The Flutter tool won't perform its actions when run as root.
 USER dart
 
-COPY --chown=dart:dart tool/dart_run.sh /dart_runtime/
+COPY --chown=dart:dart tool/dart_cloud_run.sh /dart_runtime/
+RUN chmod a+x /dart_runtime/dart_cloud_run.sh
 COPY --chown=dart:dart pubspec.* /app/
 RUN pub get
 COPY --chown=dart:dart . /app
 RUN pub get --offline
 
 ENV PATH="/home/dart/.pub-cache/bin:${PATH}"
-
-# Download the NNBD Dart SDK and unzip it.
-RUN wget https://storage.googleapis.com/nnbd_artifacts/$NNBD_SDK_VERSION/dartsdk-linux-x64-release.zip
-RUN unzip dartsdk-linux-x64-release.zip
 
 # Clone the flutter repo and set it to the same commit as the flutter submodule.
 RUN git clone https://github.com/flutter/flutter.git
@@ -49,10 +45,10 @@ RUN flutter/bin/flutter precache --web --no-android --no-ios --no-linux \
 # Build the dill file
 RUN pub run grinder build-storage-artifacts validate-storage-artifacts
 
-EXPOSE 8080
-
 # Clear out any arguments the base images might have set and ensure we start
 # the Dart app using custom script enabling debug modes.
 CMD []
 
-ENTRYPOINT /bin/bash /dart_runtime/dart_run.sh
+ENTRYPOINT ["/dart_runtime/dart_cloud_run.sh", "--port", "${PORT}", \
+            "--server-url", "http://0.0.0.0", \
+            "--redis-url", "redis://10.0.0.4:6379"]

@@ -14,19 +14,20 @@ import 'package:pedantic/pedantic.dart';
 
 import '../version.dart';
 import 'analysis_server.dart';
-import 'api_classes.dart';
 import 'common.dart';
 import 'compiler.dart';
 import 'flutter_web.dart';
+import 'protos/dart_services.pb.dart' as proto;
 import 'pub.dart';
 import 'sdk_manager.dart';
 import 'server_cache.dart';
 
-final Duration _standardExpiration = Duration(hours: 1);
+const Duration _standardExpiration = Duration(hours: 1);
 final Logger log = Logger('common_server');
 
 class BadRequest implements Exception {
   String cause;
+
   BadRequest(this.cause);
 }
 
@@ -48,8 +49,17 @@ class CommonServerImpl {
       analysisServer.analysisServer != null &&
       flutterAnalysisServer.analysisServer != null;
 
-  bool _running = false;
-  bool get running => _running;
+  // If non-null, this value indicates that the server is starting/restarting
+  // and holds the time at which that process began. If null, the server is
+  // ready to handle requests.
+  DateTime _restartingSince = DateTime.now();
+
+  bool get isRestarting => (_restartingSince != null);
+
+  // If the server has been trying and failing to restart for more than a half
+  // hour, something is seriously wrong.
+  bool get isHealthy => (_restartingSince == null ||
+      DateTime.now().difference(_restartingSince).inMinutes < 30);
 
   CommonServerImpl(
     this.sdkPath,
@@ -90,14 +100,12 @@ class CommonServerImpl {
       }
     }));
 
-    _running = true;
-  }
+    _restartingSince = null;
 
-  Future<void> warmup({bool useHtml = false}) async {
     await flutterWebManager.warmup();
-    await compiler.warmup(useHtml: useHtml);
-    await analysisServer.warmup(useHtml: useHtml);
-    await flutterAnalysisServer.warmup(useHtml: useHtml);
+    await compiler.warmup();
+    await analysisServer.warmup();
+    await flutterAnalysisServer.warmup();
   }
 
   Future<void> restart() async {
@@ -106,74 +114,101 @@ class CommonServerImpl {
     log.info('Analysis Servers shutdown');
 
     await init();
-    await warmup();
-
     log.warning('Restart complete');
   }
 
   Future<dynamic> shutdown() {
-    _running = false;
+    _restartingSince = DateTime.now();
+
     return Future.wait(<Future<dynamic>>[
       analysisServer.shutdown(),
       flutterAnalysisServer.shutdown(),
       compiler.dispose(),
       Future<dynamic>.sync(cache.shutdown)
-    ]).timeout(Duration(minutes: 1));
+    ]).timeout(const Duration(minutes: 1));
   }
 
-  Future<AnalysisResults> analyze(SourceRequest request) {
+  Future<proto.AnalysisResults> analyze(proto.SourceRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+
     return _analyze(request.source);
   }
 
-  Future<CompileResponse> compile(CompileRequest request) {
+  Future<proto.CompileResponse> compile(proto.CompileRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+
     return _compileDart2js(request.source,
         returnSourceMap: request.returnSourceMap ?? false);
   }
 
-  Future<CompileDDCResponse> compileDDC(CompileRequest request) {
+  Future<proto.CompileDDCResponse> compileDDC(proto.CompileDDCRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+
     return _compileDDC(request.source);
   }
 
-  Future<CompleteResponse> complete(SourceRequest request) {
-    if (request.offset == null) {
+  Future<proto.CompleteResponse> complete(proto.SourceRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+    if (!request.hasOffset()) {
       throw BadRequest('Missing parameter: \'offset\'');
     }
 
     return _complete(request.source, request.offset);
   }
 
-  Future<FixesResponse> fixes(SourceRequest request) {
-    if (request.offset == null) {
+  Future<proto.FixesResponse> fixes(proto.SourceRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+    if (!request.hasOffset()) {
       throw BadRequest('Missing parameter: \'offset\'');
     }
 
     return _fixes(request.source, request.offset);
   }
 
-  Future<AssistsResponse> assists(SourceRequest request) {
-    if (request.offset == null) {
+  Future<proto.AssistsResponse> assists(proto.SourceRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+    if (!request.hasOffset()) {
       throw BadRequest('Missing parameter: \'offset\'');
     }
 
     return _assists(request.source, request.offset);
   }
 
-  Future<FormatResponse> format(SourceRequest request) {
-    return _format(request.source, offset: request.offset);
-  }
-
-  Future<DocumentResponse> document(SourceRequest request) {
-    return _document(request.source, request.offset);
-  }
-
-  Future<VersionResponse> version() =>
-      Future<VersionResponse>.value(_version());
-
-  Future<AnalysisResults> _analyze(String source) async {
-    if (source == null) {
+  Future<proto.FormatResponse> format(proto.SourceRequest request) {
+    if (!request.hasSource()) {
       throw BadRequest('Missing parameter: \'source\'');
     }
 
+    return _format(request.source, request.offset ?? 0);
+  }
+
+  Future<proto.DocumentResponse> document(proto.SourceRequest request) {
+    if (!request.hasSource()) {
+      throw BadRequest('Missing parameter: \'source\'');
+    }
+    if (!request.hasOffset()) {
+      throw BadRequest('Missing parameter: \'offset\'');
+    }
+
+    return _document(request.source, request.offset);
+  }
+
+  Future<proto.VersionResponse> version(proto.VersionRequest _) =>
+      Future<proto.VersionResponse>.value(_version());
+
+  Future<proto.AnalysisResults> _analyze(String source) async {
     await _checkPackageReferencesInitFlutterWeb(source);
 
     try {
@@ -185,42 +220,41 @@ class CommonServerImpl {
       log.info('PERF: Analyzed $lineCount lines of Dart in ${ms}ms.');
       return results;
     } catch (e, st) {
-      log.severe('Error during analyze', e, st);
+      log.severe('Error during _analyze on "$source"', e, st);
       await restart();
       rethrow;
     }
   }
 
-  Future<CompileResponse> _compileDart2js(
+  Future<proto.CompileResponse> _compileDart2js(
     String source, {
     bool returnSourceMap = false,
   }) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
+    try {
+      await _checkPackageReferencesInitFlutterWeb(source);
 
-    await _checkPackageReferencesInitFlutterWeb(source);
+      final sourceHash = _hashSource(source);
+      final memCacheKey = '%%COMPILE:v0'
+          ':returnSourceMap:$returnSourceMap:source:$sourceHash';
 
-    final sourceHash = _hashSource(source);
-    final memCacheKey = '%%COMPILE:v0'
-        ':returnSourceMap:$returnSourceMap:source:$sourceHash';
+      final result = await checkCache(memCacheKey);
+      if (result != null) {
+        log.info('CACHE: Cache hit for compileDart2js');
+        final resultObj = const JsonDecoder().convert(result);
+        final response = proto.CompileResponse()
+          ..result = resultObj['compiledJS'] as String;
+        if (resultObj['sourceMap'] != null) {
+          response.sourceMap = resultObj['sourceMap'] as String;
+        }
+        return response;
+      }
 
-    final result = await checkCache(memCacheKey);
-    if (result != null) {
-      log.info('CACHE: Cache hit for compileDart2js');
-      final resultObj = JsonDecoder().convert(result);
-      return CompileResponse(
-        resultObj['compiledJS'] as String,
-        returnSourceMap ? resultObj['sourceMap'] as String : null,
-      );
-    }
+      log.info('CACHE: MISS for compileDart2js');
+      final watch = Stopwatch()..start();
 
-    log.info('CACHE: MISS for compileDart2js');
-    final watch = Stopwatch()..start();
+      final results =
+          await compiler.compile(source, returnSourceMap: returnSourceMap);
 
-    return compiler
-        .compile(source, returnSourceMap: returnSourceMap)
-        .then((CompilationResults results) {
       if (results.hasOutput) {
         final lineCount = source.split('\n').length;
         final outputSize = (results.compiledJS.length / 1024).ceil();
@@ -229,50 +263,52 @@ class CommonServerImpl {
             '${outputSize}kb of JavaScript in ${ms}ms using dart2js.');
         final sourceMap = returnSourceMap ? results.sourceMap : null;
 
-        final cachedResult = JsonEncoder().convert(<String, String>{
+        final cachedResult = const JsonEncoder().convert(<String, String>{
           'compiledJS': results.compiledJS,
           'sourceMap': sourceMap,
         });
         // Don't block on cache set.
         unawaited(setCache(memCacheKey, cachedResult));
-        return CompileResponse(results.compiledJS, sourceMap);
+        final compileResponse = proto.CompileResponse();
+        compileResponse.result = results.compiledJS;
+        if (sourceMap != null) {
+          compileResponse.sourceMap = sourceMap;
+        }
+        return compileResponse;
       } else {
         final problems = results.problems;
         final errors = problems.map(_printCompileProblem).join('\n');
         throw BadRequest(errors);
       }
-    }).catchError((dynamic e, dynamic st) {
+    } catch (e, st) {
       if (e is! BadRequest) {
-        log.severe('Error during compile (dart2js): $e\n$st');
+        log.severe('Error during compile (dart2js) on "$source"', e, st);
       }
-      throw e;
-    });
+      rethrow;
+    }
   }
 
-  Future<CompileDDCResponse> _compileDDC(String source) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
+  Future<proto.CompileDDCResponse> _compileDDC(String source) async {
+    try {
+      await _checkPackageReferencesInitFlutterWeb(source);
 
-    await _checkPackageReferencesInitFlutterWeb(source);
+      final sourceHash = _hashSource(source);
+      final memCacheKey = '%%COMPILE_DDC:v0:source:$sourceHash';
 
-    final sourceHash = _hashSource(source);
-    final memCacheKey = '%%COMPILE_DDC:v0:source:$sourceHash';
+      final result = await checkCache(memCacheKey);
+      if (result != null) {
+        log.info('CACHE: Cache hit for compileDDC');
+        final resultObj = const JsonDecoder().convert(result);
+        return proto.CompileDDCResponse()
+          ..result = resultObj['compiledJS'] as String
+          ..modulesBaseUrl = resultObj['modulesBaseUrl'] as String;
+      }
 
-    final result = await checkCache(memCacheKey);
-    if (result != null) {
-      log.info('CACHE: Cache hit for compileDDC');
-      final resultObj = JsonDecoder().convert(result);
-      return CompileDDCResponse(
-        resultObj['compiledJS'] as String,
-        resultObj['modulesBaseUrl'] as String,
-      );
-    }
+      log.info('CACHE: MISS for compileDDC');
+      final watch = Stopwatch()..start();
 
-    log.info('CACHE: MISS for compileDDC');
-    final watch = Stopwatch()..start();
+      final results = await compiler.compileDDC(source);
 
-    return compiler.compileDDC(source).then((DDCCompilationResults results) {
       if (results.hasOutput) {
         final lineCount = source.split('\n').length;
         final outputSize = (results.compiledJS.length / 1024).ceil();
@@ -280,34 +316,29 @@ class CommonServerImpl {
         log.info('PERF: Compiled $lineCount lines of Dart into '
             '${outputSize}kb of JavaScript in ${ms}ms using DDC.');
 
-        final cachedResult = JsonEncoder().convert(<String, String>{
+        final cachedResult = const JsonEncoder().convert(<String, String>{
           'compiledJS': results.compiledJS,
           'modulesBaseUrl': results.modulesBaseUrl,
         });
         // Don't block on cache set.
         unawaited(setCache(memCacheKey, cachedResult));
-        return CompileDDCResponse(results.compiledJS, results.modulesBaseUrl);
+        return proto.CompileDDCResponse()
+          ..result = results.compiledJS
+          ..modulesBaseUrl = results.modulesBaseUrl;
       } else {
         final problems = results.problems;
         final errors = problems.map(_printCompileProblem).join('\n');
         throw BadRequest(errors);
       }
-    }).catchError((dynamic e, dynamic st) {
+    } catch (e, st) {
       if (e is! BadRequest) {
-        log.severe('Error during compile (DDC): $e\n$st');
+        log.severe('Error during compile (DDC) on "$source"', e, st);
       }
-      throw e;
-    });
+      rethrow;
+    }
   }
 
-  Future<DocumentResponse> _document(String source, int offset) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-    if (offset == null) {
-      throw BadRequest('Missing parameter: \'offset\'');
-    }
-
+  Future<proto.DocumentResponse> _document(String source, int offset) async {
     await _checkPackageReferencesInitFlutterWeb(source);
 
     final watch = Stopwatch()..start();
@@ -316,32 +347,25 @@ class CommonServerImpl {
           await getCorrectAnalysisServer(source).dartdoc(source, offset);
       docInfo ??= <String, String>{};
       log.info('PERF: Computed dartdoc in ${watch.elapsedMilliseconds}ms.');
-      return DocumentResponse(docInfo);
+      return proto.DocumentResponse()..info.addAll(docInfo);
     } catch (e, st) {
-      log.severe('Error during dartdoc', e, st);
+      log.severe('Error during _document on "$source" at $offset', e, st);
       await restart();
       rethrow;
     }
   }
 
-  VersionResponse _version() => VersionResponse(
-      sdkVersion: SdkManager.sdk.version,
-      sdkVersionFull: SdkManager.sdk.versionFull,
-      runtimeVersion: vmVersion,
-      servicesVersion: servicesVersion,
-      appEngineVersion: container.version,
-      flutterDartVersion: SdkManager.flutterSdk.version,
-      flutterDartVersionFull: SdkManager.flutterSdk.versionFull,
-      flutterVersion: SdkManager.flutterSdk.flutterVersion);
+  proto.VersionResponse _version() => proto.VersionResponse()
+    ..sdkVersion = SdkManager.sdk.version
+    ..sdkVersionFull = SdkManager.sdk.versionFull
+    ..runtimeVersion = vmVersion
+    ..servicesVersion = servicesVersion
+    ..appEngineVersion = container.version
+    ..flutterDartVersion = SdkManager.flutterSdk.version
+    ..flutterDartVersionFull = SdkManager.flutterSdk.versionFull
+    ..flutterVersion = SdkManager.flutterSdk.flutterVersion;
 
-  Future<CompleteResponse> _complete(String source, int offset) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-    if (offset == null) {
-      throw BadRequest('Missing parameter: \'offset\'');
-    }
-
+  Future<proto.CompleteResponse> _complete(String source, int offset) async {
     await _checkPackageReferencesInitFlutterWeb(source);
 
     final watch = Stopwatch()..start();
@@ -351,58 +375,57 @@ class CommonServerImpl {
       log.info('PERF: Computed completions in ${watch.elapsedMilliseconds}ms.');
       return response;
     } catch (e, st) {
-      log.severe('Error during _complete', e, st);
+      log.severe('Error during _complete on "$source" at $offset', e, st);
       await restart();
       rethrow;
     }
   }
 
-  Future<FixesResponse> _fixes(String source, int offset) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-    if (offset == null) {
-      throw BadRequest('Missing parameter: \'offset\'');
-    }
+  Future<proto.FixesResponse> _fixes(String source, int offset) async {
+    try {
+      await _checkPackageReferencesInitFlutterWeb(source);
 
-    await _checkPackageReferencesInitFlutterWeb(source);
-
-    final watch = Stopwatch()..start();
-    final response =
-        await getCorrectAnalysisServer(source).getFixes(source, offset);
-    log.info('PERF: Computed fixes in ${watch.elapsedMilliseconds}ms.');
-    return response;
+      final watch = Stopwatch()..start();
+      final response =
+          await getCorrectAnalysisServer(source).getFixes(source, offset);
+      log.info('PERF: Computed fixes in ${watch.elapsedMilliseconds}ms.');
+      return response;
+    } catch (e, st) {
+      log.severe('Error during _fixes on "$source" at $offset', e, st);
+      await restart();
+      rethrow;
+    }
   }
 
-  Future<AssistsResponse> _assists(String source, int offset) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
-    }
-    if (offset == null) {
-      throw BadRequest('Missing parameter: \'offset\'');
-    }
+  Future<proto.AssistsResponse> _assists(String source, int offset) async {
+    try {
+      await _checkPackageReferencesInitFlutterWeb(source);
 
-    await _checkPackageReferencesInitFlutterWeb(source);
-
-    final watch = Stopwatch()..start();
-    final response =
-        await getCorrectAnalysisServer(source).getAssists(source, offset);
-    log.info('PERF: Computed assists in ${watch.elapsedMilliseconds}ms.');
-    return response;
+      final watch = Stopwatch()..start();
+      final response =
+          await getCorrectAnalysisServer(source).getAssists(source, offset);
+      log.info('PERF: Computed assists in ${watch.elapsedMilliseconds}ms.');
+      return response;
+    } catch (e, st) {
+      log.severe('Error during _assists on "$source" at $offset', e, st);
+      await restart();
+      rethrow;
+    }
   }
 
-  Future<FormatResponse> _format(String source, {int offset}) async {
-    if (source == null) {
-      throw BadRequest('Missing parameter: \'source\'');
+  Future<proto.FormatResponse> _format(String source, int offset) async {
+    try {
+      final watch = Stopwatch()..start();
+
+      final response =
+          await getCorrectAnalysisServer(source).format(source, offset);
+      log.info('PERF: Computed format in ${watch.elapsedMilliseconds}ms.');
+      return response;
+    } catch (e, st) {
+      log.severe('Error during _format on "$source" at $offset', e, st);
+      await restart();
+      rethrow;
     }
-    offset ??= 0;
-
-    final watch = Stopwatch()..start();
-
-    final response =
-        await getCorrectAnalysisServer(source).format(source, offset);
-    log.info('PERF: Computed format in ${watch.elapsedMilliseconds}ms.');
-    return response;
   }
 
   Future<String> checkCache(String query) => cache.get(query);

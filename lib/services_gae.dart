@@ -6,24 +6,26 @@ library services_gae;
 
 import 'dart:async';
 import 'dart:io' as io;
+import 'dart:math';
 
 import 'package:appengine/appengine.dart' as ae;
 import 'package:logging/logging.dart';
-import 'package:rpc/rpc.dart' as rpc;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
 import 'src/common.dart';
-import 'src/common_server.dart';
+import 'src/common_server_api.dart';
 import 'src/common_server_impl.dart';
-import 'src/common_server_proto.dart';
 import 'src/flutter_web.dart';
 import 'src/sdk_manager.dart';
 import 'src/server_cache.dart';
 
-const String _API = '/api';
-const String _API_V1_PREFIX = '/api/dartservices/v1';
-const String _healthCheck = '/_ah/health';
-const String _readynessCheck = '/_ah/ready';
+const String _API_PREFIX = '/api/dartservices/';
+const String _livenessCheck = '/liveness_check';
+const String _readinessCheck = '/readiness_check';
+// Serve content for 1.5 hours, +- 30 minutes.
+final DateTime _serveUntil = DateTime.now()
+    .add(Duration(hours: 1))
+    .add(Duration(minutes: Random().nextInt(60)));
 
 final Logger _logger = Logger('gae_server');
 
@@ -63,10 +65,8 @@ class GaeServer {
   final String redisServerUri;
 
   bool discoveryEnabled;
-  rpc.ApiServer apiServer;
-  CommonServer commonServer;
   CommonServerImpl commonServerImpl;
-  CommonServerProto commonServerProto;
+  CommonServerApi commonServerApi;
 
   GaeServer(this.sdkPath, this.redisServerUri) {
     hierarchicalLoggingEnabled = true;
@@ -87,11 +87,7 @@ class GaeServer {
               io.Platform.environment['GAE_VERSION'],
             ),
     );
-    commonServer = CommonServer(commonServerImpl);
-    commonServerProto = CommonServerProto(commonServerImpl);
-    // Enabled pretty printing of returned json for debuggability.
-    apiServer = rpc.ApiServer(apiPrefix: _API, prettyPrint: true)
-      ..addApi(commonServer);
+    commonServerApi = CommonServerApi(commonServerImpl);
   }
 
   Future<dynamic> start([int gaePort = 8080]) async {
@@ -101,54 +97,49 @@ class GaeServer {
 
   Future<void> requestHandler(io.HttpRequest request) async {
     request.response.headers
-        .add('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    request.response.headers.add('Access-Control-Allow-Headers',
-        'Origin, X-Requested-With, Content-Type, Accept');
+      ..add('Access-Control-Allow-Origin', '*')
+      ..add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+      ..add('Access-Control-Allow-Headers',
+          'Origin, X-Requested-With, Content-Type, Accept');
 
     if (request.method == 'OPTIONS') {
       await _processOptionsRequest(request);
-    } else if (request.uri.path == _readynessCheck) {
-      await _processReadynessRequest(request);
-    } else if (request.uri.path == _healthCheck) {
-      await _processHealthRequest(request);
-    } else if (request.uri.path.startsWith(_API_V1_PREFIX)) {
-      await _processApiRequest(request);
-    } else if (request.uri.path.startsWith(PROTO_API_URL_PREFIX)) {
-      await shelf_io.handleRequest(request, commonServerProto.router.handler);
+    } else if (request.uri.path == _readinessCheck) {
+      await _processReadinessRequest(request);
+    } else if (request.uri.path == _livenessCheck) {
+      await _processLivenessRequest(request);
+    } else if (request.uri.path.startsWith(_API_PREFIX)) {
+      await shelf_io.handleRequest(request, commonServerApi.router.handler);
     } else {
       await _processDefaultRequest(request);
     }
   }
 
   Future<void> _processOptionsRequest(io.HttpRequest request) async {
-    final requestedMethod =
-        request.headers.value('access-control-request-method');
-    int statusCode;
-    if (requestedMethod != null && requestedMethod.toUpperCase() == 'POST') {
-      statusCode = io.HttpStatus.ok;
-    } else {
-      statusCode = io.HttpStatus.badRequest;
-    }
+    final statusCode = io.HttpStatus.ok;
     request.response.statusCode = statusCode;
     await request.response.close();
   }
 
-  Future _processReadynessRequest(io.HttpRequest request) async {
-    if (commonServerImpl.running) {
+  Future _processReadinessRequest(io.HttpRequest request) async {
+    _logger.info('Processing readiness check');
+    if (!commonServerImpl.isRestarting &&
+        DateTime.now().isBefore(_serveUntil)) {
       request.response.statusCode = io.HttpStatus.ok;
     } else {
-      request.response.statusCode = io.HttpStatus.internalServerError;
-      _logger.info('CommonServer not running - failing readiness check.');
+      request.response.statusCode = io.HttpStatus.serviceUnavailable;
+      _logger.severe('CommonServer not running - failing readiness check.');
     }
 
     await request.response.close();
   }
 
-  Future _processHealthRequest(io.HttpRequest request) async {
-    if (commonServerImpl.running && !commonServerImpl.analysisServersRunning) {
-      _logger.severe('CommonServer running without analysis servers. '
-          'Intentionally failing healthcheck.');
-      request.response.statusCode = io.HttpStatus.internalServerError;
+  Future _processLivenessRequest(io.HttpRequest request) async {
+    _logger.info('Processing liveness check');
+    if (!commonServerImpl.isHealthy || DateTime.now().isAfter(_serveUntil)) {
+      _logger.severe('CommonServer is no longer healthy.'
+          ' Intentionally failing health check.');
+      request.response.statusCode = io.HttpStatus.serviceUnavailable;
     } else {
       try {
         final tempDir = await io.Directory.systemTemp.createTemp('healthz');
@@ -157,46 +148,25 @@ class GaeServer {
           await file.writeAsString('testing123\n' * 1000, flush: true);
           final stat = await file.stat();
           if (stat.size > 10000) {
+            _logger.info('CommonServer healthy and file system working.'
+                ' Passing health check.');
             request.response.statusCode = io.HttpStatus.ok;
           } else {
-            request.response.statusCode = io.HttpStatus.internalServerError;
+            _logger.severe('CommonServer healthy, but filesystem is not.'
+                ' Intentionally failing health check.');
+            request.response.statusCode = io.HttpStatus.serviceUnavailable;
           }
         } finally {
           await tempDir.delete(recursive: true);
         }
       } catch (e) {
-        _logger.severe('Failed to create temporary file: $e');
-        request.response.statusCode = io.HttpStatus.internalServerError;
+        _logger.severe('CommonServer healthy, but failed to create temporary'
+            ' file: $e');
+        request.response.statusCode = io.HttpStatus.serviceUnavailable;
       }
     }
 
     await request.response.close();
-  }
-
-  Future _processApiRequest(io.HttpRequest request) async {
-    if (!discoveryEnabled) {
-      apiServer.enableDiscoveryApi();
-      discoveryEnabled = true;
-    }
-    // NOTE: We could read in the request body here and parse it similar to
-    // the _parseRequest method to determine content-type and dispatch to e.g.
-    // a plain text handler if we want to support that.
-    final apiRequest = rpc.HttpApiRequest.fromHttpRequest(request);
-
-    // Dartpad sends data as plain text, we need to promote this to
-    // application/json to ensure that the rpc library processes it correctly
-    try {
-      apiRequest.headers['content-type'] = 'application/json; charset=utf-8';
-      final apiResponse = await apiServer.handleHttpApiRequest(apiRequest);
-      await rpc.sendApiResponse(apiResponse, request.response);
-    } catch (e) {
-      // This should only happen in the case where there is a bug in the rpc
-      // package. Otherwise it always returns an HttpApiResponse.
-      _logger.warning('Failed with error: $e when trying to call '
-          'method at \'${request.uri.path}\'.');
-      request.response.statusCode = io.HttpStatus.internalServerError;
-      await request.response.close();
-    }
   }
 
   Future _processDefaultRequest(io.HttpRequest request) async {
