@@ -182,7 +182,7 @@ class Compiler {
         final results = DDCCompilationResults(
           compiledJS: processedJs,
           modulesBaseUrl:
-              'https://storage.googleapis.com/nnbd_artifacts/2.8.0/',
+              'https://storage.googleapis.com/nnbd_artifacts/2.9.0/',
         );
         return results;
       }

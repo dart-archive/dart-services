@@ -7,7 +7,7 @@ FROM google/dart:2.8.2
 #
 # $ (cd flutter && git rev-parse HEAD)
 ARG FLUTTER_COMMIT=8f7327f83a3e094285163ae402c6f94190fc1674
-ARG NNBD_SDK_VERSION=2.8.0
+ARG NNBD_SDK_VERSION="2.9.0-10.0.dev"
 
 # We install unzip and remove the apt-index again to keep the
 # docker image diff small.
@@ -33,7 +33,7 @@ RUN pub get --offline
 ENV PATH="/home/dart/.pub-cache/bin:${PATH}"
 
 # Download the NNBD Dart SDK and unzip it.
-RUN wget https://storage.googleapis.com/nnbd_artifacts/$NNBD_SDK_VERSION/dartsdk-linux-x64-release.zip
+RUN wget https://storage.googleapis.com/dart-archive/channels/dev/release/$NNBD_SDK_VERSION/sdk/dartsdk-linux-x64-release.zip
 RUN unzip dartsdk-linux-x64-release.zip
 
 # Clone the flutter repo and set it to the same commit as the flutter submodule.

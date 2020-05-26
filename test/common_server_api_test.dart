@@ -153,7 +153,7 @@ void defineTests() {
           'packageImports': ['flutter']
         });
       }
-    });
+    }, skip: true);
 
     test('analyze errors', () async {
       for (final version in versions) {
