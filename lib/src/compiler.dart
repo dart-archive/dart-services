@@ -136,25 +136,18 @@ class Compiler {
 
       final mainPath = path.join(temp.path, kMainDart);
       final bootstrapPath = path.join(temp.path, kBootstrapDart);
-      final bootstrapContents =
-          usingFlutter ? kBootstrapFlutterCode : kBootstrapDartCode;
+      final bootstrapContents = kBootstrapDartCode;
 
       await File(bootstrapPath).writeAsString(bootstrapContents);
       await File(mainPath).writeAsString(input);
 
       final arguments = <String>[
         '--modules=amd',
-//        if (usingFlutter) ...[
-//          '-s',
-//          _flutterWebManager.summaryFilePath,
-//          '-s',
-//          '${_flutterSdk.flutterBinPath}/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk.dill'
-//        ],
         ...['-o', path.join(temp.path, '$kMainDart.js')],
         ...['--module-name', 'dartpad_main'],
+        '--sound-null-safety',
         '--enable-experiment=non-nullable',
         bootstrapPath,
-        '--packages=${_flutterWebManager.packagesFilePath}',
       ];
 
       final mainJs = File(path.join(temp.path, '$kMainDart.js'));
@@ -182,7 +175,7 @@ class Compiler {
         final results = DDCCompilationResults(
           compiledJS: processedJs,
           modulesBaseUrl:
-              'https://storage.googleapis.com/nnbd_artifacts/2.9.0/',
+              'https://storage.googleapis.com/nnbd_artifacts/2.9.0-0.0-custom/',
         );
         return results;
       }
