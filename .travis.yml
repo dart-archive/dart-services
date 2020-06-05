@@ -20,7 +20,7 @@ before_script:
   - flutter doctor
   - flutter config --enable-web
   - flutter precache --web --no-android --no-ios --no-linux --no-windows --no-macos --no-fuchsia
-  - wget https://storage.cloud.google.com/nnbd_artifacts/2.9.0-0.0-custom/dartsdk-linux-x64-release.zip
+  - wget https://storage.googleapis.com/nnbd_artifacts/2.9.0-0.0-custom/dartsdk-linux-x64-release.zip
   - unzip dartsdk-linux-x64-release.zip
   - wget https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-x86_64.zip
   - unzip protoc-3.11.4-linux-x86_64.zip -d protoc
