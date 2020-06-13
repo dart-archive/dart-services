@@ -457,9 +457,6 @@ class CommonServerImpl {
 
   AnalysisServerWrapper getCorrectAnalysisServer(String source) {
     final imports = getAllImportsFor(source);
-//    return flutterWebManager.usesFlutterWeb(imports)
-//        ? flutterAnalysisServer
-//        : analysisServer;
     if (flutterWebManager.usesFlutterWeb(imports)) {
       throw BadRequest('This endpoint does not support Flutter analysis. '
           'Please remove any flutter references from your code and try again.');
