@@ -1,12 +1,12 @@
 # Keep aligned with min SDK in pubspec.yaml and Dart test version in .travis.yml
-FROM google/dart:2.8.2
+FROM google/dart:2.8.4
 
 # The specific commit that dart-services should use. This should be kept
 # in sync with the flutter submodule in the dart-services repo.
 # To retrieve this value, please run the following in your closest shell:
 #
 # $ (cd flutter && git rev-parse HEAD)
-ARG FLUTTER_COMMIT=8f7327f83a3e094285163ae402c6f94190fc1674
+ARG FLUTTER_COMMIT=f994b769743368b36b9c03fb359f62230b60ab92
 ARG NNBD_SDK_VERSION="2.9.0-0.0-custom"
 
 # We install unzip and remove the apt-index again to keep the
