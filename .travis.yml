@@ -16,7 +16,7 @@ branches:
 before_script:
   - git submodule init
   - git submodule update
-  - export PATH=$PATH:$PWD/flutter/bin
+  - export PATH=$PATH:$PWD/dart_services/flutter/bin
   - flutter doctor
   - flutter config --enable-web
   - flutter precache --web --no-android --no-ios --no-linux --no-windows --no-macos --no-fuchsia
@@ -25,4 +25,4 @@ before_script:
   - export PATH=$PATH:$PWD/protoc/bin
   - pub global activate protoc_plugin
   - export PATH=$PATH:$HOME/.pub-cache/bin
-script: ./tool/travis.sh
+script: ./dart_services/tool/travis.sh
