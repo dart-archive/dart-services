@@ -7,6 +7,9 @@
 # Fast fail the script on failures.
 set -e
 
+# Change directory to dart_services project
+cd dart_services
+
 # Run pub get to fetch packages.
 pub get
 
