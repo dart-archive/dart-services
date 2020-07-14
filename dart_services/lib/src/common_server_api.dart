@@ -17,7 +17,7 @@ import 'protos/dart_services.pb.dart' as proto;
 
 export 'common_server_impl.dart' show log, ServerContainer;
 
-part 'common_server_api.g.dart'; // generated with 'pub run build_runner build'
+part 'common_server_api.g.dart'; // re-generated with 'pub run build_runner build'
 
 const PROTOBUF_CONTENT_TYPE = 'application/x-protobuf';
 const JSON_CONTENT_TYPE = 'application/json; charset=utf-8';
