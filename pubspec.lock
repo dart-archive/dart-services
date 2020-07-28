@@ -14,7 +14,7 @@ packages:
       name: _fe_analyzer_shared
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.0"
+    version: "5.0.0"
   analysis_server_lib:
     dependency: "direct main"
     description:
@@ -28,7 +28,7 @@ packages:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.39.14"
+    version: "0.39.13"
   appengine:
     dependency: "direct main"
     description:
@@ -140,7 +140,7 @@ packages:
       name: cli_util
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.4"
+    version: "0.2.0"
   code_builder:
     dependency: transitive
     description:
@@ -189,7 +189,7 @@ packages:
       name: csslib
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.16.1"
+    version: "0.16.2"
   dart_style:
     dependency: transitive
     description:
@@ -595,7 +595,7 @@ packages:
       name: tuneup
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.6+2"
+    version: "0.3.7"
   typed_data:
     dependency: transitive
     description:
@@ -646,4 +646,4 @@ packages:
     source: hosted
     version: "2.2.1"
 sdks:
-  dart: ">=2.8.4 <3.0.0"
+  dart: ">=2.9.0-21.10.beta <3.0.0"
