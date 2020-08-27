@@ -4,7 +4,7 @@ install:
 dart:
   # Keep this value aligned with min SDK value in pubspec.yaml and FROM line of Dockerfile
   - "2.9.2"
-  # Dart 2.10 is currently b0rked: https://github.com/dart-lang/dart-pad/issues/1619
+  # 2.10 is currently breaking dart services. Tracking bug: https://github.com/dart-lang/dart-pad/issues/1616
   # - beta
 
 # Use Ubuntu 18.04 (Bionic Beaver) 
