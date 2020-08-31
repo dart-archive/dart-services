@@ -63,9 +63,8 @@ class AnalysisServerWrapper {
       }
 
       final serverArgs = <String>[
-        // WIP DO NOT SUBMIT
-        // TODO(domesticmouse): remove this change
-        '--no-use-new-relevance',
+        // See https://github.com/dart-lang/dart-pad/issues/1616
+        if (_sdkVersion.startsWith('2.10')) '--no-use-new-relevance',
         '--dartpad',
         '--client-id=DartPad',
         '--client-version=$_sdkVersion'
