@@ -6,8 +6,7 @@ environment:
   sdk: ^2.10.0-7.3.beta
 
 dependencies:
-  # TODO(domesticmouse): unpin analyzer after we update to Dart 2.10
-  analyzer: 0.39.16
+  analyzer: ^0.39.17
   analysis_server_lib: ^0.1.4
   appengine: ^0.12.0
   args: ^1.5.2
