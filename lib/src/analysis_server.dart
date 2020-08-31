@@ -63,6 +63,9 @@ class AnalysisServerWrapper {
       }
 
       final serverArgs = <String>[
+        // WIP DO NOT SUBMIT
+        // TODO(domesticmouse): remove this change
+        '--no-use-new-relevance',
         '--dartpad',
         '--client-id=DartPad',
         '--client-version=$_sdkVersion'
