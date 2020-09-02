@@ -4,9 +4,14 @@
 
 library services.flutter_analyzer_server_test;
 
+import 'package:dart_services/src/common.dart';
+import 'package:dart_services/src/compiler.dart';
 import 'package:dart_services/src/analysis_server.dart';
-import 'package:dart_services/src/protos/dart_services.pb.dart' as proto;
+import 'package:dart_services/src/common_server_impl.dart';
+import 'package:dart_services/src/common_server_api.dart';
 import 'package:dart_services/src/flutter_web.dart';
+import 'package:dart_services/src/protos/dart_services.pbserver.dart';
+import 'package:dart_services/src/server_cache.dart';
 import 'package:dart_services/src/sdk_manager.dart';
 import 'package:test/test.dart';
 
@@ -198,11 +203,12 @@ class _DraggableCardState extends State<DraggableCard>
 void main() => defineTests();
 
 void defineTests() {
-  AnalysisServerWrapper analysisServer;
-  FlutterWebManager flutterWebManager;
-
   group('Flutter SDK analysis_server', () {
+    AnalysisServerWrapper analysisServer;
+    FlutterWebManager flutterWebManager;
+
     setUp(() async {
+      await SdkManager.flutterSdk.init();
       flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
       await flutterWebManager.warmup();
       analysisServer = AnalysisServerWrapper(
@@ -226,8 +232,133 @@ void defineTests() {
       expect(results.issues, isEmpty);
     });
   });
+
+  group('Flutter SDK analysis_server with compiler', () {
+    AnalysisServerWrapper analysisServer;
+    FlutterWebManager flutterWebManager;
+    Compiler compiler;
+
+    setUp(() async {
+      await SdkManager.flutterSdk.init();
+      flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
+      await flutterWebManager.warmup();
+
+      compiler =
+          Compiler(SdkManager.sdk, SdkManager.flutterSdk, flutterWebManager);
+      await compiler.warmup();
+
+      analysisServer = AnalysisServerWrapper(
+          SdkManager.flutterSdk.sdkPath, flutterWebManager);
+      await analysisServer.init();
+      await analysisServer.warmup();
+    });
+
+    tearDown(() async {
+      await compiler.dispose();
+      await analysisServer.shutdown();
+      await flutterWebManager.dispose();
+    });
+
+    test('analyze counter app', () async {
+      final results = await analysisServer.analyze(counter);
+      expect(results.issues, isEmpty);
+    });
+
+    test('analyze Draggable Physics sample', () async {
+      final results = await analysisServer.analyze(draggableAndPhysics);
+      expect(results.issues, isEmpty);
+    });
+  });
+
+  group('Flutter SDK analysis_server with dart analysis_server', () {
+    AnalysisServerWrapper flutterAnalysisServer;
+    AnalysisServerWrapper dartAnalysisServer;
+    FlutterWebManager flutterWebManager;
+
+    setUp(() async {
+      await SdkManager.flutterSdk.init();
+      flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
+      await flutterWebManager.warmup();
+
+      flutterAnalysisServer = AnalysisServerWrapper(
+          SdkManager.flutterSdk.sdkPath, flutterWebManager);
+      await flutterAnalysisServer.init();
+      await flutterAnalysisServer.warmup();
+
+      dartAnalysisServer =
+          AnalysisServerWrapper(SdkManager.sdk.sdkPath, flutterWebManager);
+      await dartAnalysisServer.init();
+      await dartAnalysisServer.warmup();
+    });
+
+    tearDown(() async {
+      await flutterAnalysisServer.shutdown();
+      await dartAnalysisServer.shutdown();
+      await flutterWebManager.dispose();
+    });
+
+    test('analyze counter app', () async {
+      final results = await flutterAnalysisServer.analyze(counter);
+      expect(results.issues, isEmpty);
+    });
+
+    test('analyze Draggable Physics sample', () async {
+      final results = await flutterAnalysisServer.analyze(draggableAndPhysics);
+      expect(results.issues, isEmpty);
+    });
+  });
+
+  group('CommonServerImpl flutter analyze', () {
+    CommonServerImpl commonServerImpl;
+    FlutterWebManager flutterWebManager;
+
+    _MockContainer container;
+    _MockCache cache;
+
+    setUp(() async {
+      await SdkManager.flutterSdk.init();
+      container = _MockContainer();
+      cache = _MockCache();
+      flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
+      commonServerImpl =
+          CommonServerImpl(sdkPath, flutterWebManager, container, cache);
+      await commonServerImpl.init();
+    });
+
+    tearDown(() async {
+      await commonServerImpl.shutdown();
+      await flutterWebManager.dispose();
+    });
+
+    test('analyze counter app', () async {
+      final results =
+          await commonServerImpl.analyze(SourceRequest()..source = counter);
+      expect(results.issues, isEmpty);
+    });
+
+    test('analyze Draggable Physics sample', () async {
+      final results = await commonServerImpl
+          .analyze(SourceRequest()..source = draggableAndPhysics);
+      expect(results.issues, isEmpty);
+    });
+  });
 }
 
-bool completionsContains(proto.CompleteResponse response, String expected) =>
-    response.completions
-        .any((completion) => completion.completion['completion'] == expected);
+class _MockContainer implements ServerContainer {
+  @override
+  String get version => vmVersion;
+}
+
+class _MockCache implements ServerCache {
+  @override
+  Future<String> get(String key) => Future.value(null);
+
+  @override
+  Future set(String key, String value, {Duration expiration}) => Future.value();
+
+  @override
+  Future remove(String key) => Future.value();
+
+  @override
+  Future<void> shutdown() => Future.value();
+}
