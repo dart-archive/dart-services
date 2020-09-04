@@ -62,12 +62,10 @@ void main() => defineTests();
 
 void defineTests() {
   AnalysisServerWrapper analysisServer;
-  FlutterWebManager flutterWebManager;
 
   group('Platform SDK analysis_server', () {
     setUp(() async {
-      flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
-      analysisServer = AnalysisServerWrapper(sdkPath, flutterWebManager);
+      analysisServer = DartAnalysisServerWrapper();
       await analysisServer.init();
     });
 
@@ -189,10 +187,11 @@ void defineTests() {
   });
 
   group('Flutter cached SDK analysis_server', () {
+    FlutterWebManager flutterWebManager;
+
     setUp(() async {
       flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
-      analysisServer = AnalysisServerWrapper(
-          SdkManager.flutterSdk.sdkPath, flutterWebManager);
+      analysisServer = FlutterAnalysisServerWrapper(flutterWebManager);
       await analysisServer.init();
     });
 
