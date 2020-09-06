@@ -28,20 +28,22 @@ class Compiler {
   final String _dartdevcPath;
   final BazelWorkerDriver _ddcDriver;
 
-  Compiler(this._sdk, this._flutterSdk, this._flutterWebManager)
+  Compiler(this._sdk, this._flutterSdk)
       : _dartdevcPath = path.join(_flutterSdk.sdkPath, 'bin', 'dartdevc'),
         _ddcDriver = BazelWorkerDriver(
             () => Process.start(
                   path.join(_flutterSdk.sdkPath, 'bin', 'dartdevc'),
                   <String>['--persistent_worker'],
                 ),
-            maxWorkers: 1);
+            maxWorkers: 1),
+        _flutterWebManager = FlutterWebManager(_flutterSdk);
 
   bool importsOkForCompile(Set<String> imports) {
     return !_flutterWebManager.hasUnsupportedImport(imports);
   }
 
-  Future<CompilationResults> warmup({bool useHtml = false}) {
+  Future<CompilationResults> warmup({bool useHtml = false}) async {
+    await _flutterWebManager.warmup();
     return compile(useHtml ? sampleCodeWeb : sampleCode);
   }
 

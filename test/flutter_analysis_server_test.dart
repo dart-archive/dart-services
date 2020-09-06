@@ -238,7 +238,6 @@ void defineTests() {
       await SdkManager.flutterSdk.init();
 
       analysisServersWrapper = AnalysisServersWrapper();
-      await analysisServersWrapper.init();
       await analysisServersWrapper.warmup();
     });
 

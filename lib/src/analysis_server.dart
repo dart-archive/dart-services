@@ -58,7 +58,7 @@ class AnalysisServersWrapper {
   bool get isHealthy => (_restartingSince == null ||
       DateTime.now().difference(_restartingSince).inMinutes < 30);
 
-  Future<void> init() async {
+  Future<void> warmup() async {
     _logger.info('Beginning AnalysisServersWrapper init().');
     _dartAnalysisServer = DartAnalysisServerWrapper();
     _flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
@@ -85,6 +85,12 @@ class AnalysisServersWrapper {
     }));
 
     _restartingSince = null;
+
+    return Future.wait(<Future<dynamic>>[
+      _flutterWebManager.warmup(),
+      _flutterAnalysisServer.warmup(),
+      _dartAnalysisServer.warmup(),
+    ]);
   }
 
   Future<void> _restart() async {
@@ -92,16 +98,9 @@ class AnalysisServersWrapper {
     await shutdown();
     _logger.info('shutdown');
 
-    await init();
     await warmup();
     _logger.warning('Restart complete');
   }
-
-  Future warmup() => Future.wait(<Future<dynamic>>[
-        _flutterWebManager.warmup(),
-        _flutterAnalysisServer.warmup(),
-        _dartAnalysisServer.warmup(),
-      ]);
 
   Future<dynamic> shutdown() {
     _restartingSince = DateTime.now();

@@ -15,9 +15,7 @@ import '../version.dart';
 import 'analysis_server.dart';
 import 'common.dart';
 import 'compiler.dart';
-import 'flutter_web.dart';
 import 'protos/dart_services.pb.dart' as proto;
-import 'pub.dart';
 import 'sdk_manager.dart';
 import 'server_cache.dart';
 
@@ -38,7 +36,7 @@ class CommonServerImpl {
   final ServerContainer container;
   final ServerCache cache;
 
-  FlutterWebManager flutterWebManager;
+  // FlutterWebManager flutterWebManager;
   Compiler compiler;
   AnalysisServersWrapper analysisServers;
 
@@ -57,15 +55,9 @@ class CommonServerImpl {
 
   Future<void> init() async {
     log.info('Beginning CommonServer init().');
-    flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
     analysisServers = AnalysisServersWrapper();
-    compiler =
-        Compiler(SdkManager.sdk, SdkManager.flutterSdk, flutterWebManager);
+    compiler = Compiler(SdkManager.sdk, SdkManager.flutterSdk);
 
-    await analysisServers.init();
-    log.info('Analysis servers initialized.');
-
-    await flutterWebManager.warmup();
     await compiler.warmup();
     await analysisServers.warmup();
   }
@@ -74,7 +66,6 @@ class CommonServerImpl {
     return Future.wait(<Future<dynamic>>[
       analysisServers.shutdown(),
       compiler.dispose(),
-      flutterWebManager.dispose(),
       Future<dynamic>.sync(cache.shutdown)
     ]).timeout(const Duration(minutes: 1));
   }
@@ -177,8 +168,6 @@ class CommonServerImpl {
     bool returnSourceMap = false,
   }) async {
     try {
-      await _checkPackageReferences(source);
-
       final sourceHash = _hashSource(source);
       final memCacheKey = '%%COMPILE:v0'
           ':returnSourceMap:$returnSourceMap:source:$sourceHash';
@@ -236,8 +225,6 @@ class CommonServerImpl {
 
   Future<proto.CompileDDCResponse> _compileDDC(String source) async {
     try {
-      await _checkPackageReferences(source);
-
       final sourceHash = _hashSource(source);
       final memCacheKey = '%%COMPILE_DDC:v0:source:$sourceHash';
 
@@ -288,16 +275,6 @@ class CommonServerImpl {
 
   Future<void> _setCache(String query, String result) =>
       cache.set(query, result, expiration: _standardExpiration);
-
-  /// Check that the set of packages referenced is valid.
-  Future<void> _checkPackageReferences(String source) async {
-    final imports = getAllImportsFor(source);
-
-    if (flutterWebManager.hasUnsupportedImport(imports)) {
-      throw BadRequest(
-          'Unsupported input: ${flutterWebManager.getUnsupportedImport(imports)}');
-    }
-  }
 }
 
 String _printCompileProblem(CompilationProblem problem) => problem.message;
