@@ -233,21 +233,17 @@ void defineTests() {
 
   group('Flutter SDK analysis_server with analysis servers', () {
     AnalysisServersWrapper analysisServersWrapper;
-    FlutterWebManager flutterWebManager;
 
     setUp(() async {
       await SdkManager.flutterSdk.init();
-      flutterWebManager = FlutterWebManager(SdkManager.flutterSdk);
-      await flutterWebManager.warmup();
 
-      analysisServersWrapper = AnalysisServersWrapper(flutterWebManager);
+      analysisServersWrapper = AnalysisServersWrapper();
       await analysisServersWrapper.init();
       await analysisServersWrapper.warmup();
     });
 
     tearDown(() async {
       await analysisServersWrapper.shutdown();
-      await flutterWebManager.dispose();
     });
 
     test('analyze counter app', () async {
