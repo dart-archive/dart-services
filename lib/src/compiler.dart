@@ -188,7 +188,10 @@ class Compiler {
     }
   }
 
-  Future<void> dispose() => _ddcDriver.terminateWorkers();
+  Future<void> dispose() async {
+    await _flutterWebManager.dispose();
+    return _ddcDriver.terminateWorkers();
+  }
 }
 
 /// The result of a dart2js compile.
