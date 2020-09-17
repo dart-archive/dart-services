@@ -3,7 +3,7 @@ publish_to: none
 
 environment:
   # Keep SDK aligned with .travis.yml and FROM line of Dockerfile
-  sdk: ^2.10.0-7.3.beta
+  sdk: ^2.10.0-110.3.beta
 
 dependencies:
   analyzer: ^0.39.17
