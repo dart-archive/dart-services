@@ -70,20 +70,25 @@ class CommonServerImplProxy implements CommonServerImpl {
   @override
   Future<proto.CompileResponse> compile(proto.CompileRequest request) {
     final url = '${_proxyTarget}api/dartservices/v2/compile';
-    final proxyResponse = http
-        .post(url,
-            headers: {'Content-Type': 'application/json; charset=utf-8'},
-            body: _jsonEncoder.convert(request.toProto3Json()))
-        .then<String>((value) => value.body);
+    final proxyResponse = http.post(url,
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
+        body: _jsonEncoder.convert(request.toProto3Json()));
     if (_darkLaunch) {
-      proxyResponse.then((value) {
-        log.info('compile: Proxied request returned: $value');
+      proxyResponse.then((response) {
+        log.info(
+            'compile: Proxied request returned status code: ${response.statusCode}');
       });
       return _wrapped.compile(request);
     } else {
-      return proxyResponse.then((value) async {
-        return proto.CompileResponse.create()
-          ..mergeFromProto3Json(JsonDecoder().convert(value));
+      return proxyResponse.then((response) async {
+        if (response.statusCode == 200) {
+          return proto.CompileResponse.create()
+            ..mergeFromProto3Json(JsonDecoder().convert(response.body));
+        } else {
+          final err = proto.BadRequest.create()
+            ..mergeFromProto3Json(JsonDecoder().convert(response.body));
+          throw BadRequest(err.error.message);
+        }
       });
     }
   }
@@ -91,20 +96,25 @@ class CommonServerImplProxy implements CommonServerImpl {
   @override
   Future<proto.CompileDDCResponse> compileDDC(proto.CompileDDCRequest request) {
     final url = '${_proxyTarget}api/dartservices/v2/compileDDC';
-    final proxyResponse = http
-        .post(url,
-            headers: {'Content-Type': 'application/json; charset=utf-8'},
-            body: _jsonEncoder.convert(request.toProto3Json()))
-        .then<String>((value) => value.body);
+    final proxyResponse = http.post(url,
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
+        body: _jsonEncoder.convert(request.toProto3Json()));
     if (_darkLaunch) {
-      proxyResponse.then((value) {
-        log.info('compileDDC: Proxied request returned: $value');
+      proxyResponse.then((response) {
+        log.info(
+            'compileDDC: Proxied request returned status code: ${response.statusCode}');
       });
       return _wrapped.compileDDC(request);
     } else {
-      return proxyResponse.then((value) async {
-        return proto.CompileDDCResponse.create()
-          ..mergeFromProto3Json(JsonDecoder().convert(value));
+      return proxyResponse.then((response) async {
+        if (response.statusCode == 200) {
+          return proto.CompileDDCResponse.create()
+            ..mergeFromProto3Json(JsonDecoder().convert(response.body));
+        } else {
+          final err = proto.BadRequest.create()
+            ..mergeFromProto3Json(JsonDecoder().convert(response.body));
+          throw BadRequest(err.error.message);
+        }
       });
     }
   }
