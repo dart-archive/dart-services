@@ -171,7 +171,7 @@ class CommonServerImplProxy implements CommonServerImpl {
   set _compiler(Compiler __compiler) => _wrapped._compiler = __compiler;
 }
 
-final JsonEncoder _jsonEncoder = const JsonEncoder.withIndent(' ');
+final JsonEncoder _jsonEncoder = const JsonEncoder.withIndent('  ');
 
 class CommonServerImpl {
   final ServerContainer _container;
