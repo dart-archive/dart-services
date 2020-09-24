@@ -9,6 +9,7 @@ import 'dart:io' as io;
 import 'dart:math';
 
 import 'package:appengine/appengine.dart' as ae;
+import 'package:args/args.dart';
 import 'package:logging/logging.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
@@ -28,8 +29,15 @@ final DateTime _serveUntil = DateTime.now()
 final Logger _logger = Logger('gae_server');
 
 void main(List<String> args) {
-  var gaePort = 8080;
-  if (args.isNotEmpty) gaePort = int.parse(args[0]);
+  final parser = ArgParser()
+    ..addFlag('dark-launch', help: 'Dark launch proxied compilation requests')
+    ..addOption('proxy-target',
+        help: 'URL base to proxy compilation requests to')
+    ..addOption('port',
+        abbr: 'p', defaultsTo: '8080', help: 'Port to attach to');
+  final results = parser.parse(args);
+
+  final gaePort = int.tryParse(results['port'] as String ?? '') ?? 8080;
 
   if (SdkManager.sdk.sdkPath == null) {
     throw 'No Dart SDK is available; set the DART_SDK env var.';
@@ -46,10 +54,12 @@ void main(List<String> args) {
     }
   });
   log.info('''Initializing dart-services:
-    port: $gaePort
+    --port: $gaePort
+    --dark-launch: ${results['dark-launch']}
+    --proxy-target: ${results['proxy-target']}
     sdkPath: ${SdkManager.sdk?.sdkPath}
-    REDIS_SERVER_URI: ${io.Platform.environment['REDIS_SERVER_URI']}
-    GAE_VERSION: ${io.Platform.environment['GAE_VERSION']}
+    \$REDIS_SERVER_URI: ${io.Platform.environment['REDIS_SERVER_URI']}
+    \$GAE_VERSION: ${io.Platform.environment['GAE_VERSION']}
   ''');
 
   final server = GaeServer(io.Platform.environment['REDIS_SERVER_URI']);
