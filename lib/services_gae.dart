@@ -62,24 +62,25 @@ void main(List<String> args) {
     \$GAE_VERSION: ${io.Platform.environment['GAE_VERSION']}
   ''');
 
-  final server = GaeServer(io.Platform.environment['REDIS_SERVER_URI']);
+  final server = GaeServer(
+      io.Platform.environment['REDIS_SERVER_URI'],
+      results['dark-launch'].toString().toLowerCase() == 'true',
+      results['proxy-target'].toString());
   server.start(gaePort);
 }
 
 class GaeServer {
   final String redisServerUri;
 
-  bool discoveryEnabled;
   CommonServerImpl commonServerImpl;
   CommonServerApi commonServerApi;
 
-  GaeServer(this.redisServerUri) {
+  GaeServer(this.redisServerUri, bool darkLaunch, String proxyTarget) {
     hierarchicalLoggingEnabled = true;
     recordStackTraceAtLevel = Level.SEVERE;
 
     _logger.level = Level.ALL;
 
-    discoveryEnabled = false;
     commonServerImpl = CommonServerImpl(
       GaeServerContainer(),
       redisServerUri == null
@@ -89,6 +90,10 @@ class GaeServer {
               io.Platform.environment['GAE_VERSION'],
             ),
     );
+    if (proxyTarget != null && proxyTarget.isNotEmpty) {
+      commonServerImpl =
+          CommonServerImplProxy(commonServerImpl, darkLaunch, proxyTarget);
+    }
     commonServerApi = CommonServerApi(commonServerImpl);
   }
 
