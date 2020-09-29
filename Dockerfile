@@ -50,4 +50,6 @@ EXPOSE 8080
 # the Dart app using custom script enabling debug modes.
 CMD []
 
-ENTRYPOINT /bin/bash /dart_runtime/dart_run.sh
+ENTRYPOINT ["/dart_runtime/dart_run.sh", \
+            "--port", "8080", \
+            "--proxy-target", "https://dart-service-cloud-run-hdjctvyqtq-uc.a.run.app/"]
