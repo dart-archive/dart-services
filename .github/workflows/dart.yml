@@ -29,7 +29,7 @@ jobs:
       - name: Activate pub globals
         run: dart pub global activate grinder protoc_plugin
       - name: Check formatting
-        run: dart format --output=none --set-exit-if-changed lib test tool
+        run: dart format --set-exit-if-changed lib test tool
       - name: Analyze code (lib and test)
         run: dart analyze .
       - name: Analyze code (example)
@@ -39,5 +39,9 @@ jobs:
           dart pub get
           dart analyze .
         shell: bash
-      - name: Grind
-        run: dart pub run grinder
+      - name: Prepare to run unit tests (but do not actually run tests).
+        run: dart pub run grinder buildbot
+      - name: Validate storage artifacts
+        run: dart pub run grinder validate-storage-artifacts
+      - name: run tests
+        run: dart test/all.dart
