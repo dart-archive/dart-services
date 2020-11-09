@@ -8,8 +8,8 @@ on:
     branches: [master]
 
 jobs:
-  # Check code formating and static analysis on a single OS (linux)
-  # against Dart stable and dev.
+  # Check code formating, static analysis, and build on a single OS (linux)
+  # against Dart stable and beta.
   analyze:
     runs-on: ubuntu-latest
     strategy:
