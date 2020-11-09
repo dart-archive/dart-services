@@ -29,7 +29,7 @@ jobs:
       - name: Activate pub globals
         run: dart pub global activate grinder protoc_plugin
       - name: Check formatting
-        run: dart format --output=none --set-exit-if-changed .
+        run: dart format --output=none --set-exit-if-changed lib test tool
       - name: Analyze code (lib and test)
         run: dart analyze .
       - name: Analyze code (example)
