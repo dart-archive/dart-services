@@ -2,8 +2,8 @@ name: dart_services
 publish_to: none
 
 environment:
-  # Keep SDK aligned with .travis.yml and FROM line of Dockerfile
-  sdk: ^2.11.0-213.5.beta
+  # Lock to 2.10.x as this code base is not yet migrated to null safe.
+  sdk: ^2.10.3
 
 dependencies:
   analyzer: ^0.39.17
