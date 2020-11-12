@@ -41,6 +41,8 @@ jobs:
           dart pub get
           dart analyze .
         shell: bash
+      - name: Flutter doctor
+        run: flutter/bin/flutter doctor -v
       - name: Prepare to run unit tests (but do not actually run tests).
         run: dart pub run grinder buildbot
       - name: Validate storage artifacts
