@@ -3,7 +3,7 @@ publish_to: none
 
 environment:
   # Lock to 2.10.x as this code base is not yet migrated to null safe.
-  sdk: ^2.10.3
+  sdk: ^2.10.4
 
 dependencies:
   analyzer: ^0.39.17
