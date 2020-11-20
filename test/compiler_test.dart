@@ -65,6 +65,17 @@ void defineTests() {
       expect(result.compiledJS, contains("define('dartpad_main', ["));
     });
 
+    test('compileDDC with Flutter Sunflower', () async {
+      final result = await compiler.compileDDC(sampleCodeFlutterSunflower);
+      print(result.problems);
+
+      expect(result.success, true);
+      expect(result.compiledJS, isNotEmpty);
+      expect(result.modulesBaseUrl, isNotEmpty);
+
+      expect(result.compiledJS, contains("define('dartpad_main', ["));
+    });
+
     test('compileDDC with async', () async {
       final result = await compiler.compileDDC(sampleCodeAsync);
       expect(result.success, true);
