@@ -2,8 +2,6 @@ language: dart
 install:
   - gem install coveralls-lcov
 dart:
-  # Keep this value aligned with min SDK value in pubspec.yaml and FROM line of Dockerfile
-  - stable
   - beta
   - dev
 
