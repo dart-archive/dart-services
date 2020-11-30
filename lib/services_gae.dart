@@ -29,7 +29,6 @@ final Logger _logger = Logger('gae_server');
 
 void main(List<String> args) {
   final parser = ArgParser()
-    ..addFlag('dark-launch', help: 'Dark launch proxied compilation requests')
     ..addOption('proxy-target',
         help: 'URL base to proxy compilation requests to')
     ..addOption('port',
@@ -54,16 +53,13 @@ void main(List<String> args) {
   });
   log.info('''Initializing dart-services:
     --port: $gaePort
-    --dark-launch: ${results['dark-launch']}
     --proxy-target: ${results['proxy-target']}
     sdkPath: ${SdkManager.sdk?.sdkPath}
     \$REDIS_SERVER_URI: ${io.Platform.environment['REDIS_SERVER_URI']}
     \$GAE_VERSION: ${io.Platform.environment['GAE_VERSION']}
   ''');
 
-  final server = GaeServer(
-      io.Platform.environment['REDIS_SERVER_URI'],
-      results['dark-launch'].toString().toLowerCase() == 'true',
+  final server = GaeServer(io.Platform.environment['REDIS_SERVER_URI'],
       results['proxy-target'].toString());
   server.start(gaePort);
 }
@@ -74,7 +70,7 @@ class GaeServer {
   CommonServerImpl commonServerImpl;
   CommonServerApi commonServerApi;
 
-  GaeServer(this.redisServerUri, bool darkLaunch, String proxyTarget) {
+  GaeServer(this.redisServerUri, String proxyTarget) {
     hierarchicalLoggingEnabled = true;
     recordStackTraceAtLevel = Level.SEVERE;
 
@@ -90,8 +86,7 @@ class GaeServer {
             ),
     );
     if (proxyTarget != null && proxyTarget.isNotEmpty) {
-      commonServerImpl =
-          CommonServerImplProxy(commonServerImpl, darkLaunch, proxyTarget);
+      commonServerImpl = CommonServerImplProxy(commonServerImpl, proxyTarget);
     }
     commonServerApi = CommonServerApi(commonServerImpl);
   }
