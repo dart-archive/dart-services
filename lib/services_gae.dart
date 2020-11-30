@@ -76,17 +76,18 @@ class GaeServer {
 
     _logger.level = Level.ALL;
 
-    commonServerImpl = CommonServerImpl(
-      GaeServerContainer(),
-      redisServerUri == null
-          ? InMemoryCache()
-          : RedisCache(
-              redisServerUri,
-              io.Platform.environment['GAE_VERSION'],
-            ),
-    );
     if (proxyTarget != null && proxyTarget.isNotEmpty) {
-      commonServerImpl = CommonServerImplProxy(commonServerImpl, proxyTarget);
+      commonServerImpl = CommonServerImplProxy(proxyTarget);
+    } else {
+      commonServerImpl = CommonServerImpl(
+        GaeServerContainer(),
+        redisServerUri == null
+            ? InMemoryCache()
+            : RedisCache(
+                redisServerUri,
+                io.Platform.environment['GAE_VERSION'],
+              ),
+      );
     }
     commonServerApi = CommonServerApi(commonServerImpl);
   }
