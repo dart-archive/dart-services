@@ -69,6 +69,7 @@ class GaeServer {
 
   CommonServerImpl commonServerImpl;
   CommonServerApi commonServerApi;
+  bool proxying = false;
 
   GaeServer(this.redisServerUri, String proxyTarget) {
     hierarchicalLoggingEnabled = true;
@@ -78,6 +79,7 @@ class GaeServer {
 
     if (proxyTarget != null && proxyTarget.isNotEmpty) {
       commonServerImpl = CommonServerImplProxy(proxyTarget);
+      proxying = true;
     } else {
       commonServerImpl = CommonServerImpl(
         GaeServerContainer(),
@@ -125,7 +127,9 @@ class GaeServer {
 
   Future _processReadinessRequest(io.HttpRequest request) async {
     _logger.info('Processing readiness check');
-    if (!commonServerImpl.isRestarting &&
+    if (proxying) {
+      request.response.statusCode = io.HttpStatus.ok;
+    } else if (!commonServerImpl.isRestarting &&
         DateTime.now().isBefore(_serveUntil)) {
       request.response.statusCode = io.HttpStatus.ok;
     } else {
@@ -138,7 +142,10 @@ class GaeServer {
 
   Future _processLivenessRequest(io.HttpRequest request) async {
     _logger.info('Processing liveness check');
-    if (!commonServerImpl.isHealthy || DateTime.now().isAfter(_serveUntil)) {
+    if (proxying) {
+      request.response.statusCode = io.HttpStatus.ok;
+    } else if (!commonServerImpl.isHealthy ||
+        DateTime.now().isAfter(_serveUntil)) {
       _logger.severe('CommonServer is no longer healthy.'
           ' Intentionally failing health check.');
       request.response.statusCode = io.HttpStatus.serviceUnavailable;
