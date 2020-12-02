@@ -15,18 +15,24 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-RUN groupadd --system dart && \
+RUN \
+  groupadd --system dart && \
   useradd --no-log-init --system --home /home/dart --create-home -g dart dart
-RUN chown dart:dart /app
+RUN chown dart:dart /app && chmod 775 /app
 
 # Switch to a new, non-root user to use the flutter tool.
 # The Flutter tool won't perform its actions when run as root.
 USER dart
 
 COPY --chown=dart:dart tool/dart_run.sh /dart_runtime/
-COPY --chown=dart:dart pubspec.* /app/
+RUN chmod 664 /dart_runtime/dart_run.sh
+COPY --chown=dart:dart pubspec.* ./
+RUN chmod 664 pubspec.*
 RUN pub get
-COPY --chown=dart:dart . /app
+COPY --chown=dart:dart . .
+RUN find . \
+  \( -type f -exec chmod 664 {} \; \) , \
+  \( -type d -exec chmod 775 {} \; \)
 RUN pub get --offline
 
 ENV PATH="/home/dart/.pub-cache/bin:${PATH}"
