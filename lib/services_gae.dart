@@ -48,8 +48,10 @@ void main(List<String> args) {
     final out = ('${rec.level.name}: ${rec.time}: ${rec.message}\n');
     if (rec.level > Level.INFO) {
       io.stderr.write(out);
+      io.stderr.flush();
     } else {
       io.stdout.write(out);
+      io.stdout.flush();
     }
   });
   log.info('''Initializing dart-services:
@@ -122,62 +124,66 @@ class GaeServer {
   }
 
   Future<void> _processOptionsRequest(io.HttpRequest request) async {
-    final statusCode = io.HttpStatus.ok;
-    request.response.statusCode = statusCode;
+    request.response.statusCode = io.HttpStatus.ok;
     await request.response.close();
   }
 
   Future _processReadinessRequest(io.HttpRequest request) async {
     _logger.info('Processing readiness check');
-    if (!commonServerImpl.isRestarting &&
-        DateTime.now().isBefore(_serveUntil)) {
-      request.response.statusCode = io.HttpStatus.ok;
-    } else {
-      request.response.statusCode = io.HttpStatus.serviceUnavailable;
-      _logger.severe('CommonServer not running - failing readiness check.');
-    }
+    final response = request.response;
+    // if (!commonServerImpl.isRestarting &&
+    //     DateTime.now().isBefore(_serveUntil)) {
+    response.statusCode = io.HttpStatus.ok;
+    // } else {
+    //   response.statusCode = io.HttpStatus.serviceUnavailable;
+    //   _logger.severe('CommonServer not running - failing readiness check.');
+    // }
 
-    await request.response.close();
+    await response.close();
   }
 
   Future _processLivenessRequest(io.HttpRequest request) async {
     _logger.info('Processing liveness check');
-    if (!commonServerImpl.isHealthy || DateTime.now().isAfter(_serveUntil)) {
-      _logger.severe('CommonServer is no longer healthy.'
-          ' Intentionally failing health check.');
-      request.response.statusCode = io.HttpStatus.serviceUnavailable;
-    } else {
-      try {
-        final tempDir = await io.Directory.systemTemp.createTemp('healthz');
-        try {
-          final file = await io.File('${tempDir.path}/livecheck.txt');
-          await file.writeAsString('testing123\n' * 1000, flush: true);
-          final stat = await file.stat();
-          if (stat.size > 10000) {
-            _logger.info('CommonServer healthy and file system working.'
-                ' Passing health check.');
-            request.response.statusCode = io.HttpStatus.ok;
-          } else {
-            _logger.severe('CommonServer healthy, but filesystem is not.'
-                ' Intentionally failing health check.');
-            request.response.statusCode = io.HttpStatus.serviceUnavailable;
-          }
-        } finally {
-          await tempDir.delete(recursive: true);
-        }
-      } catch (e) {
-        _logger.severe('CommonServer healthy, but failed to create temporary'
-            ' file: $e');
-        request.response.statusCode = io.HttpStatus.serviceUnavailable;
-      }
-    }
+    final response = request.response;
+    // if (!commonServerImpl.isHealthy || DateTime.now().isAfter(_serveUntil)) {
+    //   _logger.severe('CommonServer is no longer healthy.'
+    //       ' Intentionally failing health check.');
+    //   response.statusCode = io.HttpStatus.serviceUnavailable;
+    // } else {
+    //   try {
+    //     final tempDir = await io.Directory.systemTemp.createTemp('healthz');
+    //     try {
+    //       final file = await io.File('${tempDir.path}/livecheck.txt');
+    //       await file.writeAsString('testing123\n' * 1000, flush: true);
+    //       final stat = await file.stat();
+    //       if (stat.size > 10000) {
+    //         _logger.info('CommonServer healthy and file system working.'
+    //             ' Passing health check.');
+    response.statusCode = io.HttpStatus.ok;
+    //       } else {
+    //         _logger.severe('CommonServer healthy, but filesystem is not.'
+    //             ' Intentionally failing health check.');
+    //         response.statusCode = io.HttpStatus.serviceUnavailable;
+    //       }
+    //     } finally {
+    //       await tempDir.delete(recursive: true);
+    //     }
+    //   } catch (e) {
+    //     _logger.severe('CommonServer healthy, but failed to create temporary'
+    //         ' file: $e');
+    //     response.statusCode = io.HttpStatus.serviceUnavailable;
+    //   }
+    // }
 
-    await request.response.close();
+    await response.close();
   }
 
   Future _processDefaultRequest(io.HttpRequest request) async {
-    request.response.statusCode = io.HttpStatus.notFound;
-    await request.response.close();
+    _logger.info('Processing default handler');
+    final response = request.response;
+
+    response.statusCode = io.HttpStatus.notFound;
+    await response.close();
   }
 }
 
