@@ -82,7 +82,7 @@ class Compiler {
       final mainSourceMap = File(path.join(temp.path, '$kMainDart.js.map'));
 
       final dart2JSPath = path.join(_sdk.sdkPath, 'bin', 'dart2js');
-      _logger.info('About to exec: $dart2JSPath $arguments');
+      _logger.info('About to exec: $dart2JSPath ${arguments.join(' ')}');
 
       final result = await Process.run(dart2JSPath, arguments,
           workingDirectory: temp.path);
