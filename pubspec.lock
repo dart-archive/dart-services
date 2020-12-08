@@ -310,7 +310,7 @@ packages:
     source: hosted
     version: "0.16.1"
   io:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: io
       url: "https://pub.dartlang.org"

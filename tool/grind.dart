@@ -23,7 +23,8 @@ Future<void> main(List<String> args) async {
 
 @Task()
 void analyze() {
-  Pub.run('tuneup', arguments: ['check']);
+  // Disabling: https://github.com/google/tuneup.dart/issues/89
+  // Pub.run('tuneup', arguments: ['check']);
 }
 
 @Task()
@@ -86,7 +87,52 @@ Future _validateExists(String url) async {
   }
 }
 
+@Task('build the project templates')
+void buildProjectTemplates() async {
+  final templatesPath =
+      Directory(path.join(Directory.current.path, 'project_templates'));
+  final exists = await templatesPath.exists();
+  if (exists) {
+    await templatesPath.delete(recursive: true);
+  }
+
+  final dartProjectPath =
+      Directory(path.join(templatesPath.path, 'dart_project'));
+  final dartProjectDir = await dartProjectPath.create(recursive: true);
+  joinFile(dartProjectDir, ['pubspec.yaml'])
+      .writeAsStringSync(FlutterWebManager.createPubspec(false));
+  await _runDartPubGet(dartProjectDir);
+
+  final flutterProjectPath =
+      Directory(path.join(templatesPath.path, 'flutter_project'));
+  final flutterProjectDir = await flutterProjectPath.create(recursive: true);
+  joinFile(flutterProjectDir, ['pubspec.yaml'])
+      .writeAsStringSync(FlutterWebManager.createPubspec(true));
+  await _runFlutterPubGet(flutterProjectDir);
+}
+
+Future<void> _runDartPubGet(Directory dir) async {
+  log('running dart pub get (${dir.path})');
+
+  await runWithLogging(
+    path.join(SdkManager.sdk.sdkPath, 'bin', 'dart'),
+    arguments: ['pub', 'get'],
+    workingDirectory: dir.path,
+  );
+}
+
+Future<void> _runFlutterPubGet(Directory dir) async {
+  log('running flutter pub get (${dir.path})');
+
+  await runWithLogging(
+    path.join(SdkManager.flutterSdk.flutterBinPath, 'flutter'),
+    arguments: ['pub', 'get'],
+    workingDirectory: dir.path,
+  );
+}
+
 @Task('build the sdk compilation artifacts for upload to google storage')
+@Depends(buildProjectTemplates)
 void buildStorageArtifacts() async {
   // build and copy dart_sdk.js, flutter_web.js, and flutter_web.dill
   final temp = Directory.systemTemp.createTempSync('flutter_web_sample');
