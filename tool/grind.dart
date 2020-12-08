@@ -22,9 +22,8 @@ Future<void> main(List<String> args) async {
 }
 
 @Task()
-void analyze() {
-  // Disabling: https://github.com/google/tuneup.dart/issues/89
-  // Pub.run('tuneup', arguments: ['check']);
+void analyze() async {
+  await runWithLogging('dart', arguments: ['analyze']);
 }
 
 @Task()
@@ -188,7 +187,7 @@ void _buildStorageArtifacts(Directory dir) async {
   // Make sure flutter/bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk.dill
   // is installed.
   await runWithLogging(
-    path.join(flutterSdkPath.path, 'bin/flutter'),
+    path.join(flutterSdkPath.path, 'bin', 'flutter'),
     arguments: ['precache', '--web'],
     workingDirectory: dir.path,
   );
