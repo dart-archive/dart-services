@@ -7,12 +7,12 @@ library services.grind;
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart_services/src/flutter_web.dart';
 import 'package:dart_services/src/sdk_manager.dart';
 import 'package:grinder/grinder.dart';
 import 'package:grinder/grinder_files.dart';
 import 'package:grinder/src/run_utils.dart' show mergeWorkingDirectory;
 import 'package:http/http.dart' as http;
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
 Future<void> main(List<String> args) async {
@@ -100,14 +100,14 @@ void buildProjectTemplates() async {
       Directory(path.join(templatesPath.path, 'dart_project'));
   final dartProjectDir = await dartProjectPath.create(recursive: true);
   joinFile(dartProjectDir, ['pubspec.yaml'])
-      .writeAsStringSync(FlutterWebManager.createPubspec(false));
+      .writeAsStringSync(createPubspec(includeFlutterWeb: false));
   await _runDartPubGet(dartProjectDir);
 
   final flutterProjectPath =
       Directory(path.join(templatesPath.path, 'flutter_project'));
   final flutterProjectDir = await flutterProjectPath.create(recursive: true);
   joinFile(flutterProjectDir, ['pubspec.yaml'])
-      .writeAsStringSync(FlutterWebManager.createPubspec(true));
+      .writeAsStringSync(createPubspec(includeFlutterWeb: true));
   await _runFlutterPubGet(flutterProjectDir);
 }
 
@@ -147,7 +147,7 @@ void buildStorageArtifacts() async {
 void _buildStorageArtifacts(Directory dir) async {
   final flutterSdkPath =
       Directory(path.join(Directory.current.path, 'flutter'));
-  final pubspec = FlutterWebManager.createPubspec(true);
+  final pubspec = createPubspec(includeFlutterWeb: true);
   joinFile(dir, ['pubspec.yaml']).writeAsStringSync(pubspec);
 
   // run flutter pub get
@@ -335,4 +335,27 @@ Future<void> runWithLogging(String executable,
   if (exitCode != 0) {
     fail('Unable to exec $executable, failed with code $exitCode');
   }
+}
+
+const String _samplePackageName = 'dartpad_sample';
+
+String createPubspec({@required bool includeFlutterWeb}) {
+  // Mark the samples as not null safe.
+  var content = '''
+name: $_samplePackageName
+environment:
+  sdk: '>=2.10.0 <3.0.0'
+''';
+
+  if (includeFlutterWeb) {
+    content += '''
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+''';
+  }
+
+  return content;
 }

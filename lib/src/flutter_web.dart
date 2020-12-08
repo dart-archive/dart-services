@@ -64,27 +64,4 @@ class FlutterWebManager {
 
     return null;
   }
-
-  static const String _samplePackageName = 'dartpad_sample';
-
-  static String createPubspec(bool includeFlutterWeb) {
-    // Mark the samples as not null safe.
-    var content = '''
-name: $_samplePackageName
-environment:
-  sdk: '>=2.10.0 <3.0.0'
-''';
-
-    if (includeFlutterWeb) {
-      content += '''
-dependencies:
-  flutter:
-    sdk: flutter
-  flutter_test:
-    sdk: flutter
-''';
-    }
-
-    return content;
-  }
 }
