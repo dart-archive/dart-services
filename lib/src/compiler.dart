@@ -66,7 +66,6 @@ class Compiler {
 
     try {
       await copyPath(_flutterWebManager.dartTemplateProject.path, temp.path);
-
       await Directory(path.join(temp.path, 'lib')).create(recursive: true);
 
       final arguments = <String>[
