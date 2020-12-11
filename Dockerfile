@@ -25,7 +25,7 @@ RUN chown dart:dart /app && chmod 775 /app
 USER dart
 
 COPY --chown=dart:dart tool/dart_run.sh /dart_runtime/
-RUN chmod 664 /dart_runtime/dart_run.sh
+RUN chmod 774 /dart_runtime/dart_run.sh
 COPY --chown=dart:dart pubspec.* ./
 RUN chmod 664 pubspec.*
 RUN pub get
