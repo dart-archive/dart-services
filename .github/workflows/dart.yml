@@ -8,7 +8,7 @@ on:
     branches: [master]
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *' # Every day at midnight
+    - cron: "0 0 * * *" # Every day at midnight
 
 jobs:
   # Check code formating, static analysis, and build on a single OS (linux)
@@ -35,7 +35,7 @@ jobs:
       - name: Report version
         run: dart --version
       - name: Prepare Flutter
-        run: |	
+        run: |
           git submodule init	
           git submodule update	
           export PATH=$PATH:$PWD/flutter/bin	
