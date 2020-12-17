@@ -51,5 +51,8 @@ jobs:
           export PATH=$PATH:$PWD/flutter/bin
           flutter doctor -v
           flutter config --enable-web
-      - run: ./tool/travis.sh
+      - run: |
+          dart pub global activate protoc_plugin
+          export PATH=$PATH:$HOME/.pub-cache/bin
+          ./tool/travis.sh
         continue-on-error: ${{ matrix.allow_failure }}
