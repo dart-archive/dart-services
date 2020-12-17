@@ -51,7 +51,8 @@ jobs:
           export PATH=$PATH:$PWD/flutter/bin
           flutter doctor -v
           flutter config --enable-web
-      - run: |
+      - name: Run tests
+        run: |
           export PATH=$PATH:$HOME/.pub-cache/bin
           dart pub global activate protoc_plugin
           ./tool/travis.sh
