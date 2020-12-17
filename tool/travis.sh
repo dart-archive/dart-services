@@ -7,8 +7,6 @@
 # Fast fail the script on failures.
 set -e
 
-echo `which protoc`
-
 # Run pub get to fetch packages.
 dart pub get
 
@@ -19,7 +17,7 @@ dart pub run grinder buildbot
 dart pub run grinder validate-storage-artifacts
 
 # Enforce dart formatting on lib, test and tool directories.
-echo -n "Files that need dartfmt: "
+echo -n "Files that need dart format: "
 dart format --dry-run --set-exit-if-changed lib test tool
 echo "All clean"
 
