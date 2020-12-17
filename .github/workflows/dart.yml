@@ -34,6 +34,12 @@ jobs:
         run: sudo apt-get install -y protobuf-compiler redis
       - name: Report version
         run: dart --version
-      - name: Install dependencies
-        run: ./tool/travis.sh
+      - name: Prepare Flutter
+        run: |	
+          git submodule init	
+          git submodule update	
+          export PATH=$PATH:$PWD/flutter/bin	
+          flutter doctor -v	
+          flutter config --enable-web
+      - run: ./tool/travis.sh
         continue-on-error: ${{ matrix.allow_failure }}
