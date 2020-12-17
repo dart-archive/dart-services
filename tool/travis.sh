@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Copyright (c) 2018, the Dart project authors. Please see the AUTHORS file
 # for details. All rights reserved. Use of this source code is governed by a
@@ -7,14 +7,16 @@
 # Fast fail the script on failures.
 set -e
 
+echo `which protoc`
+
 # Run pub get to fetch packages.
-pub get
+dart pub get
 
 # Prepare to run unit tests (but do not actually run tests).
-pub run grinder buildbot
+dart pub run grinder buildbot
 
 # Ensure that we've uploaded the compilation artifacts to google storage.
-pub run grinder validate-storage-artifacts
+dart pub run grinder validate-storage-artifacts
 
 # Enforce dart formatting on lib, test and tool directories.
 echo -n "Files that need dartfmt: "
