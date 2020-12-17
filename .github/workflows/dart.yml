@@ -34,6 +34,18 @@ jobs:
         run: sudo apt-get install -y protobuf-compiler redis
       - name: Report version
         run: dart --version
+      - name: Install dependencies
+        run: dart pub get
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Analyze code (lib and test)
+        run: dart analyze .
+      - name: Analyze code (example)
+        run: |
+          cd example
+          echo [Analyzing example]
+          dart pub get
+          dart analyze .
       - name: Prepare Flutter
         run: |
           git submodule init
