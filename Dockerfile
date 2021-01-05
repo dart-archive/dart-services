@@ -1,5 +1,5 @@
 # Keep aligned with min SDK in pubspec.yaml and Dart test version in .travis.yml
-FROM google/dart:2.12.0-51.0.dev
+FROM google/dart:2.12.0-133.2.beta
 
 # The specific commit that dart-services should use. This should be kept
 # in sync with the flutter submodule in the dart-services repo.
