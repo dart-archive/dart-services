@@ -24,9 +24,16 @@ class FlutterWebManager {
     return path.join('artifacts', 'flutter_web.dill');
   }
 
-  static final Set<String> _flutterWebImportPrefixes = <String>{
+  static const Set<String> _flutterWebImportPrefixes = {
     'package:flutter',
     'dart:ui',
+  };
+
+  static const Set<String> _dartVmImports = {
+    'dart:ffi',
+    'dart:io',
+    'dart:isolate',
+    'dart:mirrors',
   };
 
   bool usesFlutterWeb(Set<String> imports) {
@@ -43,8 +50,8 @@ class FlutterWebManager {
 
   String getUnsupportedImport(Set<String> imports) {
     for (final import in imports) {
-      // All dart: imports are ok, except dart:io
-      if (import.startsWith('dart:') && import != 'dart:io') {
+      // All non-VM dart: imports are ok
+      if (import.startsWith('dart:') && !_dartVmImports.contains(import)) {
         continue;
       }
 
