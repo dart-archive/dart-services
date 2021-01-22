@@ -2,7 +2,7 @@
 
 A server backend to support DartPad.
 
-[![Build Status](https://travis-ci.org/dart-lang/dart-services.svg?branch=master)](https://travis-ci.org/dart-lang/dart-services)
+[![Build Status](https://github.com/dart-lang/dart-services/workflows/dart-services/badge.svg)](https://github.com/dart-lang/dart-services/actions?workflow=dart-services)
 [![Coverage Status](https://coveralls.io/repos/dart-lang/dart-services/badge.svg?branch=master)](https://coveralls.io/r/dart-lang/dart-services?branch=master)
 [![Uptime Status](https://img.shields.io/badge/uptime-Pingdom-blue.svg)](http://stats.pingdom.com/8n3tfpl1u0j9)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/dart-lang/dart-services)
@@ -19,7 +19,7 @@ quick fixes for issues.
 This project is built with [grinder](https://pub.dev/packages/grinder). To install, please run:
 
 ```bash
-pub global activate grinder
+$ pub global activate grinder
 ```
 
 The dart-services v2 API is defined in terms of Protobuf, which requires
@@ -31,7 +31,25 @@ The Dart protoc plugin is also required for the above `protoc` compiler
 to generate Dart code. To install, please run:
 
 ```bash
-pub global activate protoc_plugin
+$ pub global activate protoc_plugin
+```
+
+## Initialise Flutter
+
+The Flutter submodule in the git repo needs to also be downloaded and setup.
+
+```bash
+$ git submodule update --init
+$ ./flutter/bin/flutter doctor -v
+$ ./flutter/bin/flutter/bin/flutter config --enable-web
+```
+
+## Build the subsidiary files
+
+The Dart Services server depends on generated files. Run the following to generate all the required binaries.
+
+```bash
+$ grind deploy
 ```
 
 ## Running
@@ -39,21 +57,13 @@ pub global activate protoc_plugin
 To run the server, run:
 
 ```bash
-dart bin/server_dev.dart --port 8082
+$ grind serve
 ```
 
 The server will run from port 8082 and export several JSON APIs, like
 `/api/compile` and `/api/analyze`.
 
 ## Testing
-
-Flutter is bundled with the project and requires the following commands to be executed to configure the bundled version:
-
-```bash
-flutter/bin/flutter doctor
-flutter/bin/flutter config --enable-web
-flutter/bin/flutter precache --web --no-android --no-ios --no-linux --no-windows --no-macos --no-fuchsia
-```
 
 To run tests:
 
