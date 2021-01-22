@@ -47,6 +47,7 @@ class FlutterWebManager {
     'dart:web_audio',
     'dart:web_gl',
     'dart:web_sql',
+    'dart:ui',
   };
 
   bool usesFlutterWeb(Set<String> imports) {
