@@ -29,6 +29,8 @@ class FlutterWebManager {
     'dart:ui',
   };
 
+  /// A set of all allowed `dart:` imports. Currently includes non-VM libraries
+  /// listed as the [doc](https://api.dart.dev/stable/index.html) categories.
   static const Set<String> _allowedDartImports = {
     'dart:async',
     'dart:collection',
