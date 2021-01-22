@@ -6,7 +6,7 @@ FROM google/dart:2.10.4
 # To retrieve this value, please run the following in your closest shell:
 #
 # $ (cd flutter && git rev-parse HEAD)
-ARG FLUTTER_COMMIT=b0a22998593fc605c723dee8ff4d9315c32cfe2c
+ARG FLUTTER_COMMIT=a706cd211240f27be3b61f06d70f958c7a4156fe
 
 # We install unzip and remove the apt-index again to keep the
 # docker image diff small.
@@ -51,5 +51,5 @@ EXPOSE 8080
 CMD []
 
 ENTRYPOINT ["/dart_runtime/dart_run.sh", \
-            "--port", "8080", \
-            "--proxy-target", "https://v1.api.dartpad.dev/"]
+  "--port", "8080", \
+  "--proxy-target", "https://v1.api.dartpad.dev/"]
