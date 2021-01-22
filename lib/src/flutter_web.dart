@@ -29,11 +29,22 @@ class FlutterWebManager {
     'dart:ui',
   };
 
-  static const Set<String> _dartVmImports = {
-    'dart:ffi',
-    'dart:io',
-    'dart:isolate',
-    'dart:mirrors',
+  static const Set<String> _allowedDartImports = {
+    'dart:async',
+    'dart:collection',
+    'dart:convert',
+    'dart:core',
+    'dart:developer',
+    'dart:math',
+    'dart:typed_data',
+    'dart:html',
+    'dart:indexed_db',
+    'dart:js',
+    'dart:js_util',
+    'dart:svg',
+    'dart:web_audio',
+    'dart:web_gl',
+    'dart:web_sql',
   };
 
   bool usesFlutterWeb(Set<String> imports) {
@@ -51,7 +62,7 @@ class FlutterWebManager {
   String getUnsupportedImport(Set<String> imports) {
     for (final import in imports) {
       // All non-VM dart: imports are ok
-      if (import.startsWith('dart:') && !_dartVmImports.contains(import)) {
+      if (import.startsWith('dart:') && _allowedDartImports.contains(import)) {
         continue;
       }
 
