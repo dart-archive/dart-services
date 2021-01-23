@@ -9,16 +9,19 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * *" # Every day at midnight
+      
+defaults:
+  run:
+    shell: bash
 
 jobs:
-  # Check code formatting, static analysis, and build on a single OS (linux)
-  # against Dart stable and beta.
   analyze:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        sdk: [dev,beta,stable]
+        sdk: [stable,beta,dev]
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v2
       - uses: dart-lang/setup-dart@v0.1
