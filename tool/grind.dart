@@ -216,6 +216,7 @@ Future _buildStorageArtifacts(Directory dir) async {
     '-s',
     dillPath,
     '--modules=amd',
+    '-DFLUTTER_WEB_AUTO_DETECT=true',
     '-o',
     'flutter_web.js',
     ...flutterLibraries
