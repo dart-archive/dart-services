@@ -150,6 +150,7 @@ class Compiler {
       final arguments = <String>[
         '--modules=amd',
         if (usingFlutter) ...[
+          '-DFLUTTER_WEB_AUTO_DETECT=true',
           '-s',
           _flutterWebManager.summaryFilePath,
           '-s',
