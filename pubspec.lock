@@ -36,6 +36,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.0"
+  archive:
+    dependency: transitive
+    description:
+      name: archive
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.13"
   args:
     dependency: "direct main"
     description:
@@ -98,7 +105,7 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.10.13"
+    version: "1.11.0"
   build_runner_core:
     dependency: transitive
     description:
@@ -154,7 +161,7 @@ packages:
       name: codemirror
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.23+5.59.1"
+    version: "0.5.24+5.59.2"
   collection:
     dependency: transitive
     description:
@@ -238,7 +245,7 @@ packages:
       name: googleapis_auth
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.12"
+    version: "0.2.12+1"
   graphs:
     dependency: transitive
     description:
@@ -259,7 +266,7 @@ packages:
       name: grpc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.8.0"
+    version: "2.9.0"
   http:
     dependency: "direct main"
     description:
@@ -385,7 +392,7 @@ packages:
       name: node_preamble
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.12"
+    version: "1.4.13"
   package_config:
     dependency: transitive
     description:
@@ -455,7 +462,7 @@ packages:
       name: shelf_packages_handler
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.1"
   shelf_router:
     dependency: "direct main"
     description:
@@ -476,14 +483,14 @@ packages:
       name: shelf_static
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.9+1"
+    version: "0.2.9+2"
   shelf_web_socket:
     dependency: transitive
     description:
       name: shelf_web_socket
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.3"
+    version: "0.2.4"
   source_gen:
     dependency: transitive
     description:
