@@ -216,7 +216,6 @@ Future _buildStorageArtifacts(Directory dir) async {
     '-s',
     dillPath,
     '--modules=amd',
-    '-DFLUTTER_WEB_AUTO_DETECT=true',
     '-o',
     'flutter_web.js',
     ...flutterLibraries
@@ -233,7 +232,7 @@ Future _buildStorageArtifacts(Directory dir) async {
   await artifactsDir.create();
 
   final sdkJsPath = path.join(flutterSdkPath.path,
-      'bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/amd/dart_sdk.js');
+      'bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/amd-canvaskit-html/dart_sdk.js');
 
   copy(getFile(sdkJsPath), artifactsDir);
   copy(joinFile(dir, ['flutter_web.js']), artifactsDir);
