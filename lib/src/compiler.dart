@@ -22,13 +22,12 @@ Logger _logger = Logger('compiler');
 /// An interface to the dart2js compiler. A compiler object can process one
 /// compile at a time.
 class Compiler {
-  final Sdk _sdk;
   final FlutterSdk _flutterSdk;
   final FlutterWebManager _flutterWebManager;
   final String _dartdevcPath;
   final BazelWorkerDriver _ddcDriver;
 
-  Compiler(this._sdk, this._flutterSdk)
+  Compiler(this._flutterSdk)
       : _dartdevcPath = path.join(_flutterSdk.sdkPath, 'bin', 'dartdevc'),
         _ddcDriver = BazelWorkerDriver(
             () => Process.start(
@@ -83,7 +82,7 @@ class Compiler {
       final mainJs = File(path.join(temp.path, '$kMainDart.js'));
       final mainSourceMap = File(path.join(temp.path, '$kMainDart.js.map'));
 
-      final dart2JSPath = path.join(_sdk.sdkPath, 'bin', 'dart2js');
+      final dart2JSPath = path.join(_flutterSdk.sdkPath, 'bin', 'dart2js');
       _logger.info('About to exec: $dart2JSPath ${arguments.join(' ')}');
 
       final result = await Process.run(dart2JSPath, arguments,
@@ -185,7 +184,7 @@ class Compiler {
         final results = DDCCompilationResults(
           compiledJS: processedJs,
           modulesBaseUrl: 'https://storage.googleapis.com/'
-              'compilation_artifacts/${_flutterSdk.versionFull}/',
+              'compilation_artifacts/${_flutterSdk.dartVersionFull}/',
         );
         return results;
       }

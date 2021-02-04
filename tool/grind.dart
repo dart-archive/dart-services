@@ -17,7 +17,6 @@ import 'package:path/path.dart' as path;
 
 Future<void> main(List<String> args) async {
   await SdkManager.sdk.init();
-  await SdkManager.flutterSdk.init();
   return grind(args);
 }
 
@@ -77,7 +76,7 @@ final List<String> compilationArtifacts = [
 @Task('validate that we have the correct compilation artifacts available in '
     'google storage')
 void validateStorageArtifacts() async {
-  final version = SdkManager.flutterSdk.versionFull;
+  final version = SdkManager.sdk.dartVersionFull;
 
   const urlBase = 'https://storage.googleapis.com/compilation_artifacts/';
 
@@ -136,7 +135,7 @@ Future<void> _runFlutterPubGet(Directory dir) async {
   log('running flutter pub get (${dir.path})');
 
   await runWithLogging(
-    path.join(SdkManager.flutterSdk.flutterBinPath, 'flutter'),
+    path.join(SdkManager.sdk.flutterBinPath, 'flutter'),
     arguments: ['pub', 'get'],
     workingDirectory: dir.path,
   );
@@ -237,7 +236,7 @@ Future _buildStorageArtifacts(Directory dir) async {
   copy(joinFile(dir, ['flutter_web.dill']), artifactsDir);
 
   // Emit some good google storage upload instructions.
-  final version = SdkManager.flutterSdk.versionFull;
+  final version = SdkManager.sdk.dartVersionFull;
   log('\nFrom the dart-services project root dir, run:');
   log('  gsutil -h "Cache-Control:public, max-age=86400" cp -z js '
       'artifacts/*.js gs://compilation_artifacts/$version/');

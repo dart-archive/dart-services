@@ -12,24 +12,14 @@ import 'package:yaml/yaml.dart';
 
 /// Generally, this should be a singleton instance (it's a heavy-weight object).
 class SdkManager {
-  static Sdk get sdk => _sdk ?? (_sdk = PlatformSdk());
-
-  static FlutterSdk get flutterSdk =>
-      _flutterSdk ?? (_flutterSdk = FlutterSdk());
-
-  static void setSdk(Sdk value) {
-    _sdk = sdk;
-  }
+  static FlutterSdk get sdk => _sdk ?? (_sdk = FlutterSdk());
 
   static void setFlutterSdk(FlutterSdk value) {
-    _flutterSdk = value;
+    _sdk = value;
   }
 
-  // The installed Dart SDK.
-  static Sdk _sdk;
-
   // The installed Flutter SDK.
-  static FlutterSdk _flutterSdk;
+  static FlutterSdk _sdk;
 }
 
 abstract class Sdk {
@@ -38,30 +28,18 @@ abstract class Sdk {
   Future<void> init();
 
   /// Report the current version of the SDK.
-  String get version {
-    var ver = versionFull;
+  String get dartVersion {
+    var ver = dartVersionFull;
     if (ver.contains('-')) ver = ver.substring(0, ver.indexOf('-'));
     return ver;
   }
 
   /// Report the current version of the SDK, including any `-dev` suffix.
-  String get versionFull;
+  String get dartVersionFull;
+  String get flutterVersion;
 
   /// Get the path to the sdk.
   String get sdkPath;
-}
-
-/// Represents a Dart SDK present on the server.
-class PlatformSdk extends Sdk {
-  @override
-  Future<void> init() => Future.value();
-
-  @override
-  String get versionFull =>
-      File(path.join(sdkPath, 'version')).readAsStringSync().trim();
-
-  @override
-  String get sdkPath => path.dirname(path.dirname(Platform.resolvedExecutable));
 }
 
 /// The Flutter SDK is asuumed to be available at `./flutter-sdk/`.
@@ -71,12 +49,12 @@ final flutterSdkPath =
 /// Represents a Flutter SDK installation (which includes its own version of the
 /// Dart SDK) present on the server.
 class FlutterSdk extends Sdk {
-  String _versionFull = '';
+  String _dartVersionFull = '';
   String _flutterVersion = '';
 
   @override
   Future<void> init() async {
-    _versionFull =
+    _dartVersionFull =
         (await File(path.join(sdkPath, 'version')).readAsString()).trim();
     _flutterVersion =
         (await File(path.join(flutterSdkPath.path, 'version')).readAsString())
@@ -89,7 +67,7 @@ class FlutterSdk extends Sdk {
   String get flutterBinPath => path.join(flutterSdkPath.path, 'bin');
 
   @override
-  String get versionFull => _versionFull;
+  String get dartVersionFull => _dartVersionFull;
 
   String get flutterVersion => _flutterVersion;
 }
@@ -214,7 +192,7 @@ class DownloadedFlutterSdk extends Sdk {
   String get sdkPath => path.join(flutterSdkPath, 'bin/cache/dart-sdk');
 
   @override
-  String get versionFull =>
+  String get dartVersionFull =>
       File(path.join(sdkPath, 'version')).readAsStringSync().trim();
 
   String get flutterSdkPath => path.join(Directory.current.path, 'flutter-sdk');
