@@ -354,7 +354,7 @@ String createPubspec({@required bool includeFlutterWeb}) {
   var content = '''
 name: $_samplePackageName
 environment:
-  sdk: '>=2.10.0 <3.0.0'
+  sdk: '>=2.12.0-0 <3.0.0'
 ''';
 
   if (includeFlutterWeb) {

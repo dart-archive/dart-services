@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -117,7 +117,7 @@ class PhysicsCardDragDemo extends StatelessWidget {
 
 class DraggableCard extends StatefulWidget {
   final Widget child;
-  DraggableCard({this.child});
+  DraggableCard({required this.child});
 
   @override
   _DraggableCardState createState() => _DraggableCardState();
@@ -125,9 +125,9 @@ class DraggableCard extends StatefulWidget {
 
 class _DraggableCardState extends State<DraggableCard>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
   Alignment _dragAlignment = Alignment.center;
-  Animation<Alignment> _animation;
+  late Animation<Alignment> _animation;
 
   void _runAnimation(Offset pixelsPerSecond, Size size) {
     _animation = _controller.drive(

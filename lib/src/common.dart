@@ -38,7 +38,7 @@ import 'dart:html';
 
 void main() {
   print("hello");
-  querySelector('#foo').text = 'bar';
+  querySelector('#foo')?.text = 'bar';
 }
 """;
 
@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -178,7 +178,7 @@ class SunflowerPainter extends CustomPainter {
   }
 
   // Draw a small circle representing a seed centered at (x,y).
-  void drawSeed(Canvas canvas, num x, num y) {
+  void drawSeed(Canvas canvas, double x, double y) {
     var paint = Paint()
       ..strokeWidth = 2
       ..style = PaintingStyle.fill
@@ -304,7 +304,7 @@ class PhysicsCardDragDemo extends StatelessWidget {
 
 class DraggableCard extends StatefulWidget {
   final Widget child;
-  DraggableCard({this.child});
+  DraggableCard({required this.child});
 
   @override
   _DraggableCardState createState() => _DraggableCardState();
@@ -312,9 +312,9 @@ class DraggableCard extends StatefulWidget {
 
 class _DraggableCardState extends State<DraggableCard>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
   Alignment _dragAlignment = Alignment.center;
-  Animation<Alignment> _animation;
+  late Animation<Alignment> _animation;
 
   void _runAnimation(Offset pixelsPerSecond, Size size) {
     _animation = _controller.drive(
@@ -395,9 +395,9 @@ import 'dart:math';
 class DiscData {
   static final _rng = Random();
 
-  double size;
-  Color color;
-  Alignment alignment;
+  late double size;
+  late Color color;
+  late Alignment alignment;
 
   DiscData() {
     color = Color.fromARGB(
@@ -512,7 +512,7 @@ import 'dart:html';
 
 main() async {
   print("hello");
-  querySelector('#foo').text = 'bar';
+  querySelector('#foo')?.text = 'bar';
   var foo = await HttpRequest.getString('http://www.google.com');
   print(foo);
 }
