@@ -71,6 +71,8 @@ class Compiler {
         '--terse',
         if (!returnSourceMap) '--no-source-maps',
         '--packages=${path.join('.dart_tool', 'package_config.json')}',
+        '--sound-null-safety',
+        '--enable-experiment=non-nullable',
         ...['-o', '$kMainDart.js'],
         path.join('lib', kMainDart),
       ];
@@ -152,10 +154,12 @@ class Compiler {
           '-s',
           _flutterWebManager.summaryFilePath,
           '-s',
-          '${_sdk.flutterBinPath}/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk.dill'
+          '${_sdk.flutterBinPath}/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk_sound.dill'
         ],
         ...['-o', path.join(temp.path, '$kMainDart.js')],
         ...['--module-name', 'dartpad_main'],
+        '--sound-null-safety',
+        '--enable-experiment=non-nullable',
         bootstrapPath,
         '--packages=${path.join(temp.path, '.dart_tool', 'package_config.json')}',
       ];
@@ -184,7 +188,7 @@ class Compiler {
         final results = DDCCompilationResults(
           compiledJS: processedJs,
           modulesBaseUrl: 'https://storage.googleapis.com/'
-              'compilation_artifacts/${_sdk.versionFull}/',
+              'nnbd_artifacts/${_sdk.versionFull}/',
         );
         return results;
       }

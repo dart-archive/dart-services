@@ -84,7 +84,7 @@ final List<String> compilationArtifacts = [
 void validateStorageArtifacts() async {
   final version = SdkManager.sdk.versionFull;
 
-  const urlBase = 'https://storage.googleapis.com/compilation_artifacts/';
+  const urlBase = 'https://storage.googleapis.com/nnbd_artifacts/';
 
   for (final artifact in compilationArtifacts) {
     await _validateExists('$urlBase$version/$artifact');
@@ -219,6 +219,8 @@ Future _buildStorageArtifacts(Directory dir) async {
   final args = <String>[
     '-s',
     dillPath,
+    '--sound-null-safety',
+    '--enable-experiment=non-nullable',
     '--modules=amd',
     '-o',
     'flutter_web.js',
@@ -235,8 +237,8 @@ Future _buildStorageArtifacts(Directory dir) async {
   final artifactsDir = getDir('artifacts');
   await artifactsDir.create();
 
-  final sdkJsPath = path.join(flutterSdkPath,
-      'bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/amd-canvaskit-html/dart_sdk.js');
+  final sdkJsPath = path.join(flutterSdkPath, 'bin', 'cache', 'flutter_web_sdk',
+      'flutter_web_sdk', 'kernel', 'amd-canvaskit-html-sound', 'dart_sdk.js');
 
   copy(getFile(sdkJsPath), artifactsDir);
   copy(joinFile(dir, ['flutter_web.js']), artifactsDir);
@@ -246,7 +248,7 @@ Future _buildStorageArtifacts(Directory dir) async {
   final version = SdkManager.sdk.versionFull;
   log('\nFrom the dart-services project root dir, run:');
   log('  gsutil -h "Cache-Control:public, max-age=86400" cp -z js '
-      'artifacts/*.js gs://compilation_artifacts/$version/');
+      'artifacts/*.js gs://nnbd_artifacts/$version/');
 }
 
 @Task('Reinitialize the Flutter submodule.')
