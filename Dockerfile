@@ -1,5 +1,5 @@
 # Keep aligned with min SDK in pubspec.yaml and Dart test version in .travis.yml
-FROM google/dart:2.12.0-259.1.beta
+FROM google/dart:2.12.0-259.8.beta
 
 # We install unzip and remove the apt-index again to keep the
 # docker image diff small.
