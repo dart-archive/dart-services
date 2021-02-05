@@ -67,7 +67,7 @@ class FlutterAnalysisServerWrapper extends AnalysisServerWrapper {
   final FlutterWebManager flutterWebManager;
 
   FlutterAnalysisServerWrapper(this.flutterWebManager)
-      : super(SdkManager.flutterSdk.sdkPath);
+      : super(SdkManager.sdk.sdkPath);
 
   @override
   Future<AnalysisServer> init() async {
