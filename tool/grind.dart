@@ -200,7 +200,7 @@ Future _buildStorageArtifacts(Directory dir) async {
     }
   }
 
-  // Make sure flutter-sdk/bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk.dill
+  // Make sure flutter-sdk/bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk_sound.dill
   // is installed.
   await runWithLogging(
     path.join(flutterSdkPath, 'bin', 'flutter'),
@@ -209,12 +209,12 @@ Future _buildStorageArtifacts(Directory dir) async {
   );
 
   // Build the artifacts using DDC:
-  // dart-sdk/bin/dartdevc -s kernel/flutter_ddc_sdk.dill
+  // dart-sdk/bin/dartdevc -s kernel/flutter_ddc_sdk_sound.dill
   //     --modules=amd package:flutter/animation.dart ...
   final compilerPath =
       path.join(flutterSdkPath, 'bin', 'cache', 'dart-sdk', 'bin', 'dartdevc');
   final dillPath = path.join(flutterSdkPath, 'bin', 'cache', 'flutter_web_sdk',
-      'flutter_web_sdk', 'kernel', 'flutter_ddc_sdk.dill');
+      'flutter_web_sdk', 'kernel', 'flutter_ddc_sdk_sound.dill');
 
   final args = <String>[
     '-s',
