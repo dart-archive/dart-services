@@ -45,6 +45,11 @@ message AnalysisIssue {
   bool hasFixes = 5;
   int32 charStart = 6;
   int32 charLength = 7;
+  repeated DiagnosticMessage diagnosticMessages = 8;
+}
+
+message DiagnosticMessage {
+
 }
 
 message VersionRequest {}
