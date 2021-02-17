@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: protos/dart_services.proto
 //
-// @dart = 2.7
+// @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
 import 'dart:core' as $core;
@@ -34,8 +34,8 @@ class CompileRequest extends $pb.GeneratedMessage {
 
   CompileRequest._() : super();
   factory CompileRequest({
-    $core.String source,
-    $core.bool returnSourceMap,
+    $core.String? source,
+    $core.bool? returnSourceMap,
   }) {
     final _result = create();
     if (source != null) {
@@ -60,8 +60,8 @@ class CompileRequest extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   CompileRequest copyWith(void Function(CompileRequest) updates) =>
-      super.copyWith((message) =>
-          updates(message as CompileRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as CompileRequest))
+          as CompileRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static CompileRequest create() => CompileRequest._();
@@ -71,7 +71,7 @@ class CompileRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static CompileRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<CompileRequest>(create);
-  static CompileRequest _defaultInstance;
+  static CompileRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get source => $_getSZ(0);
@@ -117,7 +117,7 @@ class CompileDDCRequest extends $pb.GeneratedMessage {
 
   CompileDDCRequest._() : super();
   factory CompileDDCRequest({
-    $core.String source,
+    $core.String? source,
   }) {
     final _result = create();
     if (source != null) {
@@ -139,8 +139,8 @@ class CompileDDCRequest extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   CompileDDCRequest copyWith(void Function(CompileDDCRequest) updates) =>
-      super.copyWith((message) => updates(
-          message as CompileDDCRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as CompileDDCRequest))
+          as CompileDDCRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static CompileDDCRequest create() => CompileDDCRequest._();
@@ -150,7 +150,7 @@ class CompileDDCRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static CompileDDCRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<CompileDDCRequest>(create);
-  static CompileDDCRequest _defaultInstance;
+  static CompileDDCRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get source => $_getSZ(0);
@@ -190,8 +190,8 @@ class SourceRequest extends $pb.GeneratedMessage {
 
   SourceRequest._() : super();
   factory SourceRequest({
-    $core.String source,
-    $core.int offset,
+    $core.String? source,
+    $core.int? offset,
   }) {
     final _result = create();
     if (source != null) {
@@ -216,8 +216,8 @@ class SourceRequest extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   SourceRequest copyWith(void Function(SourceRequest) updates) =>
-      super.copyWith((message) =>
-          updates(message as SourceRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as SourceRequest))
+          as SourceRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static SourceRequest create() => SourceRequest._();
@@ -227,7 +227,7 @@ class SourceRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static SourceRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<SourceRequest>(create);
-  static SourceRequest _defaultInstance;
+  static SourceRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get source => $_getSZ(0);
@@ -276,9 +276,9 @@ class AnalysisResults extends $pb.GeneratedMessage {
 
   AnalysisResults._() : super();
   factory AnalysisResults({
-    $core.Iterable<AnalysisIssue> issues,
-    $core.Iterable<$core.String> packageImports,
-    ErrorMessage error,
+    $core.Iterable<AnalysisIssue>? issues,
+    $core.Iterable<$core.String>? packageImports,
+    ErrorMessage? error,
   }) {
     final _result = create();
     if (issues != null) {
@@ -306,8 +306,8 @@ class AnalysisResults extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   AnalysisResults copyWith(void Function(AnalysisResults) updates) =>
-      super.copyWith((message) =>
-          updates(message as AnalysisResults)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as AnalysisResults))
+          as AnalysisResults; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static AnalysisResults create() => AnalysisResults._();
@@ -317,7 +317,7 @@ class AnalysisResults extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static AnalysisResults getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<AnalysisResults>(create);
-  static AnalysisResults _defaultInstance;
+  static AnalysisResults? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.List<AnalysisIssue> get issues => $_getList(0);
@@ -374,13 +374,13 @@ class AnalysisIssue extends $pb.GeneratedMessage {
 
   AnalysisIssue._() : super();
   factory AnalysisIssue({
-    $core.String kind,
-    $core.int line,
-    $core.String message,
-    $core.String sourceName,
-    $core.bool hasFixes,
-    $core.int charStart,
-    $core.int charLength,
+    $core.String? kind,
+    $core.int? line,
+    $core.String? message,
+    $core.String? sourceName,
+    $core.bool? hasFixes,
+    $core.int? charStart,
+    $core.int? charLength,
   }) {
     final _result = create();
     if (kind != null) {
@@ -420,8 +420,8 @@ class AnalysisIssue extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   AnalysisIssue copyWith(void Function(AnalysisIssue) updates) =>
-      super.copyWith((message) =>
-          updates(message as AnalysisIssue)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as AnalysisIssue))
+          as AnalysisIssue; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static AnalysisIssue create() => AnalysisIssue._();
@@ -431,7 +431,7 @@ class AnalysisIssue extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static AnalysisIssue getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<AnalysisIssue>(create);
-  static AnalysisIssue _defaultInstance;
+  static AnalysisIssue? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get kind => $_getSZ(0);
@@ -546,8 +546,8 @@ class VersionRequest extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   VersionRequest copyWith(void Function(VersionRequest) updates) =>
-      super.copyWith((message) =>
-          updates(message as VersionRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as VersionRequest))
+          as VersionRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static VersionRequest create() => VersionRequest._();
@@ -557,7 +557,7 @@ class VersionRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static VersionRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<VersionRequest>(create);
-  static VersionRequest _defaultInstance;
+  static VersionRequest? _defaultInstance;
 }
 
 class CompileResponse extends $pb.GeneratedMessage {
@@ -587,9 +587,9 @@ class CompileResponse extends $pb.GeneratedMessage {
 
   CompileResponse._() : super();
   factory CompileResponse({
-    $core.String result,
-    $core.String sourceMap,
-    ErrorMessage error,
+    $core.String? result,
+    $core.String? sourceMap,
+    ErrorMessage? error,
   }) {
     final _result = create();
     if (result != null) {
@@ -617,8 +617,8 @@ class CompileResponse extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   CompileResponse copyWith(void Function(CompileResponse) updates) =>
-      super.copyWith((message) =>
-          updates(message as CompileResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as CompileResponse))
+          as CompileResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static CompileResponse create() => CompileResponse._();
@@ -628,7 +628,7 @@ class CompileResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static CompileResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<CompileResponse>(create);
-  static CompileResponse _defaultInstance;
+  static CompileResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get result => $_getSZ(0);
@@ -696,9 +696,9 @@ class CompileDDCResponse extends $pb.GeneratedMessage {
 
   CompileDDCResponse._() : super();
   factory CompileDDCResponse({
-    $core.String result,
-    $core.String modulesBaseUrl,
-    ErrorMessage error,
+    $core.String? result,
+    $core.String? modulesBaseUrl,
+    ErrorMessage? error,
   }) {
     final _result = create();
     if (result != null) {
@@ -726,8 +726,8 @@ class CompileDDCResponse extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   CompileDDCResponse copyWith(void Function(CompileDDCResponse) updates) =>
-      super.copyWith((message) => updates(
-          message as CompileDDCResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as CompileDDCResponse))
+          as CompileDDCResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static CompileDDCResponse create() => CompileDDCResponse._();
@@ -737,7 +737,7 @@ class CompileDDCResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static CompileDDCResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<CompileDDCResponse>(create);
-  static CompileDDCResponse _defaultInstance;
+  static CompileDDCResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get result => $_getSZ(0);
@@ -804,8 +804,8 @@ class DocumentResponse extends $pb.GeneratedMessage {
 
   DocumentResponse._() : super();
   factory DocumentResponse({
-    $core.Map<$core.String, $core.String> info,
-    ErrorMessage error,
+    $core.Map<$core.String, $core.String>? info,
+    ErrorMessage? error,
   }) {
     final _result = create();
     if (info != null) {
@@ -830,8 +830,8 @@ class DocumentResponse extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   DocumentResponse copyWith(void Function(DocumentResponse) updates) =>
-      super.copyWith((message) => updates(
-          message as DocumentResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as DocumentResponse))
+          as DocumentResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static DocumentResponse create() => DocumentResponse._();
@@ -841,7 +841,7 @@ class DocumentResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static DocumentResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<DocumentResponse>(create);
-  static DocumentResponse _defaultInstance;
+  static DocumentResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.Map<$core.String, $core.String> get info => $_getMap(0);
@@ -885,10 +885,10 @@ class CompleteResponse extends $pb.GeneratedMessage {
 
   CompleteResponse._() : super();
   factory CompleteResponse({
-    $core.int replacementOffset,
-    $core.int replacementLength,
-    $core.Iterable<Completion> completions,
-    ErrorMessage error,
+    $core.int? replacementOffset,
+    $core.int? replacementLength,
+    $core.Iterable<Completion>? completions,
+    ErrorMessage? error,
   }) {
     final _result = create();
     if (replacementOffset != null) {
@@ -919,8 +919,8 @@ class CompleteResponse extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   CompleteResponse copyWith(void Function(CompleteResponse) updates) =>
-      super.copyWith((message) => updates(
-          message as CompleteResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as CompleteResponse))
+          as CompleteResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static CompleteResponse create() => CompleteResponse._();
@@ -930,7 +930,7 @@ class CompleteResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static CompleteResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<CompleteResponse>(create);
-  static CompleteResponse _defaultInstance;
+  static CompleteResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get replacementOffset => $_getIZ(0);
@@ -997,7 +997,7 @@ class Completion extends $pb.GeneratedMessage {
 
   Completion._() : super();
   factory Completion({
-    $core.Map<$core.String, $core.String> completion,
+    $core.Map<$core.String, $core.String>? completion,
   }) {
     final _result = create();
     if (completion != null) {
@@ -1019,8 +1019,8 @@ class Completion extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   Completion copyWith(void Function(Completion) updates) =>
-      super.copyWith((message) =>
-          updates(message as Completion)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as Completion))
+          as Completion; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static Completion create() => Completion._();
@@ -1029,7 +1029,7 @@ class Completion extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static Completion getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<Completion>(create);
-  static Completion _defaultInstance;
+  static Completion? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.Map<$core.String, $core.String> get completion => $_getMap(0);
@@ -1059,8 +1059,8 @@ class FixesResponse extends $pb.GeneratedMessage {
 
   FixesResponse._() : super();
   factory FixesResponse({
-    $core.Iterable<ProblemAndFixes> fixes,
-    ErrorMessage error,
+    $core.Iterable<ProblemAndFixes>? fixes,
+    ErrorMessage? error,
   }) {
     final _result = create();
     if (fixes != null) {
@@ -1085,8 +1085,8 @@ class FixesResponse extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   FixesResponse copyWith(void Function(FixesResponse) updates) =>
-      super.copyWith((message) =>
-          updates(message as FixesResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as FixesResponse))
+          as FixesResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static FixesResponse create() => FixesResponse._();
@@ -1096,7 +1096,7 @@ class FixesResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static FixesResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<FixesResponse>(create);
-  static FixesResponse _defaultInstance;
+  static FixesResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.List<ProblemAndFixes> get fixes => $_getList(0);
@@ -1141,10 +1141,10 @@ class ProblemAndFixes extends $pb.GeneratedMessage {
 
   ProblemAndFixes._() : super();
   factory ProblemAndFixes({
-    $core.Iterable<CandidateFix> fixes,
-    $core.String problemMessage,
-    $core.int offset,
-    $core.int length,
+    $core.Iterable<CandidateFix>? fixes,
+    $core.String? problemMessage,
+    $core.int? offset,
+    $core.int? length,
   }) {
     final _result = create();
     if (fixes != null) {
@@ -1175,8 +1175,8 @@ class ProblemAndFixes extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   ProblemAndFixes copyWith(void Function(ProblemAndFixes) updates) =>
-      super.copyWith((message) =>
-          updates(message as ProblemAndFixes)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as ProblemAndFixes))
+          as ProblemAndFixes; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ProblemAndFixes create() => ProblemAndFixes._();
@@ -1186,7 +1186,7 @@ class ProblemAndFixes extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static ProblemAndFixes getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ProblemAndFixes>(create);
-  static ProblemAndFixes _defaultInstance;
+  static ProblemAndFixes? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.List<CandidateFix> get fixes => $_getList(0);
@@ -1256,10 +1256,10 @@ class CandidateFix extends $pb.GeneratedMessage {
 
   CandidateFix._() : super();
   factory CandidateFix({
-    $core.String message,
-    $core.Iterable<SourceEdit> edits,
-    $core.int selectionOffset,
-    $core.Iterable<LinkedEditGroup> linkedEditGroups,
+    $core.String? message,
+    $core.Iterable<SourceEdit>? edits,
+    $core.int? selectionOffset,
+    $core.Iterable<LinkedEditGroup>? linkedEditGroups,
   }) {
     final _result = create();
     if (message != null) {
@@ -1290,8 +1290,8 @@ class CandidateFix extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   CandidateFix copyWith(void Function(CandidateFix) updates) =>
-      super.copyWith((message) =>
-          updates(message as CandidateFix)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as CandidateFix))
+          as CandidateFix; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static CandidateFix create() => CandidateFix._();
@@ -1301,7 +1301,7 @@ class CandidateFix extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static CandidateFix getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<CandidateFix>(create);
-  static CandidateFix _defaultInstance;
+  static CandidateFix? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get message => $_getSZ(0);
@@ -1362,9 +1362,9 @@ class SourceEdit extends $pb.GeneratedMessage {
 
   SourceEdit._() : super();
   factory SourceEdit({
-    $core.int offset,
-    $core.int length,
-    $core.String replacement,
+    $core.int? offset,
+    $core.int? length,
+    $core.String? replacement,
   }) {
     final _result = create();
     if (offset != null) {
@@ -1392,8 +1392,8 @@ class SourceEdit extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   SourceEdit copyWith(void Function(SourceEdit) updates) =>
-      super.copyWith((message) =>
-          updates(message as SourceEdit)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as SourceEdit))
+          as SourceEdit; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static SourceEdit create() => SourceEdit._();
@@ -1402,7 +1402,7 @@ class SourceEdit extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static SourceEdit getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<SourceEdit>(create);
-  static SourceEdit _defaultInstance;
+  static SourceEdit? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get offset => $_getIZ(0);
@@ -1471,9 +1471,9 @@ class LinkedEditGroup extends $pb.GeneratedMessage {
 
   LinkedEditGroup._() : super();
   factory LinkedEditGroup({
-    $core.Iterable<$core.int> positions,
-    $core.int length,
-    $core.Iterable<LinkedEditSuggestion> suggestions,
+    $core.Iterable<$core.int>? positions,
+    $core.int? length,
+    $core.Iterable<LinkedEditSuggestion>? suggestions,
   }) {
     final _result = create();
     if (positions != null) {
@@ -1501,8 +1501,8 @@ class LinkedEditGroup extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   LinkedEditGroup copyWith(void Function(LinkedEditGroup) updates) =>
-      super.copyWith((message) =>
-          updates(message as LinkedEditGroup)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as LinkedEditGroup))
+          as LinkedEditGroup; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static LinkedEditGroup create() => LinkedEditGroup._();
@@ -1512,7 +1512,7 @@ class LinkedEditGroup extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static LinkedEditGroup getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<LinkedEditGroup>(create);
-  static LinkedEditGroup _defaultInstance;
+  static LinkedEditGroup? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.List<$core.int> get positions => $_getList(0);
@@ -1557,8 +1557,8 @@ class LinkedEditSuggestion extends $pb.GeneratedMessage {
 
   LinkedEditSuggestion._() : super();
   factory LinkedEditSuggestion({
-    $core.String value,
-    $core.String kind,
+    $core.String? value,
+    $core.String? kind,
   }) {
     final _result = create();
     if (value != null) {
@@ -1584,8 +1584,8 @@ class LinkedEditSuggestion extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   LinkedEditSuggestion copyWith(void Function(LinkedEditSuggestion) updates) =>
-      super.copyWith((message) => updates(
-          message as LinkedEditSuggestion)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as LinkedEditSuggestion))
+          as LinkedEditSuggestion; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static LinkedEditSuggestion create() => LinkedEditSuggestion._();
@@ -1595,7 +1595,7 @@ class LinkedEditSuggestion extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static LinkedEditSuggestion getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<LinkedEditSuggestion>(create);
-  static LinkedEditSuggestion _defaultInstance;
+  static LinkedEditSuggestion? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get value => $_getSZ(0);
@@ -1648,9 +1648,9 @@ class FormatResponse extends $pb.GeneratedMessage {
 
   FormatResponse._() : super();
   factory FormatResponse({
-    $core.String newString,
-    $core.int offset,
-    ErrorMessage error,
+    $core.String? newString,
+    $core.int? offset,
+    ErrorMessage? error,
   }) {
     final _result = create();
     if (newString != null) {
@@ -1678,8 +1678,8 @@ class FormatResponse extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   FormatResponse copyWith(void Function(FormatResponse) updates) =>
-      super.copyWith((message) =>
-          updates(message as FormatResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as FormatResponse))
+          as FormatResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static FormatResponse create() => FormatResponse._();
@@ -1689,7 +1689,7 @@ class FormatResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static FormatResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<FormatResponse>(create);
-  static FormatResponse _defaultInstance;
+  static FormatResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get newString => $_getSZ(0);
@@ -1754,8 +1754,8 @@ class AssistsResponse extends $pb.GeneratedMessage {
 
   AssistsResponse._() : super();
   factory AssistsResponse({
-    $core.Iterable<CandidateFix> assists,
-    ErrorMessage error,
+    $core.Iterable<CandidateFix>? assists,
+    ErrorMessage? error,
   }) {
     final _result = create();
     if (assists != null) {
@@ -1780,8 +1780,8 @@ class AssistsResponse extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   AssistsResponse copyWith(void Function(AssistsResponse) updates) =>
-      super.copyWith((message) =>
-          updates(message as AssistsResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as AssistsResponse))
+          as AssistsResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static AssistsResponse create() => AssistsResponse._();
@@ -1791,7 +1791,7 @@ class AssistsResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static AssistsResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<AssistsResponse>(create);
-  static AssistsResponse _defaultInstance;
+  static AssistsResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.List<CandidateFix> get assists => $_getList(0);
@@ -1838,15 +1838,15 @@ class VersionResponse extends $pb.GeneratedMessage {
 
   VersionResponse._() : super();
   factory VersionResponse({
-    $core.String sdkVersion,
-    $core.String sdkVersionFull,
-    $core.String runtimeVersion,
-    $core.String appEngineVersion,
-    $core.String servicesVersion,
-    $core.String flutterVersion,
-    $core.String flutterDartVersion,
-    $core.String flutterDartVersionFull,
-    ErrorMessage error,
+    $core.String? sdkVersion,
+    $core.String? sdkVersionFull,
+    $core.String? runtimeVersion,
+    $core.String? appEngineVersion,
+    $core.String? servicesVersion,
+    $core.String? flutterVersion,
+    $core.String? flutterDartVersion,
+    $core.String? flutterDartVersionFull,
+    ErrorMessage? error,
   }) {
     final _result = create();
     if (sdkVersion != null) {
@@ -1892,8 +1892,8 @@ class VersionResponse extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   VersionResponse copyWith(void Function(VersionResponse) updates) =>
-      super.copyWith((message) =>
-          updates(message as VersionResponse)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as VersionResponse))
+          as VersionResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static VersionResponse create() => VersionResponse._();
@@ -1903,7 +1903,7 @@ class VersionResponse extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static VersionResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<VersionResponse>(create);
-  static VersionResponse _defaultInstance;
+  static VersionResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get sdkVersion => $_getSZ(0);
@@ -2036,7 +2036,7 @@ class BadRequest extends $pb.GeneratedMessage {
 
   BadRequest._() : super();
   factory BadRequest({
-    ErrorMessage error,
+    ErrorMessage? error,
   }) {
     final _result = create();
     if (error != null) {
@@ -2058,8 +2058,8 @@ class BadRequest extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   BadRequest copyWith(void Function(BadRequest) updates) =>
-      super.copyWith((message) =>
-          updates(message as BadRequest)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as BadRequest))
+          as BadRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static BadRequest create() => BadRequest._();
@@ -2068,7 +2068,7 @@ class BadRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static BadRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<BadRequest>(create);
-  static BadRequest _defaultInstance;
+  static BadRequest? _defaultInstance;
 
   @$pb.TagNumber(99)
   ErrorMessage get error => $_getN(0);
@@ -2104,7 +2104,7 @@ class ErrorMessage extends $pb.GeneratedMessage {
 
   ErrorMessage._() : super();
   factory ErrorMessage({
-    $core.String message,
+    $core.String? message,
   }) {
     final _result = create();
     if (message != null) {
@@ -2126,8 +2126,8 @@ class ErrorMessage extends $pb.GeneratedMessage {
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
   ErrorMessage copyWith(void Function(ErrorMessage) updates) =>
-      super.copyWith((message) =>
-          updates(message as ErrorMessage)); // ignore: deprecated_member_use
+      super.copyWith((message) => updates(message as ErrorMessage))
+          as ErrorMessage; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
   static ErrorMessage create() => ErrorMessage._();
@@ -2137,7 +2137,7 @@ class ErrorMessage extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static ErrorMessage getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ErrorMessage>(create);
-  static ErrorMessage _defaultInstance;
+  static ErrorMessage? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get message => $_getSZ(0);
