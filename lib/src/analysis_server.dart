@@ -321,8 +321,6 @@ abstract class AnalysisServerWrapper {
 
       // Calculate the issues.
       final issues = getErrors().map((AnalysisError error) {
-        print('CONTEXT MESSAGES:');
-        print(error.contextMessages);
         return proto.AnalysisIssue()
           ..kind = error.severity.toLowerCase()
           ..line = error.location.startLine
@@ -331,6 +329,7 @@ abstract class AnalysisServerWrapper {
           ..hasFixes = error.hasFix
           ..charStart = error.location.offset
           ..charLength = error.location.length
+          ..url = error.url ?? ""
           ..diagnosticMessages.addAll(error.contextMessages?.map((m) =>
                   proto.DiagnosticMessage(
                       message: m.message,
