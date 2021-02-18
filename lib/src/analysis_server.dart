@@ -330,7 +330,14 @@ abstract class AnalysisServerWrapper {
           ..sourceName = path.basename(error.location.file)
           ..hasFixes = error.hasFix
           ..charStart = error.location.offset
-          ..charLength = error.location.length;
+          ..charLength = error.location.length
+          ..diagnosticMessages.addAll(error.contextMessages?.map((m) =>
+                  proto.DiagnosticMessage(
+                      message: m.message,
+                      line: m.location.startLine,
+                      charStart: m.location.offset,
+                      charLength: m.location.length)) ??
+              []);
       }).toList();
 
       issues.sort((a, b) {
