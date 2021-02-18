@@ -330,6 +330,7 @@ abstract class AnalysisServerWrapper {
           ..charStart = error.location.offset
           ..charLength = error.location.length
           ..url = error.url ?? ""
+          ..correction = error.correction ?? ""
           ..diagnosticMessages.addAll(error.contextMessages?.map((m) =>
                   proto.DiagnosticMessage(
                       message: m.message,
