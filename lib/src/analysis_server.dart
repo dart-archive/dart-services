@@ -321,7 +321,7 @@ abstract class AnalysisServerWrapper {
 
       // Calculate the issues.
       final issues = getErrors().map((AnalysisError error) {
-        var issue = proto.AnalysisIssue()
+        final issue = proto.AnalysisIssue()
           ..kind = error.severity.toLowerCase()
           ..line = error.location.startLine
           ..message = error.message
