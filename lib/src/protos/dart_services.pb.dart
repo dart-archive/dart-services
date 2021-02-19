@@ -377,16 +377,16 @@ class AnalysisIssue extends $pb.GeneratedMessage {
 
   AnalysisIssue._() : super();
   factory AnalysisIssue({
-    $core.String kind,
-    $core.int line,
-    $core.String message,
-    $core.String sourceName,
-    $core.bool hasFixes,
-    $core.int charStart,
-    $core.int charLength,
-    $core.String url,
-    $core.Iterable<DiagnosticMessage> diagnosticMessages,
-    $core.String correction,
+    $core.String? kind,
+    $core.int? line,
+    $core.String? message,
+    $core.String? sourceName,
+    $core.bool? hasFixes,
+    $core.int? charStart,
+    $core.int? charLength,
+    $core.String? url,
+    $core.Iterable<DiagnosticMessage>? diagnosticMessages,
+    $core.String? correction,
   }) {
     final _result = create();
     if (kind != null) {
@@ -590,10 +590,10 @@ class DiagnosticMessage extends $pb.GeneratedMessage {
 
   DiagnosticMessage._() : super();
   factory DiagnosticMessage({
-    $core.String message,
-    $core.int line,
-    $core.int charStart,
-    $core.int charLength,
+    $core.String? message,
+    $core.int? line,
+    $core.int? charStart,
+    $core.int? charLength,
   }) {
     final _result = create();
     if (message != null) {
@@ -635,7 +635,7 @@ class DiagnosticMessage extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static DiagnosticMessage getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<DiagnosticMessage>(create);
-  static DiagnosticMessage _defaultInstance;
+  static DiagnosticMessage? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get message => $_getSZ(0);
