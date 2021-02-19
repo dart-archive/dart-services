@@ -2,7 +2,7 @@
 //  Generated code. Do not modify.
 //  source: protos/dart_services.proto
 //
-// @dart = 2.12
+// @dart = 2.7
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields,deprecated_member_use_from_same_package
 
 import 'dart:core' as $core;
@@ -82,12 +82,36 @@ const AnalysisIssue$json = {
     {'1': 'hasFixes', '3': 5, '4': 1, '5': 8, '10': 'hasFixes'},
     {'1': 'charStart', '3': 6, '4': 1, '5': 5, '10': 'charStart'},
     {'1': 'charLength', '3': 7, '4': 1, '5': 5, '10': 'charLength'},
+    {'1': 'url', '3': 8, '4': 1, '5': 9, '10': 'url'},
+    {
+      '1': 'diagnosticMessages',
+      '3': 9,
+      '4': 3,
+      '5': 11,
+      '6': '.dart_services.api.DiagnosticMessage',
+      '10': 'diagnosticMessages'
+    },
+    {'1': 'correction', '3': 10, '4': 1, '5': 9, '10': 'correction'},
   ],
 };
 
 /// Descriptor for `AnalysisIssue`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List analysisIssueDescriptor = $convert.base64Decode(
-    'Cg1BbmFseXNpc0lzc3VlEhIKBGtpbmQYASABKAlSBGtpbmQSEgoEbGluZRgCIAEoBVIEbGluZRIYCgdtZXNzYWdlGAMgASgJUgdtZXNzYWdlEh4KCnNvdXJjZU5hbWUYBCABKAlSCnNvdXJjZU5hbWUSGgoIaGFzRml4ZXMYBSABKAhSCGhhc0ZpeGVzEhwKCWNoYXJTdGFydBgGIAEoBVIJY2hhclN0YXJ0Eh4KCmNoYXJMZW5ndGgYByABKAVSCmNoYXJMZW5ndGg=');
+    'Cg1BbmFseXNpc0lzc3VlEhIKBGtpbmQYASABKAlSBGtpbmQSEgoEbGluZRgCIAEoBVIEbGluZRIYCgdtZXNzYWdlGAMgASgJUgdtZXNzYWdlEh4KCnNvdXJjZU5hbWUYBCABKAlSCnNvdXJjZU5hbWUSGgoIaGFzRml4ZXMYBSABKAhSCGhhc0ZpeGVzEhwKCWNoYXJTdGFydBgGIAEoBVIJY2hhclN0YXJ0Eh4KCmNoYXJMZW5ndGgYByABKAVSCmNoYXJMZW5ndGgSEAoDdXJsGAggASgJUgN1cmwSVAoSZGlhZ25vc3RpY01lc3NhZ2VzGAkgAygLMiQuZGFydF9zZXJ2aWNlcy5hcGkuRGlhZ25vc3RpY01lc3NhZ2VSEmRpYWdub3N0aWNNZXNzYWdlcxIeCgpjb3JyZWN0aW9uGAogASgJUgpjb3JyZWN0aW9u');
+@$core.Deprecated('Use diagnosticMessageDescriptor instead')
+const DiagnosticMessage$json = {
+  '1': 'DiagnosticMessage',
+  '2': [
+    {'1': 'message', '3': 1, '4': 1, '5': 9, '10': 'message'},
+    {'1': 'line', '3': 2, '4': 1, '5': 5, '10': 'line'},
+    {'1': 'charStart', '3': 3, '4': 1, '5': 5, '10': 'charStart'},
+    {'1': 'charLength', '3': 4, '4': 1, '5': 5, '10': 'charLength'},
+  ],
+};
+
+/// Descriptor for `DiagnosticMessage`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List diagnosticMessageDescriptor = $convert.base64Decode(
+    'ChFEaWFnbm9zdGljTWVzc2FnZRIYCgdtZXNzYWdlGAEgASgJUgdtZXNzYWdlEhIKBGxpbmUYAiABKAVSBGxpbmUSHAoJY2hhclN0YXJ0GAMgASgFUgljaGFyU3RhcnQSHgoKY2hhckxlbmd0aBgEIAEoBVIKY2hhckxlbmd0aA==');
 @$core.Deprecated('Use versionRequestDescriptor instead')
 const VersionRequest$json = {
   '1': 'VersionRequest',

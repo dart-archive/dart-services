@@ -370,17 +370,23 @@ class AnalysisIssue extends $pb.GeneratedMessage {
     ..aOB(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'hasFixes', protoName: 'hasFixes')
     ..a<$core.int>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'charStart', $pb.PbFieldType.O3, protoName: 'charStart')
     ..a<$core.int>(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'charLength', $pb.PbFieldType.O3, protoName: 'charLength')
+    ..aOS(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'url')
+    ..pc<DiagnosticMessage>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'diagnosticMessages', $pb.PbFieldType.PM, protoName: 'diagnosticMessages', subBuilder: DiagnosticMessage.create)
+    ..aOS(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'correction')
     ..hasRequiredFields = false;
 
   AnalysisIssue._() : super();
   factory AnalysisIssue({
-    $core.String? kind,
-    $core.int? line,
-    $core.String? message,
-    $core.String? sourceName,
-    $core.bool? hasFixes,
-    $core.int? charStart,
-    $core.int? charLength,
+    $core.String kind,
+    $core.int line,
+    $core.String message,
+    $core.String sourceName,
+    $core.bool hasFixes,
+    $core.int charStart,
+    $core.int charLength,
+    $core.String url,
+    $core.Iterable<DiagnosticMessage> diagnosticMessages,
+    $core.String correction,
   }) {
     final _result = create();
     if (kind != null) {
@@ -403,6 +409,15 @@ class AnalysisIssue extends $pb.GeneratedMessage {
     }
     if (charLength != null) {
       _result.charLength = charLength;
+    }
+    if (url != null) {
+      _result.url = url;
+    }
+    if (diagnosticMessages != null) {
+      _result.diagnosticMessages.addAll(diagnosticMessages);
+    }
+    if (correction != null) {
+      _result.correction = correction;
     }
     return _result;
   }
@@ -516,6 +531,159 @@ class AnalysisIssue extends $pb.GeneratedMessage {
   $core.bool hasCharLength() => $_has(6);
   @$pb.TagNumber(7)
   void clearCharLength() => clearField(7);
+
+  @$pb.TagNumber(8)
+  $core.String get url => $_getSZ(7);
+  @$pb.TagNumber(8)
+  set url($core.String v) {
+    $_setString(7, v);
+  }
+
+  @$pb.TagNumber(8)
+  $core.bool hasUrl() => $_has(7);
+  @$pb.TagNumber(8)
+  void clearUrl() => clearField(8);
+
+  @$pb.TagNumber(9)
+  $core.List<DiagnosticMessage> get diagnosticMessages => $_getList(8);
+
+  @$pb.TagNumber(10)
+  $core.String get correction => $_getSZ(9);
+  @$pb.TagNumber(10)
+  set correction($core.String v) {
+    $_setString(9, v);
+  }
+
+  @$pb.TagNumber(10)
+  $core.bool hasCorrection() => $_has(9);
+  @$pb.TagNumber(10)
+  void clearCorrection() => clearField(10);
+}
+
+class DiagnosticMessage extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'DiagnosticMessage',
+      package: const $pb.PackageName(
+          $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'dart_services.api'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'message')
+    ..a<$core.int>(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'line',
+        $pb.PbFieldType.O3)
+    ..a<$core.int>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'charStart', $pb.PbFieldType.O3,
+        protoName: 'charStart')
+    ..a<$core.int>(
+        4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'charLength', $pb.PbFieldType.O3,
+        protoName: 'charLength')
+    ..hasRequiredFields = false;
+
+  DiagnosticMessage._() : super();
+  factory DiagnosticMessage({
+    $core.String message,
+    $core.int line,
+    $core.int charStart,
+    $core.int charLength,
+  }) {
+    final _result = create();
+    if (message != null) {
+      _result.message = message;
+    }
+    if (line != null) {
+      _result.line = line;
+    }
+    if (charStart != null) {
+      _result.charStart = charStart;
+    }
+    if (charLength != null) {
+      _result.charLength = charLength;
+    }
+    return _result;
+  }
+  factory DiagnosticMessage.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory DiagnosticMessage.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  DiagnosticMessage clone() => DiagnosticMessage()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  DiagnosticMessage copyWith(void Function(DiagnosticMessage) updates) =>
+      super.copyWith((message) => updates(message as DiagnosticMessage))
+          as DiagnosticMessage; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static DiagnosticMessage create() => DiagnosticMessage._();
+  DiagnosticMessage createEmptyInstance() => create();
+  static $pb.PbList<DiagnosticMessage> createRepeated() =>
+      $pb.PbList<DiagnosticMessage>();
+  @$core.pragma('dart2js:noInline')
+  static DiagnosticMessage getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<DiagnosticMessage>(create);
+  static DiagnosticMessage _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get message => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set message($core.String v) {
+    $_setString(0, v);
+  }
+
+  @$pb.TagNumber(1)
+  $core.bool hasMessage() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearMessage() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.int get line => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set line($core.int v) {
+    $_setSignedInt32(1, v);
+  }
+
+  @$pb.TagNumber(2)
+  $core.bool hasLine() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearLine() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.int get charStart => $_getIZ(2);
+  @$pb.TagNumber(3)
+  set charStart($core.int v) {
+    $_setSignedInt32(2, v);
+  }
+
+  @$pb.TagNumber(3)
+  $core.bool hasCharStart() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearCharStart() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.int get charLength => $_getIZ(3);
+  @$pb.TagNumber(4)
+  set charLength($core.int v) {
+    $_setSignedInt32(3, v);
+  }
+
+  @$pb.TagNumber(4)
+  $core.bool hasCharLength() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearCharLength() => clearField(4);
 }
 
 class VersionRequest extends $pb.GeneratedMessage {
