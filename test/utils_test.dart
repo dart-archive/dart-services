@@ -5,9 +5,9 @@ import 'package:test/test.dart';
 
 void main() {
   group('utils.stripFilePaths', () {
-    for (var dataCase in dataCasesUnder(library: #utils.tests)) {
+    for (final dataCase in dataCasesUnder(library: #utils.tests)) {
       test(dataCase.testDescription, () {
-        var actualOutput = stripFilePaths(dataCase.input);
+        final actualOutput = stripFilePaths(dataCase.input);
         expect(actualOutput, equals(dataCase.expectedOutput));
       });
     }
