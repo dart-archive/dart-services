@@ -3,7 +3,7 @@ List is defined in /var/folders/4p/y54w9nqj0_n6ryqwn7lxqz6800m6cw/T/DartAnalysis
 <<<
 List is defined in main.dart
 >>> Strips Dart SDK paths
-List is defined in /Users/ryjohn/.dvm/darts/2.10.5/lib/core/list.dart
+List is defined in /path/dart/dart/sdk/lib/core/list.dart
 <<<
 List is defined in dart:core/list.dart
 >>> Strips SDK and temporary directory paths
