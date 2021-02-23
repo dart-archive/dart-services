@@ -10,3 +10,7 @@ List is defined in dart:core/list.dart
 The argument type 'List<int> (where List is defined in /Users/username/sdk/dart/2.10.5/lib/core/list.dart)' can't be assigned to the parameter type 'List<int> (where List is defined in /var/folders/4p/tmp/T/DartAnalysisWrapperintLAw/main.dart)'.
 <<<
 The argument type 'List<int> (where List is defined in dart:core/list.dart)' can't be assigned to the parameter type 'List<int> (where List is defined in main.dart)'.
+>>> Keeps package: paths intact
+Unused import: 'package:flutter/material.dart'.
+<<<
+Unused import: 'package:flutter/material.dart'.
