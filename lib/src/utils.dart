@@ -24,8 +24,7 @@ String stripFilePaths(String str) {
         pathComponents.contains('lib') && pathComponents.contains('core');
 
     // matches the 'flutter' package in the SDK
-    final isFlutterPath = pathComponents
-        .contains('flutter');
+    final isFlutterPath = pathComponents.contains('flutter');
 
     final isPackagePath = urlString.contains('package:');
     final isDartCorePath = urlString.contains('dart:core');
