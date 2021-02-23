@@ -13,7 +13,10 @@ import 'package:path/path.dart' as path;
 /// "Unused import: 'package:flutter/material.dart'" -> "Unused import:
 /// 'package:flutter/material.dart'"
 String stripFilePaths(String str) {
+  // Match any URI. Also match URIs that are prefixed with dart:core or
+  // package:*
   final regex = RegExp(r'(?:dart:core?)?(?:package:?)?[a-z]*\/\S*');
+
   return str.replaceAllMapped(regex, (match) {
     final urlString = match.group(0);
     final pathComponents = path.split(urlString);
