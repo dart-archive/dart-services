@@ -20,8 +20,13 @@ String stripFilePaths(String str) {
   return str.replaceAllMapped(regex, (match) {
     final urlString = match.group(0);
     final pathComponents = path.split(urlString);
-    final isDartPath = pathComponents.contains('lib');
-    final isFlutterPath = isDartPath && pathComponents.contains('flutter');
+    final isDartPath =
+        pathComponents.contains('lib') && pathComponents.contains('core');
+
+    // matches the 'flutter' package in the SDK
+    final isFlutterPath = pathComponents
+        .contains('flutter');
+    
     final isPackagePath = urlString.contains('package:');
     final isDartCorePath = urlString.contains('dart:core');
     final basename = path.basename(urlString);
