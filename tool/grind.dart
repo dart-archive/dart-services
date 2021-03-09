@@ -125,6 +125,14 @@ void buildProjectTemplates() async {
   final flutterProjectDir = await flutterProjectPath.create(recursive: true);
   joinFile(flutterProjectDir, ['pubspec.yaml'])
       .writeAsStringSync(createPubspec(includeFlutterWeb: true));
+  final optionsFile = await joinFile(Directory(flutterSdkPath),
+      ['packages', 'flutter', 'analysis_options_user.yaml']);
+  if (await optionsFile.exists()) {
+    optionsFile
+        .copy(path.join(flutterProjectDir.path, 'analysis_options.yaml'));
+  } else {
+    log("Flutter user analysis options file ${optionsFile.path} doesn't exist, using default.");
+  }
   await _runFlutterPubGet(flutterProjectDir);
 }
 
