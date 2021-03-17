@@ -243,7 +243,8 @@ Future<void> _buildStorageArtifacts(Directory dir) async {
 
   // Copy both to the project directory.
   final artifactsDir = getDir('artifacts');
-  await artifactsDir.create();
+  delete(artifactsDir);
+  artifactsDir.createSync();
 
   final sdkJsPath = path.join(flutterSdkPath, 'bin', 'cache', 'flutter_web_sdk',
       'flutter_web_sdk', 'kernel', 'amd-canvaskit-html-sound', 'dart_sdk.js');
