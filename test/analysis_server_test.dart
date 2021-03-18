@@ -65,7 +65,8 @@ void defineTests() {
 
   group('Platform SDK analysis_server', () {
     setUp(() async {
-      analysisServer = DartAnalysisServerWrapper();
+      analysisServer =
+          DartAnalysisServerWrapper(FlutterWebManager(SdkManager.sdk));
       await analysisServer.init();
     });
 

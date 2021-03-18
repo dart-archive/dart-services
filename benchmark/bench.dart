@@ -11,6 +11,7 @@ import 'package:dart_services/src/analysis_server.dart';
 import 'package:dart_services/src/bench.dart';
 import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/compiler.dart';
+import 'package:dart_services/src/flutter_web.dart';
 import 'package:dart_services/src/protos/dart_services.pb.dart' as proto;
 import 'package:dart_services/src/sdk_manager.dart';
 import 'package:logging/logging.dart';
@@ -59,7 +60,8 @@ class AnalyzerBenchmark extends Benchmark {
     String name,
     this.source,
   ) : super('analyzer.$name') {
-    analysisServer = DartAnalysisServerWrapper();
+    analysisServer =
+        DartAnalysisServerWrapper(FlutterWebManager(SdkManager.sdk));
   }
 
   @override
@@ -107,7 +109,8 @@ class AnalysisServerBenchmark extends Benchmark {
   final AnalysisServerWrapper analysisServer;
 
   AnalysisServerBenchmark(String name, this.source)
-      : analysisServer = DartAnalysisServerWrapper(),
+      : analysisServer =
+            DartAnalysisServerWrapper(FlutterWebManager(SdkManager.sdk)),
         super('completion.$name');
 
   @override
