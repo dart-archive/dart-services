@@ -16,6 +16,7 @@ import 'package:dart_services/src/analysis_server.dart' as analysis_server;
 import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/common_server_impl.dart';
 import 'package:dart_services/src/compiler.dart' as comp;
+import 'package:dart_services/src/flutter_web.dart';
 import 'package:dart_services/src/sdk_manager.dart';
 import 'package:dart_services/src/server_cache.dart';
 import 'package:dart_services/src/protos/dart_services.pb.dart' as proto;
@@ -126,7 +127,8 @@ Future<void> setupTools(String sdkPath) async {
   commonServerImpl = CommonServerImpl(container, cache);
   await commonServerImpl.init();
 
-  analysisServer = analysis_server.DartAnalysisServerWrapper();
+  analysisServer = analysis_server.DartAnalysisServerWrapper(
+      FlutterWebManager(SdkManager.sdk));
   await analysisServer.init();
 
   print('Warming up analysis server');

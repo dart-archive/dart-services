@@ -35,19 +35,19 @@ const String _WARMUP_SRC = 'main() { int b = 2;  b++;   b. }';
 const Duration _ANALYSIS_SERVER_TIMEOUT = Duration(seconds: 35);
 
 class DartAnalysisServerWrapper extends AnalysisServerWrapper {
-  Directory _tempProject;
+  final FlutterWebManager flutterWebManager;
 
-  DartAnalysisServerWrapper() : super(SdkManager.sdk.sdkPath);
+  DartAnalysisServerWrapper(this.flutterWebManager)
+      : super(SdkManager.sdk.sdkPath);
 
   @override
   Future<AnalysisServer> init() async {
     _logger.info('DartAnalysisServerWrapper init');
-    _tempProject = await Directory.systemTemp.createTemp('DartAnalysisWrapper');
     return super.init();
   }
 
   @override
-  String get _sourceDirPath => _tempProject.path;
+  String get _sourceDirPath => flutterWebManager.dartTemplateProject.path;
 
   @override
   Future<proto.AnalysisResults> analyze(String source) {
@@ -56,11 +56,8 @@ class DartAnalysisServerWrapper extends AnalysisServerWrapper {
   }
 
   @override
-  Future<dynamic> shutdown() {
+  Future<dynamic> shutdown() async {
     _logger.info('DartAnalysisServerWrapper shutdown');
-    return _tempProject
-        .delete(recursive: true)
-        .then((value) => super.shutdown());
   }
 }
 
