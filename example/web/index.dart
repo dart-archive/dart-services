@@ -99,7 +99,7 @@ void setupCompile() {
       final compile = {'source': source};
       final sw = Stopwatch()..start();
       post(
-        '${_uriBase}/dartservices/$version/compile',
+        '$_uriBase/dartservices/$version/compile',
         body: json.encode(compile),
       ).then(
           (response) => output.text = '${_formatTiming(sw)}${response.body}');
@@ -119,7 +119,7 @@ void setupCompileDDC() {
       final compile = {'source': source};
       final sw = Stopwatch()..start();
       post(
-        '${_uriBase}/dartservices/$version/compileDDC',
+        '$_uriBase/dartservices/$version/compileDDC',
         body: json.encode(compile),
       ).then(
           (response) => output.text = '${_formatTiming(sw)}${response.body}');
