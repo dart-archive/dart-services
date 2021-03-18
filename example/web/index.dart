@@ -29,7 +29,7 @@ void main() {
 Future<Response> post(String url, {String body}) async {
   _client ??= utils.SanitizingBrowserClient();
   return _client.post(
-    url,
+    Uri.parse(url),
     body: body,
     encoding: utf8,
     headers: {'content-type': 'application/json'},
@@ -39,7 +39,7 @@ Future<Response> post(String url, {String body}) async {
 Future<Response> get(String url) async {
   _client ??= utils.SanitizingBrowserClient();
   return _client.get(
-    url,
+    Uri.parse(url),
     headers: {'content-type': 'application/json'},
   );
 }
