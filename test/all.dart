@@ -4,7 +4,7 @@
 
 library services.all_test;
 
-import 'analysis_server_test.dart' as analysis_server_test;
+// import 'analysis_server_test.dart' as analysis_server_test;
 import 'bench_test.dart' as bench_test;
 import 'common_server_api_protobuf_test.dart'
     as common_server_api_protobuf_test;
@@ -20,7 +20,7 @@ import 'shelf_cors_test.dart' as shelf_cors_test;
 import 'summarize_test.dart' as summarize_test;
 
 void main() async {
-  analysis_server_test.defineTests();
+  // analysis_server_test.defineTests();
   bench_test.defineTests();
   common_server_api_test.defineTests();
   common_server_api_protobuf_test.defineTests();
