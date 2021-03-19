@@ -15,7 +15,7 @@ library services.all_test;
 // import 'flutter_web_test.dart' as flutter_web_test;
 // import 'gae_deployed_test.dart' as gae_deployed_test;
 // import 'pub_test.dart' as pub_test;
-// import 'redis_cache_test.dart' as redis_test;
+import 'redis_cache_test.dart' as redis_test;
 import 'shelf_cors_test.dart' as shelf_cors_test;
 import 'summarize_test.dart' as summarize_test;
 
@@ -30,7 +30,7 @@ void main() async {
   // flutter_web_test.defineTests();
   // gae_deployed_test.defineTests();
   // pub_test.defineTests();
-  // redis_test.defineTests();
+  redis_test.defineTests();
   shelf_cors_test.defineTests();
   summarize_test.defineTests();
 }
