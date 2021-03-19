@@ -5,9 +5,9 @@
 library services.all_test;
 
 // import 'analysis_server_test.dart' as analysis_server_test;
-// import 'bench_test.dart' as bench_test;
-import 'common_server_api_protobuf_test.dart'
-    as common_server_api_protobuf_test;
+import 'bench_test.dart' as bench_test;
+// import 'common_server_api_protobuf_test.dart'
+// as common_server_api_protobuf_test;
 // import 'common_server_api_test.dart' as common_server_api_test;
 import 'common_test.dart' as common_test;
 import 'compiler_test.dart' as compiler_test;
@@ -21,8 +21,8 @@ import 'summarize_test.dart' as summarize_test;
 
 void main() async {
   // analysis_server_test.defineTests();
-  // bench_test.defineTests();
-  common_server_api_protobuf_test.defineTests();
+  bench_test.defineTests();
+  // common_server_api_protobuf_test.defineTests();
   // common_server_api_test.defineTests();
   common_test.defineTests();
   compiler_test.defineTests();
