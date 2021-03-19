@@ -16,7 +16,6 @@ import 'common_server_impl.dart' show BadRequest;
 import 'flutter_web.dart';
 import 'protos/dart_services.pb.dart' as proto;
 import 'pub.dart';
-import 'sdk_manager.dart';
 
 final Logger _logger = Logger('analysis_servers');
 
