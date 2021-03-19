@@ -361,11 +361,11 @@ Future<void> runWithLogging(String executable,
 const String _samplePackageName = 'dartpad_sample';
 
 String createPubspec({@required bool includeFlutterWeb}) {
-  // Mark the samples as not null safe.
+  // Mark the samples as null safe.
   var content = '''
 name: $_samplePackageName
 environment:
-  sdk: '>=2.12.0-0 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
 ''';
 
   if (includeFlutterWeb) {
