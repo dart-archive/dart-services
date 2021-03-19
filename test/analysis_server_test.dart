@@ -8,6 +8,7 @@ import 'package:dart_services/src/analysis_server.dart';
 import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/flutter_web.dart';
 import 'package:dart_services/src/protos/dart_services.pb.dart' as proto;
+import 'package:dart_services/src/sdk_manager.dart';
 import 'package:test/test.dart';
 
 const completionCode = r'''
