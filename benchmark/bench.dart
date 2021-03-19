@@ -60,7 +60,8 @@ class AnalyzerBenchmark extends Benchmark {
     String name,
     this.source,
   ) : super('analyzer.$name') {
-    analysisServer = DartAnalysisServerWrapper(FlutterWebManager());
+    analysisServer =
+        DartAnalysisServerWrapper(FlutterWebManager(SdkManager.sdk));
   }
 
   @override
@@ -108,7 +109,8 @@ class AnalysisServerBenchmark extends Benchmark {
   final AnalysisServerWrapper analysisServer;
 
   AnalysisServerBenchmark(String name, this.source)
-      : analysisServer = DartAnalysisServerWrapper(FlutterWebManager()),
+      : analysisServer =
+            DartAnalysisServerWrapper(FlutterWebManager(SdkManager.sdk)),
         super('completion.$name');
 
   @override

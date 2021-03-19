@@ -35,7 +35,7 @@ class Compiler {
                   <String>['--persistent_worker'],
                 ),
             maxWorkers: 1),
-        _flutterWebManager = FlutterWebManager();
+        _flutterWebManager = FlutterWebManager(_sdk);
 
   bool importsOkForCompile(Set<String> imports) {
     return !_flutterWebManager.hasUnsupportedImport(imports);
