@@ -35,19 +35,16 @@ const String _WARMUP_SRC = 'main() { int b = 2;  b++;   b. }';
 const Duration _ANALYSIS_SERVER_TIMEOUT = Duration(seconds: 35);
 
 class DartAnalysisServerWrapper extends AnalysisServerWrapper {
-  Directory _tempProject;
-
   DartAnalysisServerWrapper() : super(SdkManager.sdk.sdkPath);
 
   @override
   Future<AnalysisServer> init() async {
     _logger.info('DartAnalysisServerWrapper init');
-    _tempProject = await Directory.systemTemp.createTemp('DartAnalysisWrapper');
     return super.init();
   }
 
   @override
-  String get _sourceDirPath => _tempProject.path;
+  String get _sourceDirPath => FlutterWebManager.dartTemplateProject.path;
 
   @override
   Future<proto.AnalysisResults> analyze(String source) {
@@ -56,19 +53,13 @@ class DartAnalysisServerWrapper extends AnalysisServerWrapper {
   }
 
   @override
-  Future<dynamic> shutdown() {
+  Future<dynamic> shutdown() async {
     _logger.info('DartAnalysisServerWrapper shutdown');
-    return _tempProject
-        .delete(recursive: true)
-        .then((value) => super.shutdown());
   }
 }
 
 class FlutterAnalysisServerWrapper extends AnalysisServerWrapper {
-  final FlutterWebManager flutterWebManager;
-
-  FlutterAnalysisServerWrapper(this.flutterWebManager)
-      : super(SdkManager.sdk.sdkPath);
+  FlutterAnalysisServerWrapper() : super(SdkManager.sdk.sdkPath);
 
   @override
   Future<AnalysisServer> init() async {
@@ -77,7 +68,7 @@ class FlutterAnalysisServerWrapper extends AnalysisServerWrapper {
   }
 
   @override
-  String get _sourceDirPath => flutterWebManager.flutterTemplateProject.path;
+  String get _sourceDirPath => FlutterWebManager.flutterTemplateProject.path;
 
   @override
   Future<proto.AnalysisResults> analyze(String source) {

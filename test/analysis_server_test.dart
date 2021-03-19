@@ -206,7 +206,7 @@ void defineTests() {
 
   group('Flutter cached SDK analysis_server', () {
     setUp(() async {
-      analysisServer = FlutterAnalysisServerWrapper(FlutterWebManager());
+      analysisServer = FlutterAnalysisServerWrapper();
       await analysisServer.init();
     });
 
