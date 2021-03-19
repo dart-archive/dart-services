@@ -18,12 +18,12 @@ void defineTests() {
 
     setUp(() async {
       await SdkManager.sdk.init();
-      flutterWebManager = FlutterWebManager(SdkManager.sdk);
+      flutterWebManager = FlutterWebManager();
     });
 
     test('inited', () async {
-      expect(await flutterWebManager.flutterTemplateProject.exists(), isTrue);
-      final file = File(path.join(flutterWebManager.flutterTemplateProject.path,
+      expect(await FlutterWebManager.flutterTemplateProject.exists(), isTrue);
+      final file = File(path.join(FlutterWebManager.flutterTemplateProject.path,
           '.dart_tool', 'package_config.json'));
       expect(await file.exists(), isTrue);
     });
@@ -56,12 +56,12 @@ void defineTests() {
 
     setUpAll(() async {
       await SdkManager.sdk.init();
-      flutterWebManager = FlutterWebManager(SdkManager.sdk);
+      flutterWebManager = FlutterWebManager();
     });
 
     test('packagesFilePath', () async {
       final packageConfig = File(path.join(
-          flutterWebManager.flutterTemplateProject.path,
+          FlutterWebManager.flutterTemplateProject.path,
           '.dart_tool',
           'package_config.json'));
       expect(await packageConfig.exists(), true);
