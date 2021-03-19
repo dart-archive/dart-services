@@ -45,7 +45,7 @@ class AnalysisServersWrapper {
 
   Future<void> warmup() async {
     _logger.info('Beginning AnalysisServersWrapper init().');
-    _flutterWebManager = FlutterWebManager(SdkManager.sdk);
+    _flutterWebManager = FlutterWebManager();
     _dartAnalysisServer = DartAnalysisServerWrapper(_flutterWebManager);
     _flutterAnalysisServer = FlutterAnalysisServerWrapper(_flutterWebManager);
 
