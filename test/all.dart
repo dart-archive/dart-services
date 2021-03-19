@@ -17,7 +17,7 @@ library services.all_test;
 // import 'pub_test.dart' as pub_test;
 // import 'redis_cache_test.dart' as redis_test;
 // import 'shelf_cors_test.dart' as shelf_cors_test;
-// import 'summarize_test.dart' as summarize_test;
+import 'summarize_test.dart' as summarize_test;
 
 void main() async {
   // analysis_server_test.defineTests();
@@ -32,5 +32,5 @@ void main() async {
   // pub_test.defineTests();
   // redis_test.defineTests();
   // shelf_cors_test.defineTests();
-  // summarize_test.defineTests();
+  summarize_test.defineTests();
 }
