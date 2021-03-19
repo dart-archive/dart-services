@@ -10,7 +10,7 @@ library services.all_test;
 //     as common_server_api_protobuf_test;
 // import 'common_server_api_test.dart' as common_server_api_test;
 // import 'common_test.dart' as common_test;
-// import 'compiler_test.dart' as compiler_test;
+import 'compiler_test.dart' as compiler_test;
 // import 'flutter_analysis_server_test.dart' as flutter_analysis_server_test;
 import 'flutter_web_test.dart' as flutter_web_test;
 import 'gae_deployed_test.dart' as gae_deployed_test;
@@ -25,7 +25,7 @@ void main() async {
   // common_server_api_test.defineTests();
   // common_server_api_protobuf_test.defineTests();
   // common_test.defineTests();
-  // compiler_test.defineTests();
+  compiler_test.defineTests();
   // flutter_analysis_server_test.defineTests();
   flutter_web_test.defineTests();
   gae_deployed_test.defineTests();
