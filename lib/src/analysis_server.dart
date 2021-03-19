@@ -38,49 +38,14 @@ class DartAnalysisServerWrapper extends AnalysisServerWrapper {
   DartAnalysisServerWrapper() : super(SdkManager.sdk.sdkPath);
 
   @override
-  Future<AnalysisServer> init() async {
-    _logger.info('DartAnalysisServerWrapper init');
-    return super.init();
-  }
-
-  @override
   String get _sourceDirPath => FlutterWebManager.dartTemplateProject.path;
-
-  @override
-  Future<proto.AnalysisResults> analyze(String source) {
-    _logger.info('DartAnalysisServerWrapper analyze');
-    return super.analyze(source);
-  }
-
-  @override
-  Future<dynamic> shutdown() async {
-    _logger.info('DartAnalysisServerWrapper shutdown');
-  }
 }
 
 class FlutterAnalysisServerWrapper extends AnalysisServerWrapper {
   FlutterAnalysisServerWrapper() : super(SdkManager.sdk.sdkPath);
 
   @override
-  Future<AnalysisServer> init() async {
-    _logger.info('FlutterAnalysisServerWrapper init');
-    return super.init();
-  }
-
-  @override
   String get _sourceDirPath => FlutterWebManager.flutterTemplateProject.path;
-
-  @override
-  Future<proto.AnalysisResults> analyze(String source) {
-    _logger.info('FlutterAnalysisServerWrapper analyze');
-    return super.analyze(source);
-  }
-
-  @override
-  Future<dynamic> shutdown() {
-    _logger.info('FlutterAnalysisServerWrapper shutdown');
-    return super.shutdown();
-  }
 }
 
 abstract class AnalysisServerWrapper {
