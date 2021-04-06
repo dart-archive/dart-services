@@ -36,9 +36,10 @@ jobs:
           dart analyze --fatal-infos .
       - name: Analyze code
         run: dart analyze --fatal-infos .
+      - name: Update sdk
+        run: dart run tool/update_sdk.dart
       - name: Prepare Flutter
         run: |
-          dart run tool/update_sdk.dart
           export PATH=$PATH:$PWD/flutter-sdk/bin
           flutter doctor -v
           flutter config --enable-web
