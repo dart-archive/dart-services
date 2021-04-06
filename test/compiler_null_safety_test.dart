@@ -66,27 +66,27 @@ void defineTests() {
 
     test(
       'compileDDC with Flutter Counter',
-      _generateCompilerDDCTest(sampleCodeFlutterCounter),
+      _generateCompilerDDCTest(sampleCodeFlutterCounterNullSafe),
     );
 
     test(
       'compileDDC with Flutter Sunflower',
-      _generateCompilerDDCTest(sampleCodeFlutterSunflower),
+      _generateCompilerDDCTest(sampleCodeFlutterSunflowerNullSafe),
     );
 
     test(
       'compileDDC with Flutter Draggable Card',
-      _generateCompilerDDCTest(sampleCodeFlutterDraggableCard),
+      _generateCompilerDDCTest(sampleCodeFlutterDraggableCardNullSafe),
     );
 
     test(
       'compileDDC with Flutter Implicit Animations',
-      _generateCompilerDDCTest(sampleCodeFlutterImplicitAnimations),
+      _generateCompilerDDCTest(sampleCodeFlutterImplicitAnimationsNullSafe),
     );
 
     test(
       'compileDDC with async',
-      _generateCompilerDDCTest(sampleCodeAsync),
+      _generateCompilerDDCTest(sampleCodeAsyncNullSafe),
     );
 
     test('compileDDC with single error', () async {
@@ -124,12 +124,12 @@ void defineTests() {
     });
 
     test('simple web', () async {
-      final result = await compiler.compile(sampleCodeWeb);
+      final result = await compiler.compile(sampleCodeWebNullSafe);
       expect(result.success, true);
     });
 
     test('web async', () async {
-      final result = await compiler.compile(sampleCodeAsync);
+      final result = await compiler.compile(sampleCodeAsyncNullSafe);
       expect(result.success, true);
     });
 
