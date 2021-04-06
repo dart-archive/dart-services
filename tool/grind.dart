@@ -45,6 +45,13 @@ Future<void> serve() async {
 
 @Task()
 @Depends(buildStorageArtifacts)
+Future<void> serveNullSafety() async {
+  await runWithLogging(Platform.executable,
+      arguments: ['bin/server_dev.dart', '--port', '8084', '--null-safety']);
+}
+
+@Task()
+@Depends(buildStorageArtifacts)
 Future<void> serveWithProxyTarget() async {
   await runWithLogging(Platform.executable, arguments: [
     'bin/server_dev.dart',
