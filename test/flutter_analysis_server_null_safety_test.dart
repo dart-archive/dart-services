@@ -11,7 +11,6 @@ import 'package:dart_services/src/common_server_impl.dart';
 import 'package:dart_services/src/common_server_api.dart';
 import 'package:dart_services/src/protos/dart_services.pbserver.dart';
 import 'package:dart_services/src/server_cache.dart';
-import 'package:dart_services/src/sdk_manager.dart';
 import 'package:test/test.dart';
 
 const nullSafety = true;
@@ -23,7 +22,6 @@ void defineTests() {
     AnalysisServerWrapper analysisServer;
 
     setUp(() async {
-      await SdkManager.sdk.init();
       analysisServer = FlutterAnalysisServerWrapper(nullSafety);
       await analysisServer.init();
       await analysisServer.warmup();
@@ -50,8 +48,6 @@ void defineTests() {
     AnalysisServersWrapper analysisServersWrapper;
 
     setUp(() async {
-      await SdkManager.sdk.init();
-
       analysisServersWrapper = AnalysisServersWrapper(nullSafety);
       await analysisServersWrapper.warmup();
     });
@@ -80,7 +76,6 @@ void defineTests() {
     _MockCache cache;
 
     setUp(() async {
-      await SdkManager.sdk.init();
       container = _MockContainer();
       cache = _MockCache();
       commonServerImpl = CommonServerImpl(container, cache, nullSafety);

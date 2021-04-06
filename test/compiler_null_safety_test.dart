@@ -6,7 +6,7 @@ library services.compiler_null_safety_test;
 
 import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/compiler.dart';
-import 'package:dart_services/src/sdk_manager.dart';
+import 'package:dart_services/src/sdk.dart';
 import 'package:test/test.dart';
 
 const nullSafety = true;
@@ -18,9 +18,7 @@ void defineTests() {
 
   group('compiler', () {
     setUpAll(() async {
-      await SdkManager.sdk.init();
-
-      compiler = Compiler(SdkManager.sdk, nullSafety);
+      compiler = Compiler(Sdk(), nullSafety);
       await compiler.warmup();
     });
 
