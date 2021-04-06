@@ -2,14 +2,14 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library services.analyzer_server_test;
+library services.analyzer_server_null_safety_test;
 
 import 'package:dart_services/src/analysis_server.dart';
 import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/protos/dart_services.pb.dart' as proto;
 import 'package:test/test.dart';
 
-const nullSafety = false;
+const nullSafety = true;
 
 const completionCode = r'''
 void main() {

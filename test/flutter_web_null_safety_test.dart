@@ -10,7 +10,7 @@ import 'package:dart_services/src/sdk_manager.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
-const nullSafety = false;
+const nullSafety = true;
 
 void main() => defineTests();
 

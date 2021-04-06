@@ -42,6 +42,15 @@ void main() {
 }
 """;
 
+const sampleCodeWebNullSafe = """
+import 'dart:html';
+
+void main() {
+  print("hello");
+  querySelector('#foo')?.text = 'bar';
+}
+""";
+
 const sampleCodeFlutter = '''
 import 'package:flutter/material.dart';
 

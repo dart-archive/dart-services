@@ -2,14 +2,14 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library services.compiler_null_safety_test;
+library services.compiler_test;
 
 import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/compiler.dart';
 import 'package:dart_services/src/sdk_manager.dart';
 import 'package:test/test.dart';
 
-const nullSafety = false;
+const nullSafety = true;
 
 void main() => defineTests();
 
@@ -56,7 +56,7 @@ void defineTests() {
 
     test(
       'compileDDC with web',
-      _generateCompilerDDCTest(sampleCodeWeb),
+      _generateCompilerDDCTest(sampleCodeWebNullSafe),
     );
 
     test(

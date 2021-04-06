@@ -14,7 +14,7 @@ import 'package:dart_services/src/server_cache.dart';
 import 'package:dart_services/src/sdk_manager.dart';
 import 'package:test/test.dart';
 
-const nullSafety = false;
+const nullSafety = true;
 
 const counterApp = r'''
 // Copyright (c) 2019, the Dart project authors.  Please see the AUTHORS file
