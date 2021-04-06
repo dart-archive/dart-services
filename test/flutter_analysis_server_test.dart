@@ -13,90 +13,104 @@ import 'package:dart_services/src/protos/dart_services.pbserver.dart';
 import 'package:dart_services/src/server_cache.dart';
 import 'package:test/test.dart';
 
-const nullSafety = false;
-
 void main() => defineTests();
 
 void defineTests() {
-  group('Flutter SDK analysis_server', () {
-    AnalysisServerWrapper analysisServer;
+  for (final nullSafety in [false, true]) {
+    group('Null ${nullSafety ? 'Safe' : 'Unsafe'} Flutter SDK analysis_server',
+        () {
+      AnalysisServerWrapper analysisServer;
 
-    setUp(() async {
-      analysisServer = FlutterAnalysisServerWrapper(nullSafety);
-      await analysisServer.init();
-      await analysisServer.warmup();
+      setUp(() async {
+        analysisServer = FlutterAnalysisServerWrapper(nullSafety);
+        await analysisServer.init();
+        await analysisServer.warmup();
+      });
+
+      tearDown(() async {
+        await analysisServer.shutdown();
+      });
+
+      test('analyze counter app', () async {
+        final results = await analysisServer.analyze(nullSafety
+            ? sampleCodeFlutterCounterNullSafe
+            : sampleCodeFlutterCounter);
+        expect(results.issues, isEmpty);
+      });
+
+      test('analyze Draggable Physics sample', () async {
+        final results = await analysisServer.analyze(nullSafety
+            ? sampleCodeFlutterDraggableCardNullSafe
+            : sampleCodeFlutterDraggableCard);
+        expect(results.issues, isEmpty);
+      });
     });
 
-    tearDown(() async {
-      await analysisServer.shutdown();
+    group(
+        'Null ${nullSafety ? 'Safe' : 'Unsafe'} Flutter SDK analysis_server with analysis servers',
+        () {
+      AnalysisServersWrapper analysisServersWrapper;
+
+      setUp(() async {
+        analysisServersWrapper = AnalysisServersWrapper(nullSafety);
+        await analysisServersWrapper.warmup();
+      });
+
+      tearDown(() async {
+        await analysisServersWrapper.shutdown();
+      });
+
+      test('analyze counter app', () async {
+        final results = await analysisServersWrapper.analyze(nullSafety
+            ? sampleCodeFlutterCounterNullSafe
+            : sampleCodeFlutterCounter);
+        expect(results.issues, isEmpty);
+      });
+
+      test('analyze Draggable Physics sample', () async {
+        final results = await analysisServersWrapper.analyze(nullSafety
+            ? sampleCodeFlutterDraggableCardNullSafe
+            : sampleCodeFlutterDraggableCard);
+        expect(results.issues, isEmpty);
+      });
     });
 
-    test('analyze counter app', () async {
-      final results = await analysisServer.analyze(sampleCodeFlutterCounter);
-      expect(results.issues, isEmpty);
+    group(
+        'Null ${nullSafety ? 'Safe' : 'Unsafe'} CommonServerImpl flutter analyze',
+        () {
+      CommonServerImpl commonServerImpl;
+
+      _MockContainer container;
+      _MockCache cache;
+
+      setUp(() async {
+        container = _MockContainer();
+        cache = _MockCache();
+        commonServerImpl = CommonServerImpl(container, cache, nullSafety);
+        await commonServerImpl.init();
+      });
+
+      tearDown(() async {
+        await commonServerImpl.shutdown();
+      });
+
+      test('counter app', () async {
+        final results = await commonServerImpl.analyze(SourceRequest()
+          ..source = nullSafety
+              ? sampleCodeFlutterCounterNullSafe
+              : sampleCodeFlutterCounter);
+        expect(results.issues, isEmpty);
+      });
+
+      test('Draggable Physics sample', () async {
+        final results = await commonServerImpl.analyze(SourceRequest()
+          ..source = nullSafety
+              ? sampleCodeFlutterDraggableCardNullSafe
+              : sampleCodeFlutterDraggableCard);
+        expect(results.issues, isEmpty);
+      });
     });
-
-    test('analyze Draggable Physics sample', () async {
-      final results =
-          await analysisServer.analyze(sampleCodeFlutterDraggableCard);
-      expect(results.issues, isEmpty);
-    });
-  });
-
-  group('Flutter SDK analysis_server with analysis servers', () {
-    AnalysisServersWrapper analysisServersWrapper;
-
-    setUp(() async {
-      analysisServersWrapper = AnalysisServersWrapper(nullSafety);
-      await analysisServersWrapper.warmup();
-    });
-
-    tearDown(() async {
-      await analysisServersWrapper.shutdown();
-    });
-
-    test('analyze counter app', () async {
-      final results =
-          await analysisServersWrapper.analyze(sampleCodeFlutterCounter);
-      expect(results.issues, isEmpty);
-    });
-
-    test('analyze Draggable Physics sample', () async {
-      final results =
-          await analysisServersWrapper.analyze(sampleCodeFlutterDraggableCard);
-      expect(results.issues, isEmpty);
-    });
-  });
-
-  group('CommonServerImpl flutter analyze', () {
-    CommonServerImpl commonServerImpl;
-
-    _MockContainer container;
-    _MockCache cache;
-
-    setUp(() async {
-      container = _MockContainer();
-      cache = _MockCache();
-      commonServerImpl = CommonServerImpl(container, cache, nullSafety);
-      await commonServerImpl.init();
-    });
-
-    tearDown(() async {
-      await commonServerImpl.shutdown();
-    });
-
-    test('counter app', () async {
-      final results = await commonServerImpl
-          .analyze(SourceRequest()..source = sampleCodeFlutterCounter);
-      expect(results.issues, isEmpty);
-    });
-
-    test('Draggable Physics sample', () async {
-      final results = await commonServerImpl
-          .analyze(SourceRequest()..source = sampleCodeFlutterDraggableCard);
-      expect(results.issues, isEmpty);
-    });
-  });
+  }
 }
 
 class _MockContainer implements ServerContainer {
