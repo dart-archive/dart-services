@@ -14,7 +14,7 @@ import 'package:shelf/shelf_io.dart' as shelf_io;
 
 import 'src/common_server_api.dart';
 import 'src/common_server_impl.dart';
-import 'src/sdk_manager.dart';
+import 'src/sdk.dart';
 import 'src/server_cache.dart';
 
 const String _API_PREFIX = '/api/dartservices/';
@@ -38,7 +38,7 @@ void main(List<String> args) {
 
   final gaePort = int.tryParse(results['port'] as String ?? '') ?? 8080;
 
-  if (SdkManager.sdk.sdkPath == null) {
+  if (Sdk().sdkPath == null) {
     throw 'No Dart SDK is available; set the DART_SDK env var.';
   }
 
@@ -55,7 +55,7 @@ void main(List<String> args) {
   log.info('''Initializing dart-services:
     --port: $gaePort
     --proxy-target: ${results['proxy-target']}
-    sdkPath: ${SdkManager.sdk?.sdkPath}
+    sdkPath: ${Sdk().sdkPath}
     \$REDIS_SERVER_URI: ${io.Platform.environment['REDIS_SERVER_URI']}
     \$GAE_VERSION: ${io.Platform.environment['GAE_VERSION']}
   ''');

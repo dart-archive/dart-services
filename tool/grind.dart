@@ -7,7 +7,7 @@ library services.grind;
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart_services/src/sdk_manager.dart';
+import 'package:dart_services/src/sdk.dart';
 import 'package:grinder/grinder.dart';
 import 'package:grinder/grinder_files.dart';
 import 'package:grinder/src/run_utils.dart' show mergeWorkingDirectory;
@@ -17,12 +17,6 @@ import 'package:path/path.dart' as path;
 
 Future<void> main(List<String> args) async {
   return grind(args);
-}
-
-@Task('Make sure SDKs are appropriately initialized')
-@Depends(setupFlutterSdk)
-void sdkInit() async {
-  await SdkManager.sdk.init();
 }
 
 @Task()
@@ -80,9 +74,8 @@ final List<String> compilationArtifacts = [
 
 @Task('validate that we have the correct compilation artifacts available in '
     'google storage')
-@Depends(sdkInit)
 void validateStorageArtifacts() async {
-  final version = SdkManager.sdk.versionFull;
+  final version = Sdk().versionFull;
 
   const urlBase = 'https://storage.googleapis.com/compilation_artifacts/';
 
@@ -104,7 +97,6 @@ Future<void> _validateExists(String url) async {
 }
 
 @Task('build the project templates')
-@Depends(sdkInit)
 void buildProjectTemplates() async {
   final templatesPath =
       Directory(path.join(Directory.current.path, 'project_templates'));
@@ -140,7 +132,7 @@ Future<void> _runDartPubGet(Directory dir) async {
   log('running dart pub get (${dir.path})');
 
   await runWithLogging(
-    path.join(SdkManager.sdk.sdkPath, 'bin', 'dart'),
+    path.join(Sdk().sdkPath, 'bin', 'dart'),
     arguments: ['pub', 'get'],
     workingDirectory: dir.path,
   );
@@ -150,14 +142,14 @@ Future<void> _runFlutterPubGet(Directory dir) async {
   log('running flutter pub get (${dir.path})');
 
   await runWithLogging(
-    path.join(SdkManager.sdk.flutterBinPath, 'flutter'),
+    path.join(Sdk().flutterBinPath, 'flutter'),
     arguments: ['pub', 'get'],
     workingDirectory: dir.path,
   );
 }
 
 @Task('build the sdk compilation artifacts for upload to google storage')
-@Depends(sdkInit, buildProjectTemplates)
+@Depends(buildProjectTemplates)
 void buildStorageArtifacts() async {
   // build and copy dart_sdk.js, flutter_web.js, and flutter_web.dill
   final temp = Directory.systemTemp.createTempSync('flutter_web_sample');
@@ -252,7 +244,7 @@ Future<void> _buildStorageArtifacts(Directory dir) async {
   copy(joinFile(dir, ['flutter_web.dill']), artifactsDir);
 
   // Emit some good google storage upload instructions.
-  final version = SdkManager.sdk.versionFull;
+  final version = Sdk().versionFull;
   log('\nFrom the dart-services project root dir, run:');
   log('  gsutil -h "Cache-Control:public, max-age=86400" cp -z js '
       'artifacts/*.js gs://compilation_artifacts/$version/');
@@ -300,7 +292,7 @@ void fuzz() {
 }
 
 @Task('Update generated files and run all checks prior to deployment')
-@Depends(sdkInit, updateDockerVersion, generateProtos, analyze, test, fuzz,
+@Depends(updateDockerVersion, generateProtos, analyze, test, fuzz,
     validateStorageArtifacts)
 void deploy() {
   log('Run: gcloud app deploy --project=dart-services --no-promote');

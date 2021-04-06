@@ -15,14 +15,14 @@ import 'package:path/path.dart' as path;
 import 'common.dart';
 import 'flutter_web.dart';
 import 'pub.dart';
-import 'sdk_manager.dart';
+import 'sdk.dart';
 
 Logger _logger = Logger('compiler');
 
 /// An interface to the dart2js compiler. A compiler object can process one
 /// compile at a time.
 class Compiler {
-  final FlutterSdk _sdk;
+  final Sdk _sdk;
   final FlutterWebManager _flutterWebManager;
   final String _dartdevcPath;
   final BazelWorkerDriver _ddcDriver;
