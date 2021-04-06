@@ -120,21 +120,21 @@ void buildProjectTemplates() async {
     await templatesPath.delete(recursive: true);
   }
 
-  for (final nullSafe in [true, false]) {
+  for (final nullSafety in [true, false]) {
     final dartProjectPath = Directory(path.join(templatesPath.path,
-        nullSafe ? 'null-safe' : 'null-unsafe', 'dart_project'));
+        nullSafety ? 'null-safe' : 'null-unsafe', 'dart_project'));
     final dartProjectDir = await dartProjectPath.create(recursive: true);
     joinFile(dartProjectDir, ['pubspec.yaml']).writeAsStringSync(
-        createPubspec(includeFlutterWeb: false, nullSafe: nullSafe));
+        createPubspec(includeFlutterWeb: false, nullSafety: nullSafety));
     await _runDartPubGet(dartProjectDir);
     joinFile(dartProjectDir, ['analysis_options.yaml'])
         .writeAsStringSync(createDartAnalysisOptions());
 
     final flutterProjectPath = Directory(path.join(templatesPath.path,
-        nullSafe ? 'null-safe' : 'null-unsafe', 'flutter_project'));
+        nullSafety ? 'null-safe' : 'null-unsafe', 'flutter_project'));
     final flutterProjectDir = await flutterProjectPath.create(recursive: true);
     joinFile(flutterProjectDir, ['pubspec.yaml']).writeAsStringSync(
-        createPubspec(includeFlutterWeb: true, nullSafe: nullSafe));
+        createPubspec(includeFlutterWeb: true, nullSafety: nullSafety));
     await _runFlutterPubGet(flutterProjectDir);
     // TODO(gspencergoog): Convert this to use the flutter recommended lints as
     // soon as those are finalized (the current proposal is to leave the
@@ -187,8 +187,9 @@ void buildStorageArtifacts() async {
   }
 }
 
-Future<String> _buildStorageArtifacts(Directory dir, bool nullSafe) async {
-  final pubspec = createPubspec(includeFlutterWeb: true, nullSafe: nullSafe);
+Future<String> _buildStorageArtifacts(Directory dir, bool nullSafety) async {
+  final pubspec =
+      createPubspec(includeFlutterWeb: true, nullSafety: nullSafety);
   joinFile(dir, ['pubspec.yaml']).writeAsStringSync(pubspec);
 
   // run flutter pub get
@@ -246,13 +247,13 @@ Future<String> _buildStorageArtifacts(Directory dir, bool nullSafe) async {
     'flutter_web_sdk',
     'flutter_web_sdk',
     'kernel',
-    nullSafe ? 'flutter_ddc_sdk_sound.dill' : 'flutter_ddc_sdk.dill',
+    nullSafety ? 'flutter_ddc_sdk_sound.dill' : 'flutter_ddc_sdk.dill',
   );
 
   final args = <String>[
     '-s',
     dillPath,
-    if (nullSafe) ...[
+    if (nullSafety) ...[
       '--sound-null-safety',
       '--enable-experiment=non-nullable'
     ],
@@ -270,12 +271,12 @@ Future<String> _buildStorageArtifacts(Directory dir, bool nullSafe) async {
 
   // Copy both to the project directory.
   final artifactsDir =
-      getDir(path.join('artifacts', nullSafe ? 'null-safe' : 'null-unsafe'));
+      getDir(path.join('artifacts', nullSafety ? 'null-safe' : 'null-unsafe'));
   artifactsDir.createSync(recursive: true);
 
   final sdkJsPath = path.join(
       flutterSdkPath,
-      nullSafe
+      nullSafety
           ? 'bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/amd-canvaskit-html-sound/dart_sdk.js'
           : 'bin/cache/flutter_web_sdk/flutter_web_sdk/kernel/amd-canvaskit-html/dart_sdk.js');
 
@@ -286,7 +287,7 @@ Future<String> _buildStorageArtifacts(Directory dir, bool nullSafe) async {
   // Emit some good google storage upload instructions.
   final version = SdkManager.sdk.versionFull;
   return ('  gsutil -h "Cache-Control:public, max-age=86400" cp -z js ${artifactsDir.path}/*.js'
-      ' gs://${nullSafe ? 'nnbd_artifacts' : 'compilation_artifacts'}/$version/');
+      ' gs://${nullSafety ? 'nnbd_artifacts' : 'compilation_artifacts'}/$version/');
 }
 
 @Task('Reinitialize the Flutter submodule.')
@@ -403,13 +404,13 @@ const String _samplePackageName = 'dartpad_sample';
 
 String createPubspec({
   @required bool includeFlutterWeb,
-  @required bool nullSafe,
+  @required bool nullSafety,
 }) {
   // Mark the samples as not null safe.
   var content = '''
 name: $_samplePackageName
 environment:
-  sdk: '>=${nullSafe ? '2.12.0' : '2.10.0'} <3.0.0'
+  sdk: '>=${nullSafety ? '2.12.0' : '2.10.0'} <3.0.0'
 ''';
 
   if (includeFlutterWeb) {
