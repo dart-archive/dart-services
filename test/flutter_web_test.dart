@@ -67,7 +67,7 @@ void defineTests() {
 
     test('packagesFilePath', () async {
       final packageConfig = File(path.join(
-          FlutterWebManager.flutterTemplateProject(false).path,
+          FlutterWebManager.flutterTemplateProject(nullSafety).path,
           '.dart_tool',
           'package_config.json'));
       expect(await packageConfig.exists(), true);
@@ -80,7 +80,7 @@ void defineTests() {
     });
 
     test('summaryFilePath', () {
-      final summaryFilePath = flutterWebManager.summaryFilePath(false);
+      final summaryFilePath = flutterWebManager.summaryFilePath(nullSafety);
       expect(summaryFilePath, isNotEmpty);
 
       final file = File(summaryFilePath);
