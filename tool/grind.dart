@@ -324,13 +324,7 @@ void generateProtos() async {
   // reformat generated classes so travis dart format test doesn't fail
   await runWithLogging(
     'dart',
-    arguments: ['format', '--fix', 'lib/src/protos'],
-  );
-
-  // And reformat again, for $REASONS
-  await runWithLogging(
-    'dart',
-    arguments: ['format', '--fix', 'lib/src/protos'],
+    arguments: ['fix', '--apply', 'lib/src/protos'],
   );
 
   // generate common_server_proto.g.dart
