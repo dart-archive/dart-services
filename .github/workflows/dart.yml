@@ -26,8 +26,8 @@ jobs:
           channel: ${{ matrix.sdk }}
       - name: Install dependencies
         run: sudo apt-get install -y protobuf-compiler redis
-      - name: Install dependencies
-        run: dart pub get
+      - name: Update dependencies
+        run: dart pub upgrade
       - name: Analyze code (example/)
         run: |
           cd example
