@@ -96,8 +96,8 @@ void validateStorageArtifacts() async {
       'https://storage.googleapis.com/compilation_artifacts/';
   const nullSafeUrlBase = 'https://storage.googleapis.com/nnbd_artifacts/';
 
-  for (final artifact in compilationArtifacts) {
-    for (final urlBase in [nullUnsafeUrlBase, nullSafeUrlBase]) {
+  for (final urlBase in [nullUnsafeUrlBase, nullSafeUrlBase]) {
+    for (final artifact in compilationArtifacts) {
       await _validateExists('$urlBase$version/$artifact');
     }
   }
@@ -176,7 +176,7 @@ void buildStorageArtifacts() async {
   delete(getDir('artifacts'));
   final instructions = <String>[];
 
-  for (final nullSafe in [true, false]) {
+  for (final nullSafe in [false, true]) {
     // build and copy dart_sdk.js, flutter_web.js, and flutter_web.dill
     final temp = Directory.systemTemp.createTempSync('flutter_web_sample');
 
