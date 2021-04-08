@@ -160,10 +160,10 @@ class Compiler {
           '-s',
           _flutterWebManager.summaryFilePath(_nullSafety),
           '-s',
-          if (_nullSafety)
-            '${Sdk.flutterBinPath}/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk_sound.dill'
-          else
-            '${Sdk.flutterBinPath}/cache/flutter_web_sdk/flutter_web_sdk/kernel/flutter_ddc_sdk.dill',
+          '${Sdk.flutterBinPath}/cache/flutter_web_sdk/flutter_web_sdk/kernel/' +
+              (_nullSafety
+                  ? 'flutter_ddc_sdk_sound.dill'
+                  : 'flutter_ddc_sdk.dill'),
         ],
         ...['-o', path.join(temp.path, '$kMainDart.js')],
         ...['--module-name', 'dartpad_main'],
