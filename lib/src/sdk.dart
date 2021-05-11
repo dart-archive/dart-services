@@ -14,12 +14,14 @@ class Sdk {
   static Sdk _instance;
   factory Sdk() => _instance ?? (_instance = Sdk._());
 
-  final String _versionFull;
-  final String _flutterVersion;
+  /// The current version of the SDK, including any `-dev` suffix.
+  final String versionFull;
+
+  final String flutterVersion;
 
   Sdk._()
-      : _versionFull = _readVersionFile(sdkPath),
-        _flutterVersion = _readVersionFile(flutterSdkPath);
+      : versionFull = _readVersionFile(sdkPath),
+        flutterVersion = _readVersionFile(flutterSdkPath);
 
   static String _readVersionFile(String filePath) =>
       (File(path.join(filePath, 'version')).readAsStringSync()).trim();
@@ -40,11 +42,6 @@ class Sdk {
     if (ver.contains('-')) ver = ver.substring(0, ver.indexOf('-'));
     return ver;
   }
-
-  /// Report the current version of the SDK, including any `-dev` suffix.
-  String get versionFull => _versionFull;
-
-  String get flutterVersion => _flutterVersion;
 }
 
 class DownloadingSdkManager {
