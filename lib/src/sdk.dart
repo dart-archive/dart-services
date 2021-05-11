@@ -14,15 +14,15 @@ class Sdk {
   static Sdk _instance;
   factory Sdk() => _instance ?? (_instance = Sdk._());
 
-  String _versionFull = '';
-  String _flutterVersion = '';
+  final String _versionFull;
+  final String _flutterVersion;
 
-  Sdk._() {
-    _versionFull =
-        (File(path.join(sdkPath, 'version')).readAsStringSync()).trim();
-    _flutterVersion =
-        (File(path.join(flutterSdkPath, 'version')).readAsStringSync()).trim();
-  }
+  Sdk._()
+      : _versionFull = _readVersionFile(sdkPath),
+        _flutterVersion = _readVersionFile(flutterSdkPath);
+
+  static String _readVersionFile(String filePath) =>
+      (File(path.join(filePath, 'version')).readAsStringSync()).trim();
 
   /// Get the path to the Flutter SDK.
   static String get flutterSdkPath =>
