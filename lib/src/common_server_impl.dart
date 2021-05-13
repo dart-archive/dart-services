@@ -152,7 +152,7 @@ class CommonServerImpl {
               <String, String>{});
   }
 
-  Future<proto.VersionResponse> version(proto.VersionRequest request) {
+  Future<proto.VersionResponse> version(proto.VersionRequest _) {
     final sdk = Sdk();
     final packageVersions = getPackageVersions(nullSafe: this._nullSafety);
 
