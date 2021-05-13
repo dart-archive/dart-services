@@ -13,7 +13,7 @@ import 'services_utils.dart' as utils;
 
 const versions = ['v2'];
 
-BrowserClient _client;
+BrowserClient? _client;
 
 void main() {
   setupAnalyze();
@@ -26,9 +26,9 @@ void main() {
   setupVersion();
 }
 
-Future<Response> post(String url, {String body}) async {
+Future<Response> post(String url, {String? body}) async {
   _client ??= utils.SanitizingBrowserClient();
-  return _client.post(
+  return _client!.post(
     Uri.parse(url),
     body: body,
     encoding: utf8,
@@ -38,7 +38,7 @@ Future<Response> post(String url, {String body}) async {
 
 Future<Response> get(String url) async {
   _client ??= utils.SanitizingBrowserClient();
-  return _client.get(
+  return _client!.get(
     Uri.parse(url),
     headers: {'content-type': 'application/json'},
   );
@@ -47,18 +47,18 @@ Future<Response> get(String url) async {
 void setupAnalyze() {
   versions.forEach((version) {
     final editor =
-        createEditor(querySelector('#analyzeSection-$version .editor'));
+        createEditor(querySelector('#analyzeSection-$version .editor')!);
     final output = querySelector('#analyzeSection-$version .output');
     final button =
         querySelector('#analyzeSection-$version button') as ButtonElement;
     button.onClick.listen((e) {
-      final source = {'source': editor.getDoc().getValue()};
+      final source = {'source': editor.getDoc()!.getValue()};
       final sw = Stopwatch()..start();
       post(
         '$_uriBase/dartservices/$version/analyze',
         body: json.encode(source),
       ).then(
-          (response) => output.text = '${_formatTiming(sw)}${response.body}');
+          (response) => output!.text = '${_formatTiming(sw)}${response.body}');
     });
   });
 }
@@ -66,9 +66,9 @@ void setupAnalyze() {
 void setupAssists() {
   versions.forEach((version) {
     final editor =
-        createEditor(querySelector('#assistsSection-$version .editor'));
+        createEditor(querySelector('#assistsSection-$version .editor')!);
     final output = querySelector('#assistsSection-$version .output');
-    final offsetElement = querySelector('#assistsSection-$version .offset');
+    final offsetElement = querySelector('#assistsSection-$version .offset')!;
     final button =
         querySelector('#assistsSection-$version button') as ButtonElement;
     button.onClick.listen((e) {
@@ -78,7 +78,7 @@ void setupAssists() {
         '$_uriBase/dartservices/$version/assists',
         body: json.encode(source),
       ).then(
-          (response) => output.text = '${_formatTiming(sw)}${response.body}');
+          (response) => output!.text = '${_formatTiming(sw)}${response.body}');
     });
     offsetElement.text = 'offset ${_getOffset(editor)}';
     editor.onCursorActivity.listen((_) {
@@ -90,19 +90,19 @@ void setupAssists() {
 void setupCompile() {
   versions.forEach((version) {
     final editor =
-        createEditor(querySelector('#compileSection-$version .editor'));
+        createEditor(querySelector('#compileSection-$version .editor')!);
     final output = querySelector('#compileSection-$version .output');
     final button =
         querySelector('#compileSection-$version button') as ButtonElement;
     button.onClick.listen((e) {
-      final source = editor.getDoc().getValue();
+      final source = editor.getDoc()!.getValue();
       final compile = {'source': source};
       final sw = Stopwatch()..start();
       post(
         '$_uriBase/dartservices/$version/compile',
         body: json.encode(compile),
       ).then(
-          (response) => output.text = '${_formatTiming(sw)}${response.body}');
+          (response) => output!.text = '${_formatTiming(sw)}${response.body}');
     });
   });
 }
@@ -110,19 +110,19 @@ void setupCompile() {
 void setupCompileDDC() {
   versions.forEach((version) {
     final editor =
-        createEditor(querySelector('#compileDDCSection-$version .editor'));
+        createEditor(querySelector('#compileDDCSection-$version .editor')!);
     final output = querySelector('#compileDDCSection-$version .output');
     final button =
         querySelector('#compileDDCSection-$version button') as ButtonElement;
     button.onClick.listen((e) {
-      final source = editor.getDoc().getValue();
+      final source = editor.getDoc()!.getValue();
       final compile = {'source': source};
       final sw = Stopwatch()..start();
       post(
         '$_uriBase/dartservices/$version/compileDDC',
         body: json.encode(compile),
       ).then(
-          (response) => output.text = '${_formatTiming(sw)}${response.body}');
+          (response) => output!.text = '${_formatTiming(sw)}${response.body}');
     });
   });
 }
@@ -130,9 +130,9 @@ void setupCompileDDC() {
 void setupComplete() {
   versions.forEach((version) {
     final editor =
-        createEditor(querySelector('#completeSection-$version .editor'));
+        createEditor(querySelector('#completeSection-$version .editor')!);
     final output = querySelector('#completeSection-$version .output');
-    final offsetElement = querySelector('#completeSection-$version .offset');
+    final offsetElement = querySelector('#completeSection-$version .offset')!;
     final button =
         querySelector('#completeSection-$version button') as ButtonElement;
     button.onClick.listen((e) {
@@ -142,7 +142,7 @@ void setupComplete() {
         '$_uriBase/dartservices/$version/complete',
         body: json.encode(source),
       ).then(
-          (response) => output.text = '${_formatTiming(sw)}${response.body}');
+          (response) => output!.text = '${_formatTiming(sw)}${response.body}');
     });
     offsetElement.text = 'offset ${_getOffset(editor)}';
     editor.onCursorActivity.listen((_) {
@@ -154,9 +154,9 @@ void setupComplete() {
 void setupDocument() {
   versions.forEach((version) {
     final editor =
-        createEditor(querySelector('#documentSection-$version .editor'));
+        createEditor(querySelector('#documentSection-$version .editor')!);
     final output = querySelector('#documentSection-$version .output');
-    final offsetElement = querySelector('#documentSection-$version .offset');
+    final offsetElement = querySelector('#documentSection-$version .offset')!;
     final button =
         querySelector('#documentSection-$version button') as ButtonElement;
     button.onClick.listen((e) {
@@ -166,7 +166,7 @@ void setupDocument() {
         '$_uriBase/dartservices/$version/document',
         body: json.encode(source),
       ).then(
-          (response) => output.text = '${_formatTiming(sw)}${response.body}');
+          (response) => output!.text = '${_formatTiming(sw)}${response.body}');
     });
     offsetElement.text = 'offset ${_getOffset(editor)}';
     editor.onCursorActivity.listen((_) {
@@ -178,9 +178,9 @@ void setupDocument() {
 void setupFixes() {
   versions.forEach((version) {
     final editor =
-        createEditor(querySelector('#fixesSection-$version .editor'));
+        createEditor(querySelector('#fixesSection-$version .editor')!);
     final output = querySelector('#fixesSection-$version .output');
-    final offsetElement = querySelector('#fixesSection-$version .offset');
+    final offsetElement = querySelector('#fixesSection-$version .offset')!;
     final button =
         querySelector('#fixesSection-$version button') as ButtonElement;
     button.onClick.listen((e) {
@@ -190,7 +190,7 @@ void setupFixes() {
         '$_uriBase/dartservices/$version/fixes',
         body: json.encode(source),
       ).then(
-          (response) => output.text = '${_formatTiming(sw)}${response.body}');
+          (response) => output!.text = '${_formatTiming(sw)}${response.body}');
     });
     offsetElement.text = 'offset ${_getOffset(editor)}';
 
@@ -208,12 +208,12 @@ void setupVersion() {
     button.onClick.listen((e) {
       final sw = Stopwatch()..start();
       get('$_uriBase/dartservices/$version/version').then(
-          (response) => output.text = '${_formatTiming(sw)}${response.body}');
+          (response) => output!.text = '${_formatTiming(sw)}${response.body}');
     });
   });
 }
 
-CodeMirror createEditor(Element element, {String defaultText}) {
+CodeMirror createEditor(Element element, {String? defaultText}) {
   final options = {
     'tabSize': 2,
     'indentUnit': 2,
@@ -221,7 +221,7 @@ CodeMirror createEditor(Element element, {String defaultText}) {
     'matchBrackets': true,
     'theme': 'zenburn',
     'mode': 'dart',
-    'value': _text ?? defaultText
+    'value': _text ?? defaultText!
   };
 
   final editor = CodeMirror.fromElement(element, options: options);
@@ -231,20 +231,20 @@ CodeMirror createEditor(Element element, {String defaultText}) {
 
 String _formatTiming(Stopwatch sw) => '${sw.elapsedMilliseconds}ms\n';
 
-String get _uriBase =>
+String? get _uriBase =>
     (querySelector('input[type=text]') as InputElement).value;
 
-int _getOffset(CodeMirror editor) {
-  final pos = editor.getDoc().getCursor();
-  return editor.getDoc().indexFromPos(pos);
+int? _getOffset(CodeMirror editor) {
+  final pos = editor.getDoc()!.getCursor();
+  return editor.getDoc()!.indexFromPos(pos);
 }
 
 Map<String, dynamic> _getSourceRequest(CodeMirror editor) => {
-      'source': editor.getDoc().getValue(),
+      'source': editor.getDoc()!.getValue(),
       'offset': _getOffset(editor),
     };
 
-final String _text = r'''
+final String? _text = r'''
 void main() {
   for (int i = 0; i < 4; i++) {
     print('hello ${i}');
