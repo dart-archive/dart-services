@@ -1,5 +1,6 @@
 # Dart analyzer dislikes this line. https://github.com/dart-lang/dart-pad/issues/1720
 # include: package:pedantic/analysis_options.1.11.0.yaml
+include: package:lints/recommended.yaml
 
 analyzer:
   language:
