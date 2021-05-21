@@ -60,9 +60,9 @@ void main() async {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Hey there, boo!'),
+          title: const Text('Hey there, boo!'),
         ),
-        body: Center(
+        body: const Center(
           child: Text(
             'You are pretty okay.',
           ),
@@ -88,13 +88,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  const MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
 
@@ -121,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
+            const Text(
               'You have pushed the button this many times:',
             ),
             Text(
@@ -134,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -155,16 +155,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
+
   final String title;
-  MyHomePage({Key? key, required this.title}) : super(key: key);
-
-
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -189,11 +188,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
+            const Text(
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter',
+              _counter.toString(),
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
@@ -202,7 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -507,9 +506,9 @@ class PhysicsCardDragDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('A draggable card!'),
+        title: const Text('A draggable card!'),
       ),
-      body: DraggableCard(
+      body: const DraggableCard(
         child: FlutterLogo(
           size: 128,
         ),
@@ -520,7 +519,7 @@ class PhysicsCardDragDemo extends StatelessWidget {
 
 class DraggableCard extends StatefulWidget {
   final Widget child;
-  DraggableCard({this.child});
+  const DraggableCard({this.child});
 
   @override
   _DraggableCardState createState() => _DraggableCardState();
@@ -621,9 +620,9 @@ class PhysicsCardDragDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('A draggable card!'),
+        title: const Text('A draggable card!'),
       ),
-      body: DraggableCard(
+      body: const DraggableCard(
         child: FlutterLogo(
           size: 128,
         ),
@@ -634,7 +633,7 @@ class PhysicsCardDragDemo extends StatelessWidget {
 
 class DraggableCard extends StatefulWidget {
   final Widget child;
-  DraggableCard({required this.child});
+  const DraggableCard({required this.child});
 
   @override
   _DraggableCardState createState() => _DraggableCardState();
