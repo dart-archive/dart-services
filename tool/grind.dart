@@ -10,7 +10,6 @@ import 'dart:io';
 
 import 'package:dart_services/src/sdk.dart';
 import 'package:grinder/grinder.dart';
-import 'package:grinder/grinder_files.dart';
 import 'package:grinder/src/run_utils.dart' show mergeWorkingDirectory;
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
@@ -416,7 +415,7 @@ String createPubspec(
   var content = '''
 name: $_samplePackageName
 environment:
-  sdk: '>=${nullSafety ? '2.12.0' : '2.10.0'} <3.0.0'
+  sdk: '>=${nullSafety ? '2.13.0' : '2.10.0'} <3.0.0'
 dependencies:
 ''';
 
