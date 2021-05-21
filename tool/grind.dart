@@ -36,7 +36,7 @@ Future<dynamic> test() => TestRunner().testAsync();
 
 @DefaultTask()
 @Depends(analyze, test)
-void analyzeTest() => null;
+void analyzeTest() {}
 
 @Task()
 @Depends(buildStorageArtifacts)
@@ -342,7 +342,7 @@ void deploy() {
 
 @Task()
 @Depends(generateProtos, analyze, fuzz, buildStorageArtifacts)
-void buildbot() => null;
+void buildbot() {}
 
 @Task('Generate Protobuf classes')
 void generateProtos() async {
@@ -434,7 +434,7 @@ dependencies:
 @Depends(sdkInit)
 void updatePubDependencies() async {
   for (final nullSafety in [false, true]) {
-    await updateDependenciesFile(nullSafety: nullSafety);
+    updateDependenciesFile(nullSafety: nullSafety);
   }
 }
 
@@ -465,6 +465,7 @@ void updateDependenciesFile({
       'firebase_core': 'any',
       'firebase_messaging': 'any',
       'firebase_storage': 'any',
+      'pedantic': 'any',
     },
   );
   joinFile(tempDir, ['pubspec.yaml']).writeAsStringSync(pubspec);
@@ -481,12 +482,12 @@ void updateDependenciesFile({
     'sky_engine',
   ];
 
-  packages.forEach((name_, package_) {
-    final name = name_ as String;
+  packages.forEach((_name, _package) {
+    final name = _name as String;
     if (flutterPackages.contains(name)) {
       return;
     }
-    final package = package_ as YamlMap;
+    final package = _package as YamlMap;
     final source = package['source'];
     if (source is! String || source != 'hosted') {
       fail('$name is not hosted: "$source" (${source.runtimeType})');
