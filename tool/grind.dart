@@ -127,8 +127,13 @@ void buildProjectTemplates() async {
     joinFile(dartProjectDir, ['pubspec.yaml']).writeAsStringSync(
         createPubspec(includeFlutterWeb: false, nullSafety: nullSafety));
     await _runDartPubGet(dartProjectDir);
-    joinFile(dartProjectDir, ['analysis_options.yaml'])
-        .writeAsStringSync('include: package:lints/recommended.yaml\n');
+    joinFile(dartProjectDir, ['analysis_options.yaml']).writeAsStringSync('''
+include: package:lints/recommended.yaml
+
+linter:
+  rules:
+    avoid_print: false
+''');
 
     final flutterProjectPath = Directory(path.join(templatesPath.path,
         nullSafety ? 'null-safe' : 'null-unsafe', 'flutter_project'));
@@ -140,8 +145,14 @@ void buildProjectTemplates() async {
     joinFile(flutterProjectDir, ['pubspec.yaml'])
         .writeAsStringSync(flutterPubspec);
     await _runFlutterPubGet(flutterProjectDir);
-    joinFile(flutterProjectDir, ['analysis_options.yaml'])
-        .writeAsStringSync('include: package:flutter_lints/flutter.yaml\n');
+    joinFile(flutterProjectDir, ['analysis_options.yaml']).writeAsStringSync('''
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    avoid_print: false
+    use_key_in_widget_constructors: false
+''');
   }
 }
 
