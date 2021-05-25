@@ -53,7 +53,7 @@ Future<void> serveNullSafety() async {
 }
 
 const _dartImageName = 'dart';
-final _dockerVersionMatcher = RegExp('^FROM $_dartImageName:(.*)\$');
+final _dockerVersionMatcher = RegExp('^FROM $_dartImageName:(.*)-sdk\$');
 const _dockerFileNames = [
   'cloud_run.Dockerfile',
   'cloud_run_null_safety.Dockerfile'
@@ -66,7 +66,7 @@ void updateDockerVersion() {
     final dockerFile = File(_dockerFileName);
     final dockerImageLines = dockerFile.readAsLinesSync().map((String s) {
       if (s.contains(_dockerVersionMatcher)) {
-        return 'FROM $_dartImageName:$platformVersion';
+        return 'FROM $_dartImageName:$platformVersion-sdk';
       }
       return s;
     }).toList();
