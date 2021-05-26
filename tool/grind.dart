@@ -11,7 +11,6 @@ import 'dart:io';
 import 'package:dart_services/src/pub.dart';
 import 'package:dart_services/src/sdk.dart';
 import 'package:grinder/grinder.dart';
-import 'package:grinder/grinder_files.dart';
 import 'package:grinder/src/run_utils.dart' show mergeWorkingDirectory;
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
@@ -26,6 +25,7 @@ Future<void> main(List<String> args) async {
 void sdkInit() {}
 
 @Task()
+@Depends(buildProjectTemplates)
 void analyze() async {
   await runWithLogging('dart', arguments: ['analyze']);
 }
@@ -36,7 +36,7 @@ Future<dynamic> test() => TestRunner().testAsync();
 
 @DefaultTask()
 @Depends(analyze, test)
-void analyzeTest() => null;
+void analyzeTest() {}
 
 @Task()
 @Depends(buildStorageArtifacts)
@@ -52,23 +52,28 @@ Future<void> serveNullSafety() async {
       arguments: ['bin/server_dev.dart', '--port', '8084', '--null-safety']);
 }
 
-const _dartImageName = 'google/dart';
-final _dockerVersionMatcher = RegExp('^FROM $_dartImageName:(.*)\$');
-const _dockerFileName = 'cloud_run.Dockerfile';
+const _dartImageName = 'dart';
+final _dockerVersionMatcher = RegExp('^FROM $_dartImageName:(.*)-sdk\$');
+const _dockerFileNames = [
+  'cloud_run.Dockerfile',
+  'cloud_run_null_safety.Dockerfile'
+];
 
 @Task('Update the docker and SDK versions')
 void updateDockerVersion() {
   final platformVersion = Platform.version.split(' ').first;
-  final dockerFile = File(_dockerFileName);
-  final dockerImageLines = dockerFile.readAsLinesSync().map((String s) {
-    if (s.contains(_dockerVersionMatcher)) {
-      return 'FROM $_dartImageName:$platformVersion';
-    }
-    return s;
-  }).toList();
-  dockerImageLines.add('');
+  for (final _dockerFileName in _dockerFileNames) {
+    final dockerFile = File(_dockerFileName);
+    final dockerImageLines = dockerFile.readAsLinesSync().map((String s) {
+      if (s.contains(_dockerVersionMatcher)) {
+        return 'FROM $_dartImageName:$platformVersion-sdk';
+      }
+      return s;
+    }).toList();
+    dockerImageLines.add('');
 
-  dockerFile.writeAsStringSync(dockerImageLines.join('\n'));
+    dockerFile.writeAsStringSync(dockerImageLines.join('\n'));
+  }
 }
 
 final List<String> compilationArtifacts = [
@@ -106,7 +111,7 @@ Future<void> _validateExists(String url) async {
 }
 
 @Task('build the project templates')
-@Depends(sdkInit)
+@Depends(sdkInit, updatePubDependencies)
 void buildProjectTemplates() async {
   final templatesPath =
       Directory(path.join(Directory.current.path, 'project_templates'));
@@ -333,15 +338,15 @@ void fuzz() {
 }
 
 @Task('Update generated files and run all checks prior to deployment')
-@Depends(sdkInit, updateDockerVersion, generateProtos, analyze, test, fuzz,
-    validateStorageArtifacts)
+@Depends(sdkInit, updateDockerVersion, generateProtos, updatePubDependencies,
+    analyze, test, validateStorageArtifacts)
 void deploy() {
   log('Deploy via Google Cloud Console');
 }
 
 @Task()
 @Depends(generateProtos, analyze, fuzz, buildStorageArtifacts)
-void buildbot() => null;
+void buildbot() {}
 
 @Task('Generate Protobuf classes')
 void generateProtos() async {
@@ -410,7 +415,7 @@ String createPubspec(
   var content = '''
 name: $_samplePackageName
 environment:
-  sdk: '>=${nullSafety ? '2.12.0' : '2.10.0'} <3.0.0'
+  sdk: '>=${nullSafety ? '2.13.0' : '2.10.0'} <3.0.0'
 dependencies:
 ''';
 
@@ -470,7 +475,7 @@ linter:
 @Depends(sdkInit)
 void updatePubDependencies() async {
   for (final nullSafety in [false, true]) {
-    await updateDependenciesFile(nullSafety: nullSafety);
+    updateDependenciesFile(nullSafety: nullSafety);
   }
 }
 
@@ -498,6 +503,7 @@ void updateDependenciesFile({
       'firebase_core': 'any',
       'firebase_messaging': 'any',
       'firebase_storage': 'any',
+      'pedantic': 'any',
     },
   );
   joinFile(tempDir, ['pubspec.yaml']).writeAsStringSync(pubspec);
