@@ -134,13 +134,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.7.0"
-  codemirror:
-    dependency: "direct dev"
-    description:
-      name: codemirror
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.2+5.61.1"
   collection:
     dependency: transitive
     description:
