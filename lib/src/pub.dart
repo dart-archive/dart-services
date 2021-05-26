@@ -52,12 +52,12 @@ Map<String, String> packageVersionsFromPubspecLock(Directory package) {
   final packages = pubSpecLockContents['packages'] as YamlMap;
   final packageVersions = <String, String>{};
 
-  packages.forEach((name_, package_) {
-    final name = name_ as String;
+  packages.forEach((nameKey, packageValue) {
+    final name = nameKey as String;
     if (_flutterPackages.contains(name)) {
       return;
     }
-    final package = package_ as YamlMap;
+    final package = packageValue as YamlMap;
     final source = package['source'];
     if (source is! String || source != 'hosted') {
       throw StateError(

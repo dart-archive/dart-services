@@ -154,7 +154,7 @@ class CommonServerImpl {
 
   Future<proto.VersionResponse> version(proto.VersionRequest _) {
     final sdk = Sdk();
-    final packageVersions = getPackageVersions(nullSafe: this._nullSafety);
+    final packageVersions = getPackageVersions(nullSafe: _nullSafety);
 
     return Future.value(
       proto.VersionResponse()
