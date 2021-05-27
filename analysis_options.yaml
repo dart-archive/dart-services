@@ -9,9 +9,9 @@ analyzer:
     implicit-casts: false
   exclude:
     - dart-sdk/**
-    - flutter-sdk/**
     - doc/generated/**
-    - flutter/**
+    - flutter-sdk/**
+    - project-templates/**
     # TODO: This seems to be hiding ~2 dozen legitimate analysis issues. https://github.com/dart-lang/dart-pad/issues/1712
     - lib/src/protos/**
 
