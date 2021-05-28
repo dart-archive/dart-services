@@ -7,7 +7,6 @@ analyzer:
     implicit-casts: false
   exclude:
     - dart-sdk/**
-    - doc/generated/**
     - flutter-sdk/**
     - project_templates/null-safe/dart_project/**
     - project_templates/null-unsafe/dart_project/**

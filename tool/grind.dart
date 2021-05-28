@@ -127,12 +127,8 @@ void buildProjectTemplates() async {
     joinFile(dartProjectDir, ['pubspec.yaml']).writeAsStringSync(
         createPubspec(includeFlutterWeb: false, nullSafety: nullSafety));
     await _runDartPubGet(dartProjectDir);
-    joinFile(dartProjectDir, ['analysis_options.yaml']).writeAsStringSync('''
-include: package:lints/recommended.yaml
-linter:
-  rules:
-    avoid_print: false
-''');
+    joinFile(dartProjectDir, ['analysis_options.yaml'])
+        .writeAsStringSync(createDartAnalysisOptions());
 
     final flutterProjectPath = Directory(path.join(templatesPath.path,
         nullSafety ? 'null-safe' : 'null-unsafe', 'flutter_project'));
@@ -144,13 +140,12 @@ linter:
     joinFile(flutterProjectDir, ['pubspec.yaml'])
         .writeAsStringSync(flutterPubspec);
     await _runFlutterPubGet(flutterProjectDir);
-    joinFile(flutterProjectDir, ['analysis_options.yaml']).writeAsStringSync('''
-include: package:flutter_lints/flutter.yaml
-linter:
-  rules:
-    avoid_print: false
-    use_key_in_widget_constructors: false
-''');
+    // TODO(gspencergoog): Convert this to use the flutter recommended lints as
+    // soon as those are finalized (the current proposal is to leave the
+    // analysis_options_user.yaml file as-is and replace it with a package, to
+    // avoid massive breakage).
+    joinFile(flutterProjectDir, ['analysis_options.yaml']).writeAsStringSync(
+        'include: package:flutter/analysis_options_user.yaml\n');
   }
 }
 
@@ -439,6 +434,43 @@ dependencies:
   return content;
 }
 
+String createDartAnalysisOptions() {
+  // TODO(gspencergoog): Update this to Dart "recommended" list once that is
+  // finalized.
+  return '''
+linter:
+  rules:
+    - always_declare_return_types
+    - avoid_empty_else
+    - avoid_relative_lib_imports
+    - avoid_shadowing_type_parameters
+    - avoid_types_as_parameter_names
+    - await_only_futures
+    - camel_case_extensions
+    - camel_case_types
+    - curly_braces_in_flow_control_structures
+    - empty_catches
+    - file_names
+    - hash_and_equals
+    - iterable_contains_unrelated_type
+    - list_remove_unrelated_type
+    - no_duplicate_case_values
+    - non_constant_identifier_names
+    - package_prefixed_library_names
+    - prefer_generic_function_type_aliases
+    - prefer_is_empty
+    - prefer_is_not_empty
+    - prefer_iterable_whereType
+    - prefer_typing_uninitialized_variables
+    - provide_deprecation_message
+    - unawaited_futures
+    - unnecessary_overrides
+    - unrelated_type_equality_checks
+    - valid_regexps
+    - void_checks
+''';
+}
+
 @Task('Update pubspec dependency versions')
 @Depends(sdkInit)
 void updatePubDependencies() async {
@@ -462,9 +494,6 @@ void updateDependenciesFile({
     includeFlutterWeb: true,
     nullSafety: nullSafety,
     dependencies: {
-      // pkg:lints and pkg:flutter_lints
-      'lints': 'any',
-      'flutter_lints': 'any',
       // These are all of the web-enabled plugins found at
       // https://firebase.flutter.dev/.
       'cloud_functions': 'any',
