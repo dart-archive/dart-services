@@ -74,7 +74,7 @@ void main() async {
 ''';
 
 // From https://gist.github.com/johnpryan/b6409e10de32b280b8938aa75364fa7b
-const sampleCodeFlutterCounter = '''
+const sampleCodeFlutterCounter = r'''
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '\$_counter',
+              '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
@@ -192,7 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '\$_counter',
+              '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
@@ -209,7 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
 ''';
 
 // From https://gist.github.com/johnpryan/b3ccb26497ac84895540185935ed5825
-const sampleCodeFlutterSunflower = '''
+const sampleCodeFlutterSunflower = r'''
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
@@ -323,7 +323,7 @@ class _SunflowerState extends State<Sunflower> {
                   ),
                 ),
               ),
-              Text("Showing \$seedCount seeds"),
+              Text("Showing $seedCount seeds"),
               ConstrainedBox(
                 constraints: const BoxConstraints.tightFor(width: 300),
                 child: Slider.adaptive(
