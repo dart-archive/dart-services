@@ -28,7 +28,7 @@
   "firebase_storage": "8.1.0",
   "firebase_storage_platform_interface": "2.1.0",
   "firebase_storage_web": "1.1.0",
-  "flutter_lints": "1.0.2",
+  "flutter_lints": "1.0.3",
   "http": "0.13.3",
   "http_parser": "4.0.0",
   "intl": "0.17.0",
