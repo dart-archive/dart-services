@@ -11,6 +11,8 @@ dependencies:
   args: ^2.0.0
   bazel_worker: ^1.0.0
   crypto: ^3.0.1
+  # TODO(domesticmouse): Go back to mainline once
+  # https://github.com/jcmellado/dartis/pull/38 has landed
   dartis:
     git:
       url: https://github.com/domesticmouse/dartis
