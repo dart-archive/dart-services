@@ -12,7 +12,7 @@ import 'package:yaml/yaml.dart';
 
 import 'project.dart' as project;
 
-List<ImportDirective> getAllImportsFor(String dartSource) {
+List<ImportDirective> getAllImportsFor(String? dartSource) {
   if (dartSource == null) return [];
 
   final unit = parseString(content: dartSource, throwIfDiagnostics: false).unit;
@@ -29,11 +29,11 @@ const _flutterPackages = [
 
 /// Each of these is expensive to calculate; they require reading from disk.
 /// None of them changes during execution.
-/*late*/ Map<String, String> _nullSafePackageVersions;
-/*late*/ Map<String, String> _preNullSafePackageVersions;
+Map<String, String>? _nullSafePackageVersions;
+Map<String, String>? _preNullSafePackageVersions;
 
 /// Returns a mapping of Pub package name to package version.
-Map<String, String> getPackageVersions({@required bool nullSafe}) {
+Map<String, String> getPackageVersions({required bool nullSafe}) {
   if (nullSafe) {
     return _nullSafePackageVersions ??=
         packageVersionsFromPubspecLock(project.flutterTemplateProject(true));
@@ -79,8 +79,8 @@ extension ImportIterableExtensions on Iterable<ImportDirective> {
   /// Returns the names of packages that are referenced in this collection.
   /// These package names are sanitized defensively.
   Iterable<String> filterSafePackages() {
-    return where((import) => !import.uri.stringValue.startsWith('package:../'))
-        .map((import) => Uri.parse(import.uri.stringValue))
+    return where((import) => !import.uri.stringValue!.startsWith('package:../'))
+        .map((import) => Uri.parse(import.uri.stringValue!))
         .where((uri) => uri.scheme == 'package' && uri.pathSegments.isNotEmpty)
         .map((uri) => uri.pathSegments.first);
   }

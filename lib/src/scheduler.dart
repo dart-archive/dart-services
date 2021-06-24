@@ -52,13 +52,13 @@ class _Task<T> {
 // Public working data structure.
 abstract class Task<T> {
   Future<T> perform();
-  Duration timeoutDuration;
+  late Duration timeoutDuration;
 }
 
 class ClosureTask<T> extends Task<T> {
   final Future<T> Function() _closure;
 
-  ClosureTask(this._closure, {Duration timeoutDuration}) {
+  ClosureTask(this._closure, {required Duration timeoutDuration}) {
     this.timeoutDuration = timeoutDuration;
   }
 

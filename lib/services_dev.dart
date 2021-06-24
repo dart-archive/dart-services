@@ -60,12 +60,12 @@ class EndpointsServer {
   }
 
   final int port;
-  HttpServer server;
+  late HttpServer server;
 
-  Pipeline pipeline;
-  Handler handler;
+  late Pipeline pipeline;
+  late Handler handler;
 
-  CommonServerApi commonServerApi;
+  late CommonServerApi commonServerApi;
 
   EndpointsServer._(this.port, bool nullSafety) {
     final commonServerImpl = CommonServerImpl(
@@ -103,7 +103,7 @@ class _Cache implements ServerCache {
   Future<String> get(String key) => Future<String>.value(null);
 
   @override
-  Future<void> set(String key, String value, {Duration expiration}) =>
+  Future<void> set(String key, String value, {Duration? expiration}) =>
       Future<void>.value();
 
   @override

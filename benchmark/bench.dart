@@ -53,7 +53,7 @@ void main(List<String> args) async {
 
 class AnalyzerBenchmark extends Benchmark {
   final String source;
-  AnalysisServerWrapper analysisServer;
+  late AnalysisServerWrapper analysisServer;
 
   AnalyzerBenchmark(
     String name,
@@ -63,7 +63,7 @@ class AnalyzerBenchmark extends Benchmark {
   }
 
   @override
-  Future<AnalysisServer> init() => analysisServer.init();
+  Future<AnalysisServer?> init() => analysisServer.init();
 
   @override
   Future<proto.AnalysisResults> perform() => analysisServer.analyze(source);
@@ -111,7 +111,7 @@ class AnalysisServerBenchmark extends Benchmark {
         super('completion.$name');
 
   @override
-  Future<AnalysisServer> init() => analysisServer.init();
+  Future<AnalysisServer?> init() => analysisServer.init();
 
   @override
   Future<proto.CompleteResponse> perform() =>

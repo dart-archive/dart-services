@@ -30,7 +30,7 @@ Future<void> main(List<String> args) async {
 
   // Cloud Run supplies the port to bind to in the environment.
   // Allow command line arg to override environment.
-  final port = int.tryParse(results['port'] as String ?? '') ??
+  final port = int.tryParse(results['port'] as String? ?? '') ??
       int.tryParse(Platform.environment['PORT'] ?? '');
   if (port == null) {
     stdout.writeln('Could not parse port value from either environment '
@@ -79,14 +79,14 @@ class EndpointsServer {
   }
 
   final int port;
-  HttpServer server;
-  String redisServerUri;
+  late HttpServer server;
+  String? redisServerUri;
 
-  Pipeline pipeline;
-  Handler handler;
+  late Pipeline pipeline;
+  late Handler handler;
 
-  CommonServerApi commonServerApi;
-  CommonServerImpl _commonServerImpl;
+  late CommonServerApi commonServerApi;
+  late CommonServerImpl _commonServerImpl;
 
   EndpointsServer._(this.port, this.redisServerUri, bool nullSafety) {
     _commonServerImpl = CommonServerImpl(
@@ -94,7 +94,7 @@ class EndpointsServer {
       redisServerUri == null
           ? InMemoryCache()
           : RedisCache(
-              redisServerUri,
+              redisServerUri!,
               // The name of the Cloud Run revision being run, for more detail please see:
               // https://cloud.google.com/run/docs/reference/container-contract#env-vars
               Platform.environment['K_REVISION'],

@@ -7,6 +7,7 @@ library services.server_cache;
 import 'dart:async';
 import 'dart:math';
 
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:dartis/dartis.dart' as redis;
 import 'package:pedantic/pedantic.dart';
 import 'package:quiver/cache.dart';
@@ -15,7 +16,7 @@ import 'common_server_impl.dart' show log;
 import 'sdk.dart';
 
 abstract class ServerCache {
-  Future<String> get(String key);
+  Future<String?> get(String key);
 
   Future<void> set(String key, String value, {Duration expiration});
 
@@ -26,13 +27,13 @@ abstract class ServerCache {
 
 /// A redis-backed implementation of [ServerCache].
 class RedisCache implements ServerCache {
-  redis.Client redisClient;
-  redis.Connection _connection;
+  redis.Client? redisClient;
+  redis.Connection? _connection;
 
   final String redisUriString;
 
   // Version of the server to add with keys.
-  final String serverVersion;
+  final String? serverVersion;
 
   // pseudo-random is good enough.
   final Random randomSource = Random();
@@ -56,7 +57,7 @@ class RedisCache implements ServerCache {
   /// future is reset on connection.  Mostly for testing.
   Future<void> get disconnected => _disconnected.future;
 
-  String __logPrefix;
+  String? __logPrefix;
 
   String get _logPrefix =>
       __logPrefix ??= 'RedisCache [$redisUriString] ($serverVersion)';
@@ -142,13 +143,13 @@ class RedisCache implements ServerCache {
   }
 
   @override
-  Future<String> get(String key) async {
-    String value;
+  Future<String?> get(String key) async {
+    String? value;
     key = _genKey(key);
     if (!_isConnected()) {
       log.warning('$_logPrefix: no cache available when getting key $key');
     } else {
-      final commands = redisClient.asCommands<String, String>();
+      final commands = redisClient!.asCommands<String, String>();
       // commands can return errors synchronously in timeout cases.
       try {
         value = await commands.get(key).timeout(cacheOperationTimeout,
@@ -172,7 +173,7 @@ class RedisCache implements ServerCache {
       return null;
     }
 
-    final commands = redisClient.asCommands<String, String>();
+    final commands = redisClient!.asCommands<String, String>();
     // commands can sometimes return errors synchronously in timeout cases.
     try {
       return commands.del(key: key).timeout(cacheOperationTimeout,
@@ -187,14 +188,14 @@ class RedisCache implements ServerCache {
   }
 
   @override
-  Future<void> set(String key, String value, {Duration expiration}) async {
+  Future<void> set(String key, String value, {Duration? expiration}) async {
     key = _genKey(key);
     if (!_isConnected()) {
       log.warning('$_logPrefix: no cache available when setting key $key');
       return;
     }
 
-    final commands = redisClient.asCommands<String, String>();
+    final commands = redisClient!.asCommands<String, String>();
     // commands can sometimes return errors synchronously in timeout cases.
     try {
       return Future<void>.sync(() async {
@@ -223,10 +224,10 @@ class InMemoryCache implements ServerCache {
       MapCache<String, String>.lru(maximumSize: 512);
 
   @override
-  Future<String> get(String key) async => _lru.get(key);
+  Future<String?> get(String key) async => _lru.get(key);
 
   @override
-  Future<void> set(String key, String value, {Duration expiration}) async =>
+  Future<void> set(String key, String value, {Duration? expiration}) async =>
       _lru.set(key, value);
 
   @override

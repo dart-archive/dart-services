@@ -54,10 +54,10 @@ abstract class AnalysisServerWrapper {
   final String sdkPath;
   final TaskScheduler serverScheduler = TaskScheduler();
 
-  Future<AnalysisServer> _init;
+  Future<AnalysisServer?>? _init;
 
   /// Instance to handle communication with the server.
-  AnalysisServer analysisServer;
+  AnalysisServer? analysisServer;
 
   AnalysisServerWrapper(this.sdkPath);
 
@@ -65,7 +65,7 @@ abstract class AnalysisServerWrapper {
 
   String get _sourceDirPath;
 
-  Future<AnalysisServer> init() {
+  Future<AnalysisServer?> init() {
     if (_init == null) {
       void onRead(String str) {
         if (dumpServerMessages) _logger.info('<-- $str');
@@ -88,19 +88,19 @@ abstract class AnalysisServerWrapper {
         serverArgs: serverArgs,
       ).then((AnalysisServer server) async {
         analysisServer = server;
-        analysisServer.server.onError.listen((ServerError error) {
+        analysisServer!.server.onError.listen((ServerError error) {
           _logger.severe('server error${error.isFatal ? ' (fatal)' : ''}',
               error.message, StackTrace.fromString(error.stackTrace));
         });
-        await analysisServer.server.onConnected.first;
-        await analysisServer.server.setSubscriptions(<String>['STATUS']);
+        await analysisServer!.server.onConnected.first;
+        await analysisServer!.server.setSubscriptions(<String>['STATUS']);
 
         listenForCompletions();
         listenForAnalysisComplete();
         listenForErrors();
 
         final analysisComplete = getAnalysisCompleteCompleter();
-        await analysisServer.analysis
+        await analysisServer!.analysis
             .setAnalysisRoots(<String>[_sourceDirPath], <String>[]);
         await _sendAddOverlays(<String, String>{mainPath: _warmupSrc});
         await analysisComplete.future;
@@ -113,7 +113,7 @@ abstract class AnalysisServerWrapper {
       });
     }
 
-    return _init;
+    return _init!;
   }
 
   String get _sdkVersion {
@@ -123,7 +123,7 @@ abstract class AnalysisServerWrapper {
   Future<int> get onExit {
     // Return when the analysis server exits. We introduce a delay so that when
     // we terminate the analysis server we can exit normally.
-    return analysisServer.processCompleter.future.then((int code) {
+    return analysisServer!.processCompleter.future.then((int code) {
       return Future<int>.delayed(const Duration(seconds: 1), () {
         return code;
       });
@@ -138,7 +138,7 @@ abstract class AnalysisServerWrapper {
         await _completeImpl(sources, location.sourceName, location.offset);
     var suggestions = results.results;
 
-    final source = sources[location.sourceName];
+    final source = sources[location.sourceName]!;
     final prefix = source.substring(results.replacementOffset, location.offset);
     suggestions = suggestions.where((suggestion) {
       return suggestion.completion
@@ -234,28 +234,28 @@ abstract class AnalysisServerWrapper {
       await _loadSources(<String, String>{mainPath: source});
       await analysisCompleter.future;
 
-      final result = await analysisServer.analysis.getHover(mainPath, offset);
+      final result = await analysisServer!.analysis.getHover(mainPath, offset);
       await _unloadSources();
 
       if (result.hovers.isEmpty) {
-        return null;
+        return <String, String>{};
       }
 
       final info = result.hovers.first;
       final m = <String, String>{};
 
-      m['description'] = info.elementDescription;
-      m['kind'] = info.elementKind;
-      m['dartdoc'] = info.dartdoc;
+      m['description'] = info.elementDescription!;
+      m['kind'] = info.elementKind!;
+      m['dartdoc'] = info.dartdoc!;
 
-      m['enclosingClassName'] = info.containingClassDescription;
-      m['libraryName'] = info.containingLibraryName;
+      m['enclosingClassName'] = info.containingClassDescription!;
+      m['libraryName'] = info.containingLibraryName!;
 
-      m['deprecated'] = info.parameter;
+      m['deprecated'] = info.parameter!;
       if (info.isDeprecated != null) m['deprecated'] = '${info.isDeprecated}';
 
-      m['staticType'] = info.staticType;
-      m['propagatedType'] = info.propagatedType;
+      m['staticType'] = info.staticType!;
+      m['propagatedType'] = info.propagatedType!;
 
       for (final key in m.keys.toList()) {
         if (m[key] == null) m.remove(key);
@@ -286,7 +286,7 @@ abstract class AnalysisServerWrapper {
           ..line = error.location.startLine
           ..message = utils.normalizeFilePaths(error.message)
           ..sourceName = path.basename(error.location.file)
-          ..hasFixes = error.hasFix
+          ..hasFixes = error.hasFix!
           ..charStart = error.location.offset
           ..charLength = error.location.length
           ..diagnosticMessages.addAll(error.contextMessages?.map((m) =>
@@ -298,11 +298,11 @@ abstract class AnalysisServerWrapper {
               []);
 
         if (error.url != null) {
-          issue.url = error.url;
+          issue.url = error.url!;
         }
 
         if (error.correction != null) {
-          issue.correction = utils.normalizeFilePaths(error.correction);
+          issue.correction = utils.normalizeFilePaths(error.correction!);
         }
 
         return issue;
@@ -341,7 +341,7 @@ abstract class AnalysisServerWrapper {
       await analysisCompleter.future;
       const length = 1;
       final assists =
-          await analysisServer.edit.getAssists(path, offset, length);
+          await analysisServer!.edit.getAssists(path, offset, length);
       await _unloadSources();
       return assists;
     }, timeoutDuration: _analysisServerTimeout));
@@ -428,24 +428,23 @@ abstract class AnalysisServerWrapper {
   /// equivalent.
   static Iterable<proto.LinkedEditGroup> _convertLinkedEditGroups(
       Iterable<LinkedEditGroup> groups) {
-    return groups?.map<proto.LinkedEditGroup>((g) {
-          return proto.LinkedEditGroup()
-            ..positions.addAll(g.positions?.map((p) => p.offset)?.toList())
-            ..length = g.length
-            ..suggestions.addAll(g.suggestions
-                ?.map((s) => proto.LinkedEditSuggestion()
-                  ..value = s.value
-                  ..kind = s.kind)
-                ?.toList());
-        }) ??
-        [];
+    return groups.map<proto.LinkedEditGroup>((g) {
+      return proto.LinkedEditGroup()
+        ..positions.addAll(g.positions.map((p) => p.offset).toList())
+        ..length = g.length
+        ..suggestions.addAll(g.suggestions
+            .map((s) => proto.LinkedEditSuggestion()
+              ..value = s.value
+              ..kind = s.kind)
+            .toList());
+    });
   }
 
   /// Cleanly shutdown the Analysis Server.
   Future<dynamic> shutdown() {
     // TODO(jcollins-g): calling dispose() sometimes prevents
     // --pause-isolates-on-exit from working; fix.
-    return analysisServer.server
+    return analysisServer!.server
         .shutdown()
         .timeout(const Duration(seconds: 1))
         .catchError((dynamic e) => null);
@@ -462,7 +461,7 @@ abstract class AnalysisServerWrapper {
     return serverScheduler.schedule(ClosureTask<CompletionResults>(() async {
       sources = _getOverlayMapWithPaths(sources);
       await _loadSources(sources);
-      final id = await analysisServer.completion.getSuggestions(
+      final id = await analysisServer!.completion.getSuggestions(
         _getPathFromName(sourceName),
         offset,
       );
@@ -486,7 +485,7 @@ abstract class AnalysisServerWrapper {
       final analysisCompleter = getAnalysisCompleteCompleter();
       await _loadSources(sources);
       await analysisCompleter.future;
-      final fixes = await analysisServer.edit.getFixes(path, offset);
+      final fixes = await analysisServer!.edit.getFixes(path, offset);
       await _unloadSources();
       return fixes;
     }, timeoutDuration: _analysisServerTimeout));
@@ -497,7 +496,7 @@ abstract class AnalysisServerWrapper {
 
     return serverScheduler.schedule(ClosureTask<FormatResult>(() async {
       await _loadSources(<String, String>{mainPath: src});
-      final result = await analysisServer.edit.format(mainPath, offset, 0);
+      final result = await analysisServer!.edit.format(mainPath, offset, 0);
       await _unloadSources();
       return result;
     }, timeoutDuration: _analysisServerTimeout));
@@ -506,7 +505,7 @@ abstract class AnalysisServerWrapper {
   Map<String, String> _getOverlayMapWithPaths(Map<String, String> overlay) {
     final newOverlay = <String, String>{};
     for (final key in overlay.keys) {
-      newOverlay[_getPathFromName(key)] = overlay[key];
+      newOverlay[_getPathFromName(key)] = overlay[key]!;
     }
     return newOverlay;
   }
@@ -515,7 +514,7 @@ abstract class AnalysisServerWrapper {
       path.join(_sourceDirPath, sourceName);
 
   /// Warm up the analysis server to be ready for use.
-  Future<proto.CompleteResponse> warmup({bool useHtml = false}) =>
+  Future<void> warmup({bool useHtml = false}) =>
       complete(useHtml ? _warmupSrcHtml : _warmupSrc, 10);
 
   final Set<String> _overlayPaths = <String>{};
@@ -525,20 +524,20 @@ abstract class AnalysisServerWrapper {
       await _sendRemoveOverlays();
     }
     await _sendAddOverlays(sources);
-    await analysisServer.analysis.setPriorityFiles(sources.keys.toList());
+    await analysisServer!.analysis.setPriorityFiles(sources.keys.toList());
   }
 
   Future<dynamic> _unloadSources() {
     return Future.wait(<Future<dynamic>>[
       _sendRemoveOverlays(),
-      analysisServer.analysis.setPriorityFiles(<String>[]),
+      analysisServer!.analysis.setPriorityFiles(<String>[]),
     ]);
   }
 
   Future<dynamic> _sendAddOverlays(Map<String, String> overlays) {
     final params = <String, ContentOverlayType>{};
     for (final overlayPath in overlays.keys) {
-      params[overlayPath] = AddContentOverlay(overlays[overlayPath]);
+      params[overlayPath] = AddContentOverlay(overlays[overlayPath]!);
     }
 
     _logger.fine('About to send analysis.updateContent');
@@ -546,7 +545,7 @@ abstract class AnalysisServerWrapper {
 
     _overlayPaths.addAll(params.keys);
 
-    return analysisServer.analysis.updateContent(params);
+    return analysisServer!.analysis.updateContent(params);
   }
 
   Future<dynamic> _sendRemoveOverlays() {
@@ -558,14 +557,14 @@ abstract class AnalysisServerWrapper {
       params[overlayPath] = RemoveContentOverlay();
     }
     _overlayPaths.clear();
-    return analysisServer.analysis.updateContent(params);
+    return analysisServer!.analysis.updateContent(params);
   }
 
   final Map<String, Completer<CompletionResults>> _completionCompleters =
       <String, Completer<CompletionResults>>{};
 
   void listenForCompletions() {
-    analysisServer.completion.onResults.listen((CompletionResults result) {
+    analysisServer!.completion.onResults.listen((CompletionResults result) {
       if (result.isLast) {
         final completer = _completionCompleters.remove(result.id);
         if (completer != null) {
@@ -577,16 +576,16 @@ abstract class AnalysisServerWrapper {
 
   Future<CompletionResults> getCompletionResults(String id) {
     _completionCompleters[id] = Completer<CompletionResults>();
-    return _completionCompleters[id].future;
+    return _completionCompleters[id]!.future;
   }
 
   final List<Completer<dynamic>> _analysisCompleters = <Completer<dynamic>>[];
 
   void listenForAnalysisComplete() {
-    analysisServer.server.onStatus.listen((ServerStatus status) {
+    analysisServer!.server.onStatus.listen((ServerStatus status) {
       if (status.analysis == null) return;
 
-      if (!status.analysis.isAnalyzing) {
+      if (!status.analysis!.isAnalyzing) {
         for (final completer in _analysisCompleters) {
           completer.complete();
         }
@@ -606,7 +605,7 @@ abstract class AnalysisServerWrapper {
       <String, List<AnalysisError>>{};
 
   void listenForErrors() {
-    analysisServer.analysis.onErrors.listen((AnalysisErrors result) {
+    analysisServer!.analysis.onErrors.listen((AnalysisErrors result) {
       if (result.errors.isEmpty) {
         _errors.remove(result.file);
       } else {
