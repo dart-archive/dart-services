@@ -33,7 +33,8 @@ void analyze() async {
 
 @Task()
 @Depends(buildStorageArtifacts)
-Future<dynamic> test() => TestRunner().testAsync();
+Future<dynamic> test() => runWithLogging(Platform.executable,
+    arguments: ['--no-sound-null-safety', 'test']);
 
 @DefaultTask()
 @Depends(analyze, test)
