@@ -14,11 +14,7 @@ class TaskScheduler {
   int get queueCount => _taskQueue.length;
 
   Future<T> _performTask<T>(Task<T> task) {
-    if (task.timeoutDuration != null) {
-      return task.perform().timeout(task.timeoutDuration);
-    } else {
-      return task.perform();
-    }
+    return task.perform().timeout(task.timeoutDuration);
   }
 
   Future<T> schedule<T>(Task<T> task) {

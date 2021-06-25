@@ -7,7 +7,6 @@ library services.common_server_api;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:meta/meta.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';

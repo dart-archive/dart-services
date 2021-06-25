@@ -28,9 +28,14 @@ abstract class ServerCache {
 
 /// A redis-backed implementation of [ServerCache].
 class RedisCache implements ServerCache {
-  RespClient redisClient;
-  RespServerConnection _connection;
+  RespClient? redisClient;
+  RespServerConnection? _connection;
+
+  final Uri redisUri;
+
+  // Version of the server to add with keys.
   final String? serverVersion;
+
   // pseudo-random is good enough.
   final Random randomSource = Random();
   static const int _connectionRetryBaseMs = 250;
@@ -87,7 +92,7 @@ class RedisCache implements ServerCache {
     assert(_disconnected.isCompleted && !_connected.isCompleted);
     _disconnected = Completer<void>();
     _connection = newConnection;
-    redisClient = RespClient(_connection);
+    redisClient = RespClient(_connection!);
     _connected.complete();
   }
 
@@ -103,7 +108,7 @@ class RedisCache implements ServerCache {
       // 1 <= (randomSource.nextDouble() + 1) < 2
       nextRetryMs = (retryTimeoutMs * (randomSource.nextDouble() + 1)).toInt();
     }
-    connectSocket(redisUri.host, port: redisUri.hasPort ? redisUri.port : null)
+    connectSocket(redisUri.host, port: redisUri.hasPort ? redisUri.port : 6379)
         .then((newConnection) {
           log.info('$_logPrefix: Connected to redis server');
           _setUpConnection(newConnection);
@@ -147,7 +152,7 @@ class RedisCache implements ServerCache {
     if (!_isConnected()) {
       log.warning('$_logPrefix: no cache available when getting key $key');
     } else {
-      final commands = RespCommandsTier2(redisClient);
+      final commands = RespCommandsTier2(redisClient!);
       try {
         value = await commands.get(key).timeout(cacheOperationTimeout,
             onTimeout: () async {
@@ -170,13 +175,13 @@ class RedisCache implements ServerCache {
       return null;
     }
 
-    final commands = RespCommandsTier2(redisClient);
+    final commands = RespCommandsTier2(redisClient!);
     try {
       return commands.del([key]).timeout(cacheOperationTimeout,
           onTimeout: () async {
         log.warning('$_logPrefix: timeout on remove operation for key $key');
         await _connection?.close();
-        return null;
+        return 0; // 0 keys deleted
       });
     } catch (e) {
       log.warning('$_logPrefix: error on remove operation for key $key: $e');
@@ -191,7 +196,7 @@ class RedisCache implements ServerCache {
       return;
     }
 
-    final commands = RespCommandsTier2(redisClient);
+    final commands = RespCommandsTier2(redisClient!);
     try {
       return Future<void>.sync(() async {
         await commands.set(key, value);
