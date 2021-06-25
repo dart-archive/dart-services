@@ -176,15 +176,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
-  dartis:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "Update-to-lints-and-Dart-2.10"
-      resolved-ref: "56c17c96510e7d90a0cdab16b7a03f95400f0f93"
-      url: "https://github.com/domesticmouse/dartis"
-    source: git
-    version: "0.5.0"
   file:
     dependency: transitive
     description:
@@ -374,6 +365,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
+  resp_client:
+    dependency: "direct main"
+    description:
+      name: resp_client
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   shelf:
     dependency: "direct main"
     description:
