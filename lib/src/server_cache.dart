@@ -62,7 +62,7 @@ class RedisCache implements ServerCache {
   String __logPrefix;
 
   String get _logPrefix =>
-      __logPrefix ??= 'RedisCache [${redisUri.toString()}] ($serverVersion)';
+      __logPrefix ??= 'RedisCache [$redisUri] ($serverVersion)';
 
   bool _isConnected() => redisClient != null && !_isShutdown;
   bool _isShutdown = false;
@@ -102,7 +102,7 @@ class RedisCache implements ServerCache {
     if (_isShutdown) {
       return;
     }
-    log.info('$_logPrefix: reconnecting to ${redisUri.toString()}...');
+    log.info('$_logPrefix: reconnecting to $redisUri...');
     var nextRetryMs = retryTimeoutMs;
     if (retryTimeoutMs < _connectionRetryMaxMs / 2) {
       // 1 <= (randomSource.nextDouble() + 1) < 2
