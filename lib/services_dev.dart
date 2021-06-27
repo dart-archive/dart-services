@@ -100,7 +100,7 @@ class _ServerContainer implements ServerContainer {
 
 class _Cache implements ServerCache {
   @override
-  Future<String> get(String key) => Future<String>.value(null);
+  Future<String?> get(String key) => Future<String?>.value(null);
 
   @override
   Future<void> set(String key, String value, {Duration? expiration}) =>

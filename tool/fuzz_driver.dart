@@ -392,7 +392,7 @@ class MockContainer implements ServerContainer {
 
 class MockCache implements ServerCache {
   @override
-  Future<String> get(String key) => Future.value(null);
+  Future<String?> get(String key) => Future<String?>.value(null);
 
   @override
   Future<void> set(String key, String value, {Duration? expiration}) =>
