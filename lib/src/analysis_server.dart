@@ -244,21 +244,35 @@ abstract class AnalysisServerWrapper {
       final info = result.hovers.first;
       final m = <String, String>{};
 
-      m['description'] = info.elementDescription!;
-      m['kind'] = info.elementKind!;
-      m['dartdoc'] = info.dartdoc!;
+      if (info.elementDescription != null) {
+        m['description'] = info.elementDescription!;
+      }
+      if (info.elementKind != null) {
+        m['kind'] = info.elementKind!;
+      }
+      if (info.dartdoc != null) {
+        m['dartdoc'] = info.dartdoc!;
+      }
 
-      m['enclosingClassName'] = info.containingClassDescription!;
-      m['libraryName'] = info.containingLibraryName!;
+      if (info.containingClassDescription != null) {
+        m['enclosingClassName'] = info.containingClassDescription!;
+      }
+      if (info.containingLibraryName != null) {
+        m['libraryName'] = info.containingLibraryName!;
+      }
 
-      m['deprecated'] = info.parameter!;
-      if (info.isDeprecated != null) m['deprecated'] = '${info.isDeprecated}';
+      if (info.parameter != null) {
+        m['deprecated'] = info.parameter!;
+      }
+      if (info.isDeprecated != null) {
+        m['deprecated'] = '${info.isDeprecated}';
+      }
 
-      m['staticType'] = info.staticType!;
-      m['propagatedType'] = info.propagatedType!;
-
-      for (final key in m.keys.toList()) {
-        if (m[key] == null) m.remove(key);
+      if (info.staticType != null) {
+        m['staticType'] = info.staticType!;
+      }
+      if (info.propagatedType != null) {
+        m['propagatedType'] = info.propagatedType!;
       }
 
       return m;
