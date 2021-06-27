@@ -70,6 +70,7 @@ class Compiler {
           '--sound-null-safety',
           '--enable-experiment=non-nullable',
         ],
+        '--enable-asserts',
         ...['-o', '$kMainDart.js'],
         path.join('lib', kMainDart),
       ];
@@ -163,6 +164,7 @@ class Compiler {
           '--sound-null-safety',
           '--enable-experiment=non-nullable',
         ],
+        '--enable-asserts',
         bootstrapPath,
         '--packages=${path.join(temp.path, '.dart_tool', 'package_config.json')}',
       ];
