@@ -62,7 +62,7 @@ class RedisCache implements ServerCache {
   String? __logPrefix;
 
   String get _logPrefix =>
-      __logPrefix ??= 'RedisCache [${redisUri.toString()}] ($serverVersion)';
+      __logPrefix ??= 'RedisCache [$redisUri] ($serverVersion)';
 
   bool _isConnected() => redisClient != null && !_isShutdown;
   bool _isShutdown = false;
@@ -102,7 +102,7 @@ class RedisCache implements ServerCache {
     if (_isShutdown) {
       return;
     }
-    log.info('$_logPrefix: reconnecting to ${redisUri.toString()}...');
+    log.info('$_logPrefix: reconnecting to $redisUri...');
     var nextRetryMs = retryTimeoutMs;
     if (retryTimeoutMs < _connectionRetryMaxMs / 2) {
       // 1 <= (randomSource.nextDouble() + 1) < 2
@@ -142,7 +142,9 @@ class RedisCache implements ServerCache {
   /// versions using the same redis cache do not have collisions.
   String _genKey(String key) {
     final sdk = Sdk();
-    return 'server:$serverVersion:dart:${sdk.versionFull}:flutter:${sdk.flutterVersion}+$key';
+    // the `rc` here is a differentiator to keep the `resp_client` documents
+    // separate from the `dartis` documents.
+    return 'server:rc:$serverVersion:dart:${sdk.versionFull}:flutter:${sdk.flutterVersion}+$key';
   }
 
   @override
