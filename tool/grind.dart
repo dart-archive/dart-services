@@ -32,8 +32,8 @@ void analyze() async {
 
 @Task()
 @Depends(buildStorageArtifacts)
-Future<dynamic> test() => runWithLogging(Platform.executable,
-    arguments: ['test']);
+Future<dynamic> test() =>
+    runWithLogging(Platform.executable, arguments: ['test']);
 
 @DefaultTask()
 @Depends(analyze, test)
