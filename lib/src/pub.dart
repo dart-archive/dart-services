@@ -28,19 +28,14 @@ const _flutterPackages = [
 
 /// Each of these is expensive to calculate; they require reading from disk.
 /// None of them changes during execution.
-Map<String, String>? _nullSafePackageVersions;
-Map<String, String>? _preNullSafePackageVersions;
+late final Map<String, String> _nullSafePackageVersions =
+    packageVersionsFromPubspecLock(project.flutterTemplateProject(true));
+late final Map<String, String> _preNullSafePackageVersions =
+    packageVersionsFromPubspecLock(project.flutterTemplateProject(false));
 
 /// Returns a mapping of Pub package name to package version.
-Map<String, String> getPackageVersions({required bool nullSafe}) {
-  if (nullSafe) {
-    return _nullSafePackageVersions ??=
-        packageVersionsFromPubspecLock(project.flutterTemplateProject(true));
-  } else {
-    return _preNullSafePackageVersions ??=
-        packageVersionsFromPubspecLock(project.flutterTemplateProject(false));
-  }
-}
+Map<String, String> getPackageVersions({bool nullSafe = true}) =>
+    nullSafe ? _nullSafePackageVersions : _preNullSafePackageVersions;
 
 /// Returns a mapping of Pub package name to package version, retrieving data
 /// from the project template's `pubspec.lock` file.
