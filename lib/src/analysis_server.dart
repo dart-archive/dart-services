@@ -238,7 +238,7 @@ abstract class AnalysisServerWrapper {
       await _unloadSources();
 
       if (result.hovers.isEmpty) {
-        return <String, String>{};
+        return const {};
       }
 
       final info = result.hovers.first;
