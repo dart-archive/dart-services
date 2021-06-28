@@ -54,7 +54,7 @@ abstract class AnalysisServerWrapper {
   final String sdkPath;
   final TaskScheduler serverScheduler = TaskScheduler();
 
-  Future<AnalysisServer?>? _init;
+  Future<AnalysisServer>? _init;
 
   /// Instance to handle communication with the server.
   late AnalysisServer analysisServer;
@@ -65,7 +65,7 @@ abstract class AnalysisServerWrapper {
 
   String get _sourceDirPath;
 
-  Future<AnalysisServer?> init() {
+  Future<AnalysisServer> init() {
     if (_init == null) {
       void onRead(String str) {
         if (dumpServerMessages) _logger.info('<-- $str');
