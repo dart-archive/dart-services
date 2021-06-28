@@ -57,7 +57,7 @@ abstract class AnalysisServerWrapper {
   Future<AnalysisServer?>? _init;
 
   /// Instance to handle communication with the server.
-  AnalysisServer? analysisServer;
+  late AnalysisServer analysisServer;
 
   AnalysisServerWrapper(this.sdkPath);
 
@@ -88,19 +88,19 @@ abstract class AnalysisServerWrapper {
         serverArgs: serverArgs,
       ).then((AnalysisServer server) async {
         analysisServer = server;
-        analysisServer!.server.onError.listen((ServerError error) {
+        analysisServer.server.onError.listen((ServerError error) {
           _logger.severe('server error${error.isFatal ? ' (fatal)' : ''}',
               error.message, StackTrace.fromString(error.stackTrace));
         });
-        await analysisServer!.server.onConnected.first;
-        await analysisServer!.server.setSubscriptions(<String>['STATUS']);
+        await analysisServer.server.onConnected.first;
+        await analysisServer.server.setSubscriptions(<String>['STATUS']);
 
         listenForCompletions();
         listenForAnalysisComplete();
         listenForErrors();
 
         final analysisComplete = getAnalysisCompleteCompleter();
-        await analysisServer!.analysis
+        await analysisServer.analysis
             .setAnalysisRoots(<String>[_sourceDirPath], <String>[]);
         await _sendAddOverlays(<String, String>{mainPath: _warmupSrc});
         await analysisComplete.future;
@@ -109,7 +109,7 @@ abstract class AnalysisServerWrapper {
         return analysisServer;
       }).catchError((Object err, StackTrace st) {
         _logger.severe('Error starting analysis server ($sdkPath): $err.\n$st');
-        return null;
+        throw err;
       });
     }
 
@@ -123,7 +123,7 @@ abstract class AnalysisServerWrapper {
   Future<int> get onExit {
     // Return when the analysis server exits. We introduce a delay so that when
     // we terminate the analysis server we can exit normally.
-    return analysisServer!.processCompleter.future.then((int code) {
+    return analysisServer.processCompleter.future.then((int code) {
       return Future<int>.delayed(const Duration(seconds: 1), () {
         return code;
       });
@@ -234,7 +234,7 @@ abstract class AnalysisServerWrapper {
       await _loadSources(<String, String>{mainPath: source});
       await analysisCompleter.future;
 
-      final result = await analysisServer!.analysis.getHover(mainPath, offset);
+      final result = await analysisServer.analysis.getHover(mainPath, offset);
       await _unloadSources();
 
       if (result.hovers.isEmpty) {
@@ -355,7 +355,7 @@ abstract class AnalysisServerWrapper {
       await analysisCompleter.future;
       const length = 1;
       final assists =
-          await analysisServer!.edit.getAssists(path, offset, length);
+          await analysisServer.edit.getAssists(path, offset, length);
       await _unloadSources();
       return assists;
     }, timeoutDuration: _analysisServerTimeout));
@@ -458,7 +458,7 @@ abstract class AnalysisServerWrapper {
   Future<dynamic> shutdown() {
     // TODO(jcollins-g): calling dispose() sometimes prevents
     // --pause-isolates-on-exit from working; fix.
-    return analysisServer!.server
+    return analysisServer.server
         .shutdown()
         .timeout(const Duration(seconds: 1))
         .catchError((dynamic e) => null);
@@ -475,7 +475,7 @@ abstract class AnalysisServerWrapper {
     return serverScheduler.schedule(ClosureTask<CompletionResults>(() async {
       sources = _getOverlayMapWithPaths(sources);
       await _loadSources(sources);
-      final id = await analysisServer!.completion.getSuggestions(
+      final id = await analysisServer.completion.getSuggestions(
         _getPathFromName(sourceName),
         offset,
       );
@@ -499,7 +499,7 @@ abstract class AnalysisServerWrapper {
       final analysisCompleter = getAnalysisCompleteCompleter();
       await _loadSources(sources);
       await analysisCompleter.future;
-      final fixes = await analysisServer!.edit.getFixes(path, offset);
+      final fixes = await analysisServer.edit.getFixes(path, offset);
       await _unloadSources();
       return fixes;
     }, timeoutDuration: _analysisServerTimeout));
@@ -510,7 +510,7 @@ abstract class AnalysisServerWrapper {
 
     return serverScheduler.schedule(ClosureTask<FormatResult>(() async {
       await _loadSources(<String, String>{mainPath: src});
-      final result = await analysisServer!.edit.format(mainPath, offset, 0);
+      final result = await analysisServer.edit.format(mainPath, offset, 0);
       await _unloadSources();
       return result;
     }, timeoutDuration: _analysisServerTimeout));
@@ -538,13 +538,13 @@ abstract class AnalysisServerWrapper {
       await _sendRemoveOverlays();
     }
     await _sendAddOverlays(sources);
-    await analysisServer!.analysis.setPriorityFiles(sources.keys.toList());
+    await analysisServer.analysis.setPriorityFiles(sources.keys.toList());
   }
 
   Future<dynamic> _unloadSources() {
     return Future.wait(<Future<dynamic>>[
       _sendRemoveOverlays(),
-      analysisServer!.analysis.setPriorityFiles(<String>[]),
+      analysisServer.analysis.setPriorityFiles(<String>[]),
     ]);
   }
 
@@ -559,7 +559,7 @@ abstract class AnalysisServerWrapper {
 
     _overlayPaths.addAll(params.keys);
 
-    return analysisServer!.analysis.updateContent(params);
+    return analysisServer.analysis.updateContent(params);
   }
 
   Future<dynamic> _sendRemoveOverlays() {
@@ -571,14 +571,14 @@ abstract class AnalysisServerWrapper {
       params[overlayPath] = RemoveContentOverlay();
     }
     _overlayPaths.clear();
-    return analysisServer!.analysis.updateContent(params);
+    return analysisServer.analysis.updateContent(params);
   }
 
   final Map<String, Completer<CompletionResults>> _completionCompleters =
       <String, Completer<CompletionResults>>{};
 
   void listenForCompletions() {
-    analysisServer!.completion.onResults.listen((CompletionResults result) {
+    analysisServer.completion.onResults.listen((CompletionResults result) {
       if (result.isLast) {
         final completer = _completionCompleters.remove(result.id);
         if (completer != null) {
@@ -596,7 +596,7 @@ abstract class AnalysisServerWrapper {
   final List<Completer<dynamic>> _analysisCompleters = <Completer<dynamic>>[];
 
   void listenForAnalysisComplete() {
-    analysisServer!.server.onStatus.listen((ServerStatus status) {
+    analysisServer.server.onStatus.listen((ServerStatus status) {
       if (status.analysis == null) return;
 
       if (!status.analysis!.isAnalyzing) {
@@ -619,7 +619,7 @@ abstract class AnalysisServerWrapper {
       <String, List<AnalysisError>>{};
 
   void listenForErrors() {
-    analysisServer!.analysis.onErrors.listen((AnalysisErrors result) {
+    analysisServer.analysis.onErrors.listen((AnalysisErrors result) {
       if (result.errors.isEmpty) {
         _errors.remove(result.file);
       } else {

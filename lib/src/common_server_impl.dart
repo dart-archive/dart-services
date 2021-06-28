@@ -42,7 +42,6 @@ class CommonServerImpl {
   late AnalysisServersWrapper _analysisServers;
 
   // Restarting and health status of the two Analysis Servers
-  bool get analysisServersRunning => _analysisServers.running;
   bool get isRestarting => _analysisServers.isRestarting;
   bool get isHealthy => _analysisServers.isHealthy;
 

@@ -26,10 +26,6 @@ class AnalysisServersWrapper {
   late DartAnalysisServerWrapper _dartAnalysisServer;
   late FlutterAnalysisServerWrapper _flutterAnalysisServer;
 
-  bool get running =>
-      _dartAnalysisServer.analysisServer != null &&
-      _flutterAnalysisServer.analysisServer != null;
-
   // If non-null, this value indicates that the server is starting/restarting
   // and holds the time at which that process began. If null, the server is
   // ready to handle requests.
