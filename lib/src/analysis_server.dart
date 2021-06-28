@@ -242,40 +242,21 @@ abstract class AnalysisServerWrapper {
       }
 
       final info = result.hovers.first;
-      final m = <String, String>{};
 
-      if (info.elementDescription != null) {
-        m['description'] = info.elementDescription!;
-      }
-      if (info.elementKind != null) {
-        m['kind'] = info.elementKind!;
-      }
-      if (info.dartdoc != null) {
-        m['dartdoc'] = info.dartdoc!;
-      }
-
-      if (info.containingClassDescription != null) {
-        m['enclosingClassName'] = info.containingClassDescription!;
-      }
-      if (info.containingLibraryName != null) {
-        m['libraryName'] = info.containingLibraryName!;
-      }
-
-      if (info.parameter != null) {
-        m['deprecated'] = info.parameter!;
-      }
-      if (info.isDeprecated != null) {
-        m['deprecated'] = '${info.isDeprecated}';
-      }
-
-      if (info.staticType != null) {
-        m['staticType'] = info.staticType!;
-      }
-      if (info.propagatedType != null) {
-        m['propagatedType'] = info.propagatedType!;
-      }
-
-      return m;
+      return {
+        if (info.elementDescription != null)
+          'description': info.elementDescription!,
+        if (info.elementKind != null) 'kind': info.elementKind!,
+        if (info.dartdoc != null) 'dartdoc': info.dartdoc!,
+        if (info.containingClassDescription != null)
+          'enclosingClassName': info.containingClassDescription!,
+        if (info.containingLibraryName != null)
+          'libraryName': info.containingLibraryName!,
+        if (info.parameter != null) 'deprecated': info.parameter!,
+        if (info.isDeprecated != null) 'deprecated': '${info.isDeprecated}',
+        if (info.staticType != null) 'staticType': info.staticType!,
+        if (info.propagatedType != null) 'propagatedType': info.propagatedType!,
+      };
     }, timeoutDuration: _analysisServerTimeout));
   }
 
