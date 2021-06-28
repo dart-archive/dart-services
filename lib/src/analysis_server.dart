@@ -281,7 +281,7 @@ abstract class AnalysisServerWrapper {
           ..line = error.location.startLine
           ..message = utils.normalizeFilePaths(error.message)
           ..sourceName = path.basename(error.location.file)
-          ..hasFixes = error.hasFix!
+          ..hasFixes = error.hasFix ?? false
           ..charStart = error.location.offset
           ..charLength = error.location.length
           ..diagnosticMessages.addAll(error.contextMessages?.map((m) =>
