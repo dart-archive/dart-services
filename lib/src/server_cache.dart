@@ -108,7 +108,9 @@ class RedisCache implements ServerCache {
       // 1 <= (randomSource.nextDouble() + 1) < 2
       nextRetryMs = (retryTimeoutMs * (randomSource.nextDouble() + 1)).toInt();
     }
-    connectSocket(redisUri.host, port: redisUri.hasPort ? redisUri.port : 6379)
+    (redisUri.hasPort
+            ? connectSocket(redisUri.host, port: redisUri.port)
+            : connectSocket(redisUri.host))
         .then((newConnection) {
           log.info('$_logPrefix: Connected to redis server');
           _setUpConnection(newConnection);
