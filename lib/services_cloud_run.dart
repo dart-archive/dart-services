@@ -80,7 +80,6 @@ class EndpointsServer {
 
   final int port;
   late HttpServer server;
-  String? redisServerUri;
 
   late Pipeline pipeline;
   late Handler handler;
@@ -88,13 +87,13 @@ class EndpointsServer {
   late CommonServerApi commonServerApi;
   late CommonServerImpl _commonServerImpl;
 
-  EndpointsServer._(this.port, this.redisServerUri, bool nullSafety) {
+  EndpointsServer._(this.port, String? redisServerUri, bool nullSafety) {
     _commonServerImpl = CommonServerImpl(
       _ServerContainer(),
       redisServerUri == null
           ? InMemoryCache()
           : RedisCache(
-              redisServerUri!,
+              redisServerUri,
               // The name of the Cloud Run revision being run, for more detail please see:
               // https://cloud.google.com/run/docs/reference/container-contract#env-vars
               Platform.environment['K_REVISION'],
