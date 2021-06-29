@@ -10,8 +10,9 @@ import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
 class Sdk {
-  static Sdk? _instance;
-  factory Sdk() => _instance ?? (_instance = Sdk._());
+  static late final Sdk _instance = Sdk._();
+  // TODO: eliminate this factory constructor
+  factory Sdk() => _instance;
 
   /// The current version of the SDK, including any `-dev` suffix.
   final String versionFull;
