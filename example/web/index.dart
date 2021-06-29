@@ -42,7 +42,7 @@ Future<Response> get(String url) async {
 
 void setupAnalyze() {
   final editor = createEditor(querySelector('#analyzeSection-v2 .editor')!);
-  final output = querySelector('#analyzeSection-v2 .output');
+  final output = querySelector('#analyzeSection-v2 .output')!;
   final button = querySelector('#analyzeSection-v2 button') as ButtonElement;
   button.onClick.listen((e) {
     final source = {'source': editor.getDoc()!.getValue()};
@@ -50,13 +50,13 @@ void setupAnalyze() {
     post(
       '$_uriBase/dartservices/v2/analyze',
       body: json.encode(source),
-    ).then((response) => output!.text = '${_formatTiming(sw)}${response.body}');
+    ).then((response) => output.text = '${_formatTiming(sw)}${response.body}');
   });
 }
 
 void setupAssists() {
   final editor = createEditor(querySelector('#assistsSection-v2 .editor')!);
-  final output = querySelector('#assistsSection-v2 .output');
+  final output = querySelector('#assistsSection-v2 .output')!;
   final offsetElement = querySelector('#assistsSection-v2 .offset')!;
   final button = querySelector('#assistsSection-v2 button') as ButtonElement;
   button.onClick.listen((e) {
@@ -65,7 +65,7 @@ void setupAssists() {
     post(
       '$_uriBase/dartservices/v2/assists',
       body: json.encode(source),
-    ).then((response) => output!.text = '${_formatTiming(sw)}${response.body}');
+    ).then((response) => output.text = '${_formatTiming(sw)}${response.body}');
   });
   offsetElement.text = 'offset ${_getOffset(editor)}';
   editor.onCursorActivity.listen((_) {
@@ -75,7 +75,7 @@ void setupAssists() {
 
 void setupCompile() {
   final editor = createEditor(querySelector('#compileSection-v2 .editor')!);
-  final output = querySelector('#compileSection-v2 .output');
+  final output = querySelector('#compileSection-v2 .output')!;
   final button = querySelector('#compileSection-v2 button') as ButtonElement;
   button.onClick.listen((e) {
     final source = editor.getDoc()!.getValue();
@@ -84,13 +84,13 @@ void setupCompile() {
     post(
       '$_uriBase/dartservices/v2/compile',
       body: json.encode(compile),
-    ).then((response) => output!.text = '${_formatTiming(sw)}${response.body}');
+    ).then((response) => output.text = '${_formatTiming(sw)}${response.body}');
   });
 }
 
 void setupCompileDDC() {
   final editor = createEditor(querySelector('#compileDDCSection-v2 .editor')!);
-  final output = querySelector('#compileDDCSection-v2 .output');
+  final output = querySelector('#compileDDCSection-v2 .output')!;
   final button = querySelector('#compileDDCSection-v2 button') as ButtonElement;
   button.onClick.listen((e) {
     final source = editor.getDoc()!.getValue();
@@ -99,13 +99,13 @@ void setupCompileDDC() {
     post(
       '$_uriBase/dartservices/v2/compileDDC',
       body: json.encode(compile),
-    ).then((response) => output!.text = '${_formatTiming(sw)}${response.body}');
+    ).then((response) => output.text = '${_formatTiming(sw)}${response.body}');
   });
 }
 
 void setupComplete() {
   final editor = createEditor(querySelector('#completeSection-v2 .editor')!);
-  final output = querySelector('#completeSection-v2 .output');
+  final output = querySelector('#completeSection-v2 .output')!;
   final offsetElement = querySelector('#completeSection-v2 .offset')!;
   final button = querySelector('#completeSection-v2 button') as ButtonElement;
   button.onClick.listen((e) {
@@ -114,7 +114,7 @@ void setupComplete() {
     post(
       '$_uriBase/dartservices/v2/complete',
       body: json.encode(source),
-    ).then((response) => output!.text = '${_formatTiming(sw)}${response.body}');
+    ).then((response) => output.text = '${_formatTiming(sw)}${response.body}');
   });
   offsetElement.text = 'offset ${_getOffset(editor)}';
   editor.onCursorActivity.listen((_) {
@@ -124,7 +124,7 @@ void setupComplete() {
 
 void setupDocument() {
   final editor = createEditor(querySelector('#documentSection-v2 .editor')!);
-  final output = querySelector('#documentSection-v2 .output');
+  final output = querySelector('#documentSection-v2 .output')!;
   final offsetElement = querySelector('#documentSection-v2 .offset')!;
   final button = querySelector('#documentSection-v2 button') as ButtonElement;
   button.onClick.listen((e) {
@@ -133,7 +133,7 @@ void setupDocument() {
     post(
       '$_uriBase/dartservices/v2/document',
       body: json.encode(source),
-    ).then((response) => output!.text = '${_formatTiming(sw)}${response.body}');
+    ).then((response) => output.text = '${_formatTiming(sw)}${response.body}');
   });
   offsetElement.text = 'offset ${_getOffset(editor)}';
   editor.onCursorActivity.listen((_) {
@@ -143,7 +143,7 @@ void setupDocument() {
 
 void setupFixes() {
   final editor = createEditor(querySelector('#fixesSection-v2 .editor')!);
-  final output = querySelector('#fixesSection-v2 .output');
+  final output = querySelector('#fixesSection-v2 .output')!;
   final offsetElement = querySelector('#fixesSection-v2 .offset')!;
   final button = querySelector('#fixesSection-v2 button') as ButtonElement;
   button.onClick.listen((e) {
@@ -152,7 +152,7 @@ void setupFixes() {
     post(
       '$_uriBase/dartservices/v2/fixes',
       body: json.encode(source),
-    ).then((response) => output!.text = '${_formatTiming(sw)}${response.body}');
+    ).then((response) => output.text = '${_formatTiming(sw)}${response.body}');
   });
   offsetElement.text = 'offset ${_getOffset(editor)}';
 
@@ -162,12 +162,12 @@ void setupFixes() {
 }
 
 void setupVersion() {
-  final output = querySelector('#versionSection-v2 .output');
+  final output = querySelector('#versionSection-v2 .output')!;
   final button = querySelector('#versionSection-v2 button') as ButtonElement;
   button.onClick.listen((e) {
     final sw = Stopwatch()..start();
     get('$_uriBase/dartservices/v2/version').then(
-        (response) => output!.text = '${_formatTiming(sw)}${response.body}');
+        (response) => output.text = '${_formatTiming(sw)}${response.body}');
   });
 }
 
