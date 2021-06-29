@@ -11,7 +11,7 @@ import 'package:http/browser_client.dart';
 import 'package:http/http.dart';
 import 'services_utils.dart' as utils;
 
-BrowserClient? _client;
+late BrowserClient _client = utils.SanitizingBrowserClient();
 
 void main() {
   setupAnalyze();
@@ -25,8 +25,7 @@ void main() {
 }
 
 Future<Response> post(String url, {String? body}) async {
-  _client ??= utils.SanitizingBrowserClient();
-  return _client!.post(
+  return _client.post(
     Uri.parse(url),
     body: body,
     encoding: utf8,
@@ -35,8 +34,7 @@ Future<Response> post(String url, {String? body}) async {
 }
 
 Future<Response> get(String url) async {
-  _client ??= utils.SanitizingBrowserClient();
-  return _client!.get(
+  return _client.get(
     Uri.parse(url),
     headers: {'content-type': 'application/json'},
   );
