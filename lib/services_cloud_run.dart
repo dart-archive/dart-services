@@ -60,14 +60,14 @@ Future<void> main(List<String> args) async {
     Cloud Run Environment variables:
     $cloudRunEnvVars''');
 
-  final server = await EndpointsServer.serve(port, redisServerUri, nullSafety);
-  _logger.info('Listening on port ${server.port}');
+  await EndpointsServer.serve(port, redisServerUri, nullSafety);
+  _logger.info('Listening on port $port');
 }
 
 class EndpointsServer {
   static Future<EndpointsServer> serve(
       int port, String redisServerUri, bool nullSafety) async {
-    final endpointsServer = EndpointsServer._(port, redisServerUri, nullSafety);
+    final endpointsServer = EndpointsServer._(redisServerUri, nullSafety);
 
     await endpointsServer.init();
     endpointsServer.server = await shelf.serve(
@@ -78,16 +78,15 @@ class EndpointsServer {
     return endpointsServer;
   }
 
-  final int port;
-  late HttpServer server;
+  late final HttpServer server;
 
-  late Pipeline pipeline;
-  late Handler handler;
+  late final Pipeline pipeline;
+  late final Handler handler;
 
-  late CommonServerApi commonServerApi;
-  late CommonServerImpl _commonServerImpl;
+  late final CommonServerApi commonServerApi;
+  late final CommonServerImpl _commonServerImpl;
 
-  EndpointsServer._(this.port, String? redisServerUri, bool nullSafety) {
+  EndpointsServer._(String? redisServerUri, bool nullSafety) {
     _commonServerImpl = CommonServerImpl(
       _ServerContainer(),
       redisServerUri == null
