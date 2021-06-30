@@ -61,7 +61,7 @@ class AnalyzerBenchmark extends Benchmark {
         super('analyzer.$name');
 
   @override
-  Future<void> init() => analysisServer.init();
+  void init() => analysisServer.init();
 
   @override
   Future<proto.AnalysisResults> perform() => analysisServer.analyze(source);
@@ -109,7 +109,7 @@ class AnalysisServerBenchmark extends Benchmark {
         super('completion.$name');
 
   @override
-  Future<void> init() => analysisServer.init();
+  void init() => analysisServer.init();
 
   @override
   Future<proto.CompleteResponse> perform() =>
