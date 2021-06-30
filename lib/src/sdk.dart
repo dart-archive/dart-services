@@ -10,7 +10,7 @@ import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
 class Sdk {
-  static late Sdk? _instance;
+  static Sdk? _instance;
 
   /// The current version of the SDK, including any `-dev` suffix.
   final String versionFull;
