@@ -66,7 +66,7 @@ void defineTests() {
         () {
       setUp(() async {
         analysisServer = DartAnalysisServerWrapper(nullSafety);
-        await analysisServer.init();
+        analysisServer.init();
       });
 
       tearDown(() => analysisServer.shutdown());
@@ -212,7 +212,7 @@ void defineTests() {
         () {
       setUp(() async {
         analysisServer = FlutterAnalysisServerWrapper(nullSafety);
-        await analysisServer.init();
+        analysisServer.init();
       });
 
       tearDown(() => analysisServer.shutdown());

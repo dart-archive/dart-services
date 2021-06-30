@@ -22,7 +22,7 @@ void defineTests() {
 
       setUp(() async {
         analysisServer = FlutterAnalysisServerWrapper(nullSafety);
-        await analysisServer.init();
+        analysisServer.init();
         await analysisServer.warmup();
       });
 

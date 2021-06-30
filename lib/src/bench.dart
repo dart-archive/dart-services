@@ -14,7 +14,7 @@ abstract class Benchmark {
 
   Benchmark(this.name);
 
-  Future<void> init() => Future<void>.value();
+  void init() {}
 
   Future<void> perform();
 
