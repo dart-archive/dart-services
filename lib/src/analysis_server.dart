@@ -65,7 +65,7 @@ abstract class AnalysisServerWrapper {
 
   String get _sourceDirPath;
 
-  void init() async {
+  Future<void> init() async {
     if (_isInitialized) {
       throw StateError('AnalysisServerWrapper is already initialized');
     }

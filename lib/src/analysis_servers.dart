@@ -43,10 +43,10 @@ class AnalysisServersWrapper {
     _dartAnalysisServer = DartAnalysisServerWrapper(_nullSafety);
     _flutterAnalysisServer = FlutterAnalysisServerWrapper(_nullSafety);
 
-    _dartAnalysisServer.init();
+    await _dartAnalysisServer.init();
     _logger.info('Dart analysis server initialized.');
 
-    _flutterAnalysisServer.init();
+    await _flutterAnalysisServer.init();
     _logger.info('Flutter analysis server initialized.');
 
     unawaited(_dartAnalysisServer.onExit.then((int code) {
