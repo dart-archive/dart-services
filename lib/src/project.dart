@@ -44,13 +44,20 @@ const Set<String> _flutterPackages = {
 /// The set of non-Flutter packages which can be directly imported into a
 /// script.
 const Set<String> supportedNonFlutterPackages = {
+  'bloc',
   'characters',
   'collection',
+  'google_fonts',
+  'http',
+  'intl',
   'js',
   'lints',
   'meta',
   'path',
   'pedantic',
+  'provider',
+  'riverpod',
+  'url_launcher',
   'vector_math',
 };
 
