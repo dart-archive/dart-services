@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:dart_services/src/project.dart';
 import 'package:logging/logging.dart';
 import 'package:pedantic/pedantic.dart';
 
@@ -153,6 +154,13 @@ class CommonServerImpl {
   Future<proto.VersionResponse> version(proto.VersionRequest _) {
     final sdk = Sdk.create();
     final packageVersions = getPackageVersions(nullSafe: _nullSafety);
+    final packageInfos = [
+      for (var packageName in packageVersions.keys)
+        proto.PackageInfo()
+          ..name = packageName
+          ..version = packageVersions[packageName]!
+          ..supported = isSupportedPackage(packageName),
+    ];
 
     return Future.value(
       proto.VersionResponse()
@@ -164,7 +172,8 @@ class CommonServerImpl {
         ..flutterDartVersion = sdk.version
         ..flutterDartVersionFull = sdk.versionFull
         ..flutterVersion = sdk.flutterVersion
-        ..packageVersions.addAll(packageVersions),
+        ..packageVersions.addAll(packageVersions)
+        ..packageInfo.addAll(packageInfos),
     );
   }
 
