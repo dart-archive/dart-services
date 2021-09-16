@@ -8,7 +8,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
-import 'package:dart_services/src/project.dart';
 import 'package:logging/logging.dart';
 import 'package:pedantic/pedantic.dart';
 
@@ -16,6 +15,7 @@ import '../version.dart';
 import 'analysis_servers.dart';
 import 'common.dart';
 import 'compiler.dart';
+import 'project.dart';
 import 'protos/dart_services.pb.dart' as proto;
 import 'pub.dart';
 import 'sdk.dart';
