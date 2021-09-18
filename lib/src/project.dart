@@ -8,18 +8,20 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:path/path.dart' as path;
 
 Directory flutterTemplateProject(bool nullSafety) => Directory(path.join(
-      Directory.current.path,
-      'project_templates',
-      nullSafety ? 'null-safe' : 'null-unsafe',
+      _baseTemplateProject(nullSafety),
       'flutter_project',
     ));
 
 Directory dartTemplateProject(bool nullSafety) => Directory(path.join(
+      _baseTemplateProject(nullSafety),
+      'dart_project',
+    ));
+
+String _baseTemplateProject(bool nullSafety) => path.join(
       Directory.current.path,
       'project_templates',
       nullSafety ? 'null-safe' : 'null-unsafe',
-      'dart_project',
-    ));
+    );
 
 String summaryFilePath(bool nullSafety) {
   return path.join(
@@ -35,7 +37,9 @@ const Set<String> _flutterPackages = {
   'firebase',
   'firebase_auth',
   'firebase_core',
+  'firebase_database',
   'flutter',
+  'flutter_bloc',
   'flutter_test',
 };
 
@@ -49,6 +53,7 @@ const Set<String> supportedNonFlutterPackages = {
   'http',
   'intl',
   'js',
+  'lints',
   'meta',
   'path',
   'pedantic',
@@ -111,11 +116,14 @@ List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports) {
     if (uri.scheme == 'package') {
       if (uri.pathSegments.isEmpty) return true;
       final package = uri.pathSegments.first;
-      return !_flutterPackages.contains(package) &&
-          !supportedNonFlutterPackages.contains(package);
+      return !isSupportedPackage(package);
     }
 
     // Don't allow file imports.
     return true;
   }).toList();
 }
+
+bool isSupportedPackage(String package) =>
+    _flutterPackages.contains(package) ||
+    supportedNonFlutterPackages.contains(package);
