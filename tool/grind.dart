@@ -428,7 +428,7 @@ String createPubspec({
   var content = '''
 name: $_samplePackageName
 environment:
-  sdk: '>=${nullSafety ? '2.13.0' : '2.10.0'} <3.0.0'
+  sdk: '>=${nullSafety ? '2.14.0' : '2.10.0'} <3.0.0'
 dependencies:
 ''';
 
@@ -480,9 +480,22 @@ void updateDependenciesFile({
       'firebase_analytics': 'any',
       'firebase_auth': 'any',
       'firebase_core': 'any',
+      'firebase_database': 'any',
       'firebase_messaging': 'any',
       'firebase_storage': 'any',
       'pedantic': 'any',
+      // Otherwise desirable for users:
+      'bloc': 'any',
+      'collection': 'any',
+      'flutter_bloc': 'any',
+      'google_fonts': 'any',
+      'http': 'any',
+      'intl': 'any',
+      'js': 'any',
+      'meta': 'any',
+      'provider': 'any',
+      'riverpod': 'any',
+      'url_launcher': 'any',
     },
   );
   joinFile(tempDir, ['pubspec.yaml']).writeAsStringSync(pubspec);
