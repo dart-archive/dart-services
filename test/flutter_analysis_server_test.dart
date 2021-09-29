@@ -86,7 +86,9 @@ void defineTests() {
         expect(issue.kind, 'info');
         expect(
             issue.message, 'Prefer typing uninitialized variables and fields.');
-      });
+      },
+          // TODO(srawlins): Figure out why this test is flaking.
+          skip: true);
 
       test('analyze counter app', () async {
         final results = await analysisServersWrapper.analyze(nullSafety
