@@ -67,6 +67,7 @@ const Set<String> firebasePackages = {
 const Set<String> _flutterPackages = {
   'flutter',
   'flutter_bloc',
+  'flutter_riverpod',
   'flutter_test',
   'url_launcher',
   ...firebasePackages,
