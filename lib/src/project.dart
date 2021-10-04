@@ -58,18 +58,27 @@ const Set<String> firebasePackages = {
   'cloud_functions',
   'cloud_firestore',
   'firebase',
+  'firebase_analytics',
   'firebase_auth',
   'firebase_core',
   'firebase_database',
+  'firebase_messaging',
+  'firebase_storage',
+};
+
+const Set<String> supportedFlutterPackages = {
+  'flutter_bloc',
+  'flutter_hooks',
+  'flutter_riverpod',
+  'hooks_riverpod',
+  'url_launcher',
 };
 
 /// The set of packages which indicate that Flutter Web is being used.
-const Set<String> _flutterPackages = {
+const Set<String> _packagesIndicatingFlutter = {
   'flutter',
-  'flutter_bloc',
-  'flutter_riverpod',
   'flutter_test',
-  'url_launcher',
+  ...supportedFlutterPackages,
   ...firebasePackages,
 };
 
@@ -83,7 +92,6 @@ const Set<String> supportedNonFlutterPackages = {
   'http',
   'intl',
   'js',
-  'lints',
   'meta',
   'path',
   'pedantic',
@@ -125,7 +133,7 @@ bool usesFlutterWeb(Iterable<ImportDirective> imports) {
     if (uri.scheme != 'package') return false;
     if (uri.pathSegments.isEmpty) return false;
     final package = uri.pathSegments.first;
-    return _flutterPackages.contains(package);
+    return _packagesIndicatingFlutter.contains(package);
   });
 }
 
@@ -171,5 +179,5 @@ List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports) {
 }
 
 bool isSupportedPackage(String package) =>
-    _flutterPackages.contains(package) ||
+    _packagesIndicatingFlutter.contains(package) ||
     supportedNonFlutterPackages.contains(package);
