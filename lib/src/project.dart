@@ -60,7 +60,6 @@ class ProjectTemplates {
 const Set<String> registerableFirebasePackages = {
   'cloud_functions',
   'firebase',
-  'firebase_analytics',
   'firebase_auth',
   'firebase_core',
   'firebase_storage',
@@ -69,6 +68,7 @@ const Set<String> registerableFirebasePackages = {
 /// The set of Firebase packages which indicate that Firebase is being used.
 const Set<String> firebasePackages = {
   'cloud_firestore',
+  'firebase_analytics',
   'firebase_database',
   'firebase_messaging',
   ...registerableFirebasePackages,
