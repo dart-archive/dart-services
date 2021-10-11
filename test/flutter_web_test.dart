@@ -81,7 +81,7 @@ void defineTests() {
         final encoded = await packageConfig.readAsString();
         final contents = jsonDecode(encoded) as Map<String, dynamic>;
         expect(contents['packages'], isNotEmpty);
-        final packages = contents['packages'] as List<Object>;
+        final packages = contents['packages'] as List<dynamic>;
         expect(
             packages.where((element) => (element as Map)['name'] == 'flutter'),
             isNotEmpty);
