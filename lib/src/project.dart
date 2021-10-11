@@ -77,6 +77,7 @@ const Set<String> firebasePackages = {
 /// The set of packages which indicate that Flutter Web is being used.
 const Set<String> supportedFlutterPackages = {
   'flutter_bloc',
+  'flutter_lints',
   'flutter_riverpod',
   'url_launcher',
 };
