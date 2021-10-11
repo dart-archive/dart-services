@@ -229,9 +229,9 @@ void defineTests() {
             await _sendPostRequest('dartservices/$version/compile', jsonData);
         expect(response.statusCode, 400);
         final encoded = await response.transform(utf8.decoder).join();
-        final data = json.decode(encoded) as Map<Object, Object>;
+        final data = json.decode(encoded) as Map<String, dynamic>;
         expect(data, isNotEmpty);
-        final error = data['error'] as Map<Object, Object>;
+        final error = data['error'] as Map<String, dynamic>;
         expect(error['message'], contains('Error: Expected'));
       }
     });
@@ -291,8 +291,8 @@ void defineTests() {
             await _sendPostRequest('dartservices/$version/complete', jsonData);
         expect(response.statusCode, 400);
         final encoded = await response.transform(utf8.decoder).join();
-        final data = json.decode(encoded) as Map<Object, Object>;
-        final error = data['error'] as Map<Object, Object>;
+        final data = json.decode(encoded) as Map<String, dynamic>;
+        final error = data['error'] as Map<String, dynamic>;
         expect(error['message'], 'Missing parameter: \'offset\'');
       }
     });
@@ -363,7 +363,7 @@ void defineTests() {
             await _sendPostRequest('dartservices/$version/format', jsonData);
         expect(response.statusCode, 200);
         final encoded = await response.transform(utf8.decoder).join();
-        final data = json.decode(encoded) as Map<Object, Object>;
+        final data = json.decode(encoded) as Map<String, dynamic>;
         expect(data['newString'], postFormattedCode);
       }
     });
@@ -375,7 +375,7 @@ void defineTests() {
             await _sendPostRequest('dartservices/$version/format', jsonData);
         expect(response.statusCode, 200);
         final encoded = await response.transform(utf8.decoder).join();
-        final data = json.decode(encoded) as Map<Object, Object>;
+        final data = json.decode(encoded) as Map<String, dynamic>;
         expect(data['newString'], formatBadCode);
       }
     });
@@ -387,7 +387,7 @@ void defineTests() {
             await _sendPostRequest('dartservices/$version/format', jsonData);
         expect(response.statusCode, 200);
         final encoded = await response.transform(utf8.decoder).join();
-        final data = json.decode(encoded) as Map<Object, Object>;
+        final data = json.decode(encoded) as Map<String, dynamic>;
         expect(data['newString'], postFormattedCode);
         expect(data['offset'], 24);
       }
@@ -400,10 +400,10 @@ void defineTests() {
             await _sendPostRequest('dartservices/$version/fixes', jsonData);
         expect(response.statusCode, 200);
         final encoded = await response.transform(utf8.decoder).join();
-        final data = json.decode(encoded) as Map<Object, Object>;
-        final fixes = data['fixes'] as List<Object>;
+        final data = json.decode(encoded) as Map<String, dynamic>;
+        final fixes = data['fixes'] as List<dynamic>;
         expect(fixes.length, 1);
-        final problemAndFix = fixes[0] as Map<Object, Object>;
+        final problemAndFix = fixes[0] as Map<String, dynamic>;
         expect(problemAndFix['problemMessage'], isNotNull);
       }
     });
@@ -452,10 +452,10 @@ void main() {
         expect(response.statusCode, 200);
 
         final encoded = await response.transform(utf8.decoder).join();
-        final data = json.decode(encoded) as Map<Object, Object>;
-        final assists = data['assists'] as List<Object>;
+        final data = json.decode(encoded) as Map<String, dynamic>;
+        final assists = data['assists'] as List<dynamic>;
         expect(assists, hasLength(2));
-        final firstEdit = assists.first as Map<Object, Object>;
+        final firstEdit = assists.first as Map<String, dynamic>;
         expect(firstEdit['edits'], isNotNull);
         expect(firstEdit['edits'], hasLength(1));
         expect(assists.where((m) {
@@ -470,7 +470,7 @@ void main() {
         final response = await _sendGetRequest('dartservices/$version/version');
         expect(response.statusCode, 200);
         final encoded = await response.transform(utf8.decoder).join();
-        final data = json.decode(encoded) as Map<Object, Object>;
+        final data = json.decode(encoded) as Map<String, dynamic>;
         expect(data['sdkVersion'], isNotNull);
         expect(data['runtimeVersion'], isNotNull);
       }

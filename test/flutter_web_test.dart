@@ -79,7 +79,7 @@ void defineTests() {
             projectTemplates.flutterPath, '.dart_tool', 'package_config.json'));
         expect(await packageConfig.exists(), true);
         final encoded = await packageConfig.readAsString();
-        final contents = jsonDecode(encoded) as Map<Object, Object>;
+        final contents = jsonDecode(encoded) as Map<String, dynamic>;
         expect(contents['packages'], isNotEmpty);
         final packages = contents['packages'] as List<Object>;
         expect(
