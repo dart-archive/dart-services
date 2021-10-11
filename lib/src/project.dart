@@ -69,7 +69,6 @@ const Set<String> registerableFirebasePackages = {
 /// The set of Firebase packages which indicate that Firebase is being used.
 const Set<String> firebasePackages = {
   'cloud_firestore',
-  'firebase_analytics',
   'firebase_database',
   'firebase_messaging',
   ...registerableFirebasePackages,
@@ -103,6 +102,7 @@ const Set<String> supportedBasicDartPackages = {
   'http',
   'intl',
   'js',
+  'lints',
   'meta',
   'path',
   'pedantic',
@@ -191,8 +191,4 @@ List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports) {
 
 bool isSupportedPackage(String package) =>
     _packagesIndicatingFlutter.contains(package) ||
-<<<<<<< HEAD
-    supportedNonFlutterPackages.contains(package);
-=======
     supportedBasicDartPackages.contains(package);
->>>>>>> master

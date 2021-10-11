@@ -543,7 +543,7 @@ void updateDependenciesFile({
       'flutter_lints': 'any',
       for (var package in firebasePackages) package: 'any',
       for (var package in supportedFlutterPackages) package: 'any',
-      for (var package in supportedNonFlutterPackages) package: 'any',
+      for (var package in supportedBasicDartPackages) package: 'any',
     },
   );
   joinFile(tempDir, ['pubspec.yaml']).writeAsStringSync(pubspec);
