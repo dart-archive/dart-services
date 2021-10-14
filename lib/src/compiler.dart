@@ -24,23 +24,20 @@ Logger _logger = Logger('compiler');
 class Compiler {
   final Sdk _sdk;
   final String _dartPath;
-  final String _dartdevcPath;
   final BazelWorkerDriver _ddcDriver;
   final bool _nullSafety;
   final ProjectTemplates _projectTemplates;
 
   Compiler(Sdk sdk, bool nullSafety)
-      : this._(
-            sdk,
-            nullSafety,
-            path.join(Sdk.sdkPath, 'bin', 'dart'),
-            path.join(
-                Sdk.sdkPath, 'bin', 'snapshots', 'dartdevc.dart.snapshot'));
+      : this._(sdk, nullSafety, path.join(Sdk.sdkPath, 'bin', 'dart'));
 
-  Compiler._(this._sdk, this._nullSafety, this._dartPath, this._dartdevcPath)
+  Compiler._(this._sdk, this._nullSafety, this._dartPath)
       : _ddcDriver = BazelWorkerDriver(
-            () => Process.start(
-                _dartPath, [_dartdevcPath, '--persistent_worker']),
+            () => Process.start(_dartPath, [
+                  path.join(Sdk.sdkPath, 'bin', 'snapshots',
+                      'dartdevc.dart.snapshot'),
+                  '--persistent_worker'
+                ]),
             maxWorkers: 1),
         _projectTemplates = _nullSafety
             ? ProjectTemplates.nullSafe
