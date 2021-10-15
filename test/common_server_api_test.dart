@@ -12,6 +12,7 @@ import 'package:angel3_mock_request/angel3_mock_request.dart';
 import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/common_server_api.dart';
 import 'package:dart_services/src/common_server_impl.dart';
+import 'package:dart_services/src/sdk.dart';
 import 'package:dart_services/src/server_cache.dart';
 import 'package:logging/logging.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
@@ -91,7 +92,8 @@ void defineTests() {
     setUp(() async {
       container = MockContainer();
       cache = MockCache();
-      commonServerImpl = CommonServerImpl(container, cache, false);
+      final sdk = Sdk.create(stableChannel);
+      commonServerImpl = CommonServerImpl(container, cache, sdk, false);
       commonServerApi = CommonServerApi(commonServerImpl);
       await commonServerImpl.init();
 

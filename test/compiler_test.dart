@@ -17,7 +17,7 @@ void defineTests() {
   for (final nullSafety in [false, true]) {
     group('Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler', () {
       setUpAll(() async {
-        compiler = Compiler(Sdk.create(), nullSafety);
+        compiler = Compiler(Sdk.create(stableChannel), nullSafety);
         await compiler.warmup();
       });
 

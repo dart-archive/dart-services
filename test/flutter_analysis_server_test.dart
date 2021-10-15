@@ -9,6 +9,7 @@ import 'package:dart_services/src/analysis_servers.dart';
 import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/common_server_impl.dart';
 import 'package:dart_services/src/protos/dart_services.pbserver.dart';
+import 'package:dart_services/src/sdk.dart';
 import 'package:dart_services/src/server_cache.dart';
 import 'package:test/test.dart';
 
@@ -22,7 +23,9 @@ void defineTests() {
       late AnalysisServerWrapper analysisServer;
 
       setUp(() async {
-        analysisServer = FlutterAnalysisServerWrapper(nullSafety: nullSafety);
+        final sdk = Sdk.create(stableChannel);
+        analysisServer = FlutterAnalysisServerWrapper(
+            dartSdkPath: sdk.dartSdkPath, nullSafety: nullSafety);
         await analysisServer.init();
         await analysisServer.warmup();
       });
@@ -52,7 +55,9 @@ void defineTests() {
       late AnalysisServersWrapper analysisServersWrapper;
 
       setUp(() async {
-        analysisServersWrapper = AnalysisServersWrapper(nullSafety);
+        final sdk = Sdk.create(stableChannel);
+        analysisServersWrapper =
+            AnalysisServersWrapper(sdk.dartSdkPath, nullSafety);
         await analysisServersWrapper.warmup();
       });
 
@@ -137,7 +142,8 @@ class HelloWorld extends StatelessWidget {
       setUp(() async {
         container = _MockContainer();
         cache = _MockCache();
-        commonServerImpl = CommonServerImpl(container, cache, nullSafety);
+        final sdk = Sdk.create(stableChannel);
+        commonServerImpl = CommonServerImpl(container, cache, sdk, nullSafety);
         await commonServerImpl.init();
       });
 
