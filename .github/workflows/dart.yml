@@ -39,7 +39,7 @@ jobs:
       - name: Prepare Flutter
         run: |
           dart run tool/update_sdk.dart stable
-          export PATH=$PATH:$PWD/flutter-sdk/bin
+          export PATH=$PATH:$PWD/flutter-sdks/stable/bin
           flutter doctor -v
           flutter config --enable-web
       - name: Run tests
