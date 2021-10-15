@@ -11,10 +11,10 @@ set -e
 dart pub get
 
 # Prepare to run unit tests (but do not actually run tests).
-dart pub run grinder buildbot
+FLUTTER_CHANNEL=stable dart pub run grinder buildbot
 
 # Ensure that we've uploaded the compilation artifacts to google storage.
-dart pub run grinder validate-storage-artifacts
+FLUTTER_CHANNEL=stable dart pub run grinder validate-storage-artifacts
 
 # Enforce dart formatting on lib, test and tool directories.
 echo -n "Files that need dart format: "
