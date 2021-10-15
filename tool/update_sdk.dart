@@ -11,7 +11,7 @@ import 'package:dart_services/src/sdk.dart';
 
 void main(List<String> args) async {
   if (args.length != 1) {
-    print('Usage: update_sdk.dart');
+    print('Usage: update_sdk.dart [CHANNEL]');
     exitCode = 1;
     return;
   }
