@@ -7,14 +7,16 @@
 # Fast fail the script on failures.
 set -e
 
+channel="$1"
+
 # Run pub get to fetch packages.
 dart pub get
 
 # Prepare to run unit tests (but do not actually run tests).
-FLUTTER_CHANNEL=stable dart pub run grinder buildbot
+FLUTTER_CHANNEL=$channel dart pub run grinder buildbot
 
 # Ensure that we've uploaded the compilation artifacts to google storage.
-FLUTTER_CHANNEL=stable dart pub run grinder validate-storage-artifacts
+FLUTTER_CHANNEL=$channel dart pub run grinder validate-storage-artifacts
 
 # Enforce dart formatting on lib, test and tool directories.
 echo -n "Files that need dart format: "

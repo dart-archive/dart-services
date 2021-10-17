@@ -154,7 +154,6 @@ class CommonServerImpl {
   }
 
   Future<proto.VersionResponse> version(proto.VersionRequest _) {
-    //final sdk = Sdk.create();
     final packageVersions = getPackageVersions(nullSafe: _nullSafety);
     final packageInfos = [
       for (var packageName in packageVersions.keys)

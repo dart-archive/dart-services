@@ -38,7 +38,7 @@ jobs:
         run: dart analyze --fatal-infos .
       - name: Prepare Flutter
         run: |
-          dart run tool/update_sdk.dart stable
+          dart run tool/update_sdk.dart ${{ matrix.sdk }}
           export PATH=$PATH:$PWD/flutter-sdks/stable/bin
           flutter doctor -v
           flutter config --enable-web
@@ -46,4 +46,4 @@ jobs:
         run: |
           export PATH=$PATH:$HOME/.pub-cache/bin
           dart pub global activate protoc_plugin
-          ./tool/travis.sh
+          ./tool/travis.sh ${{ matrix.sdk }}
