@@ -7,6 +7,7 @@ library services.common_server_api_test;
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:angel3_mock_request/angel3_mock_request.dart';
 import 'package:dart_services/src/common.dart';
@@ -92,7 +93,8 @@ void defineTests() {
     setUp(() async {
       container = MockContainer();
       cache = MockCache();
-      final sdk = Sdk.create(stableChannel);
+      final channel = Platform.environment['FLUTTER_CHANNEL'] ?? stableChannel;
+      final sdk = Sdk.create(channel);
       commonServerImpl = CommonServerImpl(container, cache, sdk, false);
       commonServerApi = CommonServerApi(commonServerImpl);
       await commonServerImpl.init();
