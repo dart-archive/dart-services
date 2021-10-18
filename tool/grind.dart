@@ -45,7 +45,7 @@ Future<void> serve() async {
   await runWithLogging(Platform.executable, arguments: [
     'bin/server_dev.dart',
     '--channel',
-    _getChannel(),
+    _channel,
     '--port',
     '8082',
   ]);
@@ -57,7 +57,7 @@ Future<void> serveNullSafety() async {
   await runWithLogging(Platform.executable, arguments: [
     'bin/server_dev.dart',
     '--channel',
-    _getChannel(),
+    _channel,
     '--port',
     '8084',
     '--null-safety',
@@ -72,18 +72,18 @@ const _dockerFileNames = [
 ];
 
 /// Returns the Flutter channel provided in environment variables.
-String _getChannel() {
+late final String _channel = () {
   final channel = Platform.environment['FLUTTER_CHANNEL'];
   if (channel == null) {
     throw StateError('Must provide FLUTTER_CHANNEL');
   }
   return channel;
-}
+}();
 
 /// Returns the appropriate SDK for the given Flutter channel.
 ///
 /// The Flutter SDK directory must be already created by [sdkInit].
-Sdk _getSdk() => Sdk.create(_getChannel());
+Sdk _getSdk() => Sdk.create(_channel);
 
 @Task('Update the docker and SDK versions')
 void updateDockerVersion() {
@@ -158,14 +158,14 @@ void buildProjectTemplates() async {
     await _buildDartProjectTemplate(
       dartSdkPath: sdk.dartSdkPath,
       nullSafety: nullSafety,
-      channel: _getChannel(),
+      channel: _channel,
       templatePath: templatesPath.path,
     );
 
     await _buildFlutterProjectTemplate(
       sdk: sdk,
       nullSafety: nullSafety,
-      channel: _getChannel(),
+      channel: _channel,
       templatePath: templatesPath.path,
       includeFirebase: false,
     );
@@ -173,7 +173,7 @@ void buildProjectTemplates() async {
     await _buildFlutterProjectTemplate(
       sdk: sdk,
       nullSafety: nullSafety,
-      channel: _getChannel(),
+      channel: _channel,
       templatePath: templatesPath.path,
       includeFirebase: true,
     );
@@ -304,7 +304,7 @@ void buildStorageArtifacts() async {
 
     try {
       instructions.add(await _buildStorageArtifacts(temp, sdk,
-          nullSafety: nullSafe, channel: _getChannel()));
+          nullSafety: nullSafe, channel: _channel));
     } finally {
       temp.deleteSync(recursive: true);
     }
@@ -420,11 +420,10 @@ Future<String> _buildStorageArtifacts(Directory dir, Sdk sdk,
 
 @Task('Reinitialize the Flutter submodule.')
 void setupFlutterSdk() async {
-  final channel = _getChannel();
-  print('setup-flutter-sdk channel: $channel');
+  print('setup-flutter-sdk channel: $_channel');
 
   // Download the SDK into ./flutter-sdks/
-  final sdkManager = DownloadingSdkManager(channel);
+  final sdkManager = DownloadingSdkManager(_channel);
   print('Flutter version: ${sdkManager.flutterVersion}');
   final flutterSdkPath = await sdkManager.createFromConfigFile();
 
@@ -563,7 +562,7 @@ dependencies:
 void updatePubDependencies() async {
   final sdk = _getSdk();
   _updateDependenciesFile(
-      flutterToolPath: sdk.flutterToolPath, channel: _getChannel());
+      flutterToolPath: sdk.flutterToolPath, channel: _channel);
 }
 
 /// Updates the "dependencies file".

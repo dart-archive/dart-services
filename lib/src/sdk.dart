@@ -108,16 +108,6 @@ class DownloadingSdkManager {
   ///
   /// Note that this is an expensive operation.
   Future<String> createFromConfigFile() async {
-    return _createUsingFlutterVersion(version: flutterVersion);
-  }
-
-  /// Creates a Flutter SDK in `flutter-sdks/` that tracks a specific Flutter
-  /// version.
-  ///
-  /// Note that this is an expensive operation.
-  Future<String> _createUsingFlutterVersion({
-    required String version,
-  }) async {
     final sdk = await _cloneSdkIfNecessary(channel);
 
     // git checkout master
@@ -125,7 +115,7 @@ class DownloadingSdkManager {
     // git fetch --tags
     await sdk.fetchTags();
     // git checkout 1.25.0-8.1.pre
-    await sdk.checkout(version);
+    await sdk.checkout(flutterVersion);
 
     // Force downloading of Dart SDK before constructing the Sdk singleton.
     await sdk.init();
