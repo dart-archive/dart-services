@@ -67,6 +67,8 @@ class Sdk {
       path.join(Directory.current.path, 'flutter-sdks');
 }
 
+const channels = ['stable', 'beta', 'dev', 'old'];
+
 class DownloadingSdkManager {
   final String channel;
   final String flutterVersion;
@@ -74,7 +76,7 @@ class DownloadingSdkManager {
   DownloadingSdkManager._(this.channel, this.flutterVersion);
 
   factory DownloadingSdkManager(String channel) {
-    if (!['stable', 'beta', 'dev', 'old'].contains(channel)) {
+    if (!channels.contains(channel)) {
       throw StateError('Unknown channel name: $channel');
     }
     final flutterVersion = _readFlutterVersion(channel);

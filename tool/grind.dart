@@ -158,12 +158,14 @@ void buildProjectTemplates() async {
     await _buildDartProjectTemplate(
       dartSdkPath: sdk.dartSdkPath,
       nullSafety: nullSafety,
+      channel: _getChannel(),
       templatePath: templatesPath.path,
     );
 
     await _buildFlutterProjectTemplate(
       sdk: sdk,
       nullSafety: nullSafety,
+      channel: _getChannel(),
       templatePath: templatesPath.path,
       includeFirebase: false,
     );
@@ -171,6 +173,7 @@ void buildProjectTemplates() async {
     await _buildFlutterProjectTemplate(
       sdk: sdk,
       nullSafety: nullSafety,
+      channel: _getChannel(),
       templatePath: templatesPath.path,
       includeFirebase: true,
     );
@@ -178,8 +181,8 @@ void buildProjectTemplates() async {
 }
 
 Map<String, String> _dependencyVersions(Iterable<String> packages,
-    {required bool nullSafety}) {
-  final allVersions = _parsePubDependenciesFile(nullSafety: nullSafety);
+    {required String channel}) {
+  final allVersions = _parsePubDependenciesFile(channel: channel);
   return {
     for (var package in packages) package: allVersions[package]!,
   };
@@ -190,13 +193,14 @@ Map<String, String> _dependencyVersions(Iterable<String> packages,
 Future<void> _buildDartProjectTemplate({
   required String dartSdkPath,
   required bool nullSafety,
+  required String channel,
   required String templatePath,
 }) async {
   final projectPath = Directory(path.join(
       templatePath, nullSafety ? 'null-safe' : 'null-unsafe', 'dart_project'));
   final projectDir = await projectPath.create(recursive: true);
   final dependencies =
-      _dependencyVersions(supportedBasicDartPackages, nullSafety: nullSafety);
+      _dependencyVersions(supportedBasicDartPackages, channel: channel);
   joinFile(projectDir, ['pubspec.yaml']).writeAsStringSync(createPubspec(
     includeFlutterWeb: false,
     nullSafety: nullSafety,
@@ -220,6 +224,7 @@ linter:
 Future<void> _buildFlutterProjectTemplate({
   required Sdk sdk,
   required bool nullSafety,
+  required String channel,
   required String templatePath,
   required bool includeFirebase,
 }) async {
@@ -237,7 +242,7 @@ Future<void> _buildFlutterProjectTemplate({
     ...supportedFlutterPackages,
     if (includeFirebase) ...registerableFirebasePackages,
   };
-  final dependencies = _dependencyVersions(packages, nullSafety: nullSafety);
+  final dependencies = _dependencyVersions(packages, channel: channel);
   joinFile(projectDir, ['pubspec.yaml']).writeAsStringSync(createPubspec(
     includeFlutterWeb: true,
     nullSafety: nullSafety,
@@ -298,7 +303,8 @@ void buildStorageArtifacts() async {
     final temp = Directory.systemTemp.createTempSync('flutter_web_sample');
 
     try {
-      instructions.add(await _buildStorageArtifacts(temp, sdk, nullSafe));
+      instructions.add(await _buildStorageArtifacts(temp, sdk,
+          nullSafety: nullSafe, channel: _getChannel()));
     } finally {
       temp.deleteSync(recursive: true);
     }
@@ -309,12 +315,12 @@ void buildStorageArtifacts() async {
   }
 }
 
-Future<String> _buildStorageArtifacts(
-    Directory dir, Sdk sdk, bool nullSafety) async {
+Future<String> _buildStorageArtifacts(Directory dir, Sdk sdk,
+    {required bool nullSafety, required String channel}) async {
   final pubspec = createPubspec(
       includeFlutterWeb: true,
       nullSafety: nullSafety,
-      dependencies: _parsePubDependenciesFile(nullSafety: nullSafety));
+      dependencies: _parsePubDependenciesFile(channel: channel));
   joinFile(dir, ['pubspec.yaml']).writeAsStringSync(pubspec);
 
   // Run `flutter packages get`.
@@ -556,10 +562,8 @@ dependencies:
 @Depends(sdkInit)
 void updatePubDependencies() async {
   final sdk = _getSdk();
-  for (final nullSafety in [false, true]) {
-    _updateDependenciesFile(
-        flutterToolPath: sdk.flutterToolPath, nullSafety: nullSafety);
-  }
+  _updateDependenciesFile(
+      flutterToolPath: sdk.flutterToolPath, channel: _getChannel());
 }
 
 /// Updates the "dependencies file".
@@ -571,12 +575,12 @@ void updatePubDependencies() async {
 /// See [_pubDependenciesFile] for the location of the dependencies files.
 void _updateDependenciesFile({
   required String flutterToolPath,
-  required bool nullSafety,
+  required String channel,
 }) async {
   final tempDir = Directory.systemTemp.createTempSync('pubspec-scratch');
   final pubspec = createPubspec(
     includeFlutterWeb: true,
-    nullSafety: nullSafety,
+    nullSafety: true,
     dependencies: {
       // pkg:lints and pkg:flutter_lints
       'lints': 'any',
@@ -590,7 +594,7 @@ void _updateDependenciesFile({
   await _runFlutterPackagesGet(flutterToolPath, tempDir);
   final packageVersions = packageVersionsFromPubspecLock(tempDir.path);
 
-  _pubDependenciesFile(nullSafety: nullSafety)
+  _pubDependenciesFile(channel: channel)
       .writeAsStringSync(_jsonEncoder.convert(packageVersions));
 }
 
@@ -599,17 +603,17 @@ const JsonEncoder _jsonEncoder = JsonEncoder.withIndent('  ');
 
 /// Returns the File containing the pub dependencies and their version numbers.
 ///
-/// The null safe file is at `tool/pub_dependencies_null-safe.json`. The null
-/// unsafe file is at `tool/pub_dependencies_null-unsafe.json`.
-File _pubDependenciesFile({required bool nullSafety}) {
-  final versionsFileName =
-      'pub_dependencies_${nullSafety ? 'null-safe' : 'null-unsafe'}.json';
+/// The file is at `tool/pub_dependencies_{channel}.json`, for the Flutter
+/// channels: stable, beta, dev, old.
+File _pubDependenciesFile({required String channel}) {
+  final versionsFileName = 'pub_dependencies_$channel.json';
   return File(path.join(Directory.current.path, 'tool', versionsFileName));
 }
 
 /// Parses [_pubDependenciesFile] as a JSON Map of Strings.
-Map<String, String> _parsePubDependenciesFile({required bool nullSafety}) {
-  final packageVersions = jsonDecode(
-      _pubDependenciesFile(nullSafety: nullSafety).readAsStringSync()) as Map;
+Map<String, String> _parsePubDependenciesFile({required String channel}) {
+  final packageVersions =
+      jsonDecode(_pubDependenciesFile(channel: channel).readAsStringSync())
+          as Map;
   return packageVersions.cast<String, String>();
 }
