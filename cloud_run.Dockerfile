@@ -28,14 +28,14 @@ RUN dart pub get --offline
 ENV PATH="/home/dart/.pub-cache/bin:${PATH}"
 
 # Set the Flutter SDK up for web compilation.
-RUN dart pub run grinder setup-flutter-sdk
+RUN FLUTTER_CHANNEL=stable dart pub run grinder setup-flutter-sdk
 
 # Build the dill file
-RUN dart pub run grinder build-storage-artifacts validate-storage-artifacts
+RUN FLUTTER_CHANNEL=stable dart pub run grinder build-storage-artifacts validate-storage-artifacts
 
 # Clear out any arguments the base images might have set and ensure we start
 # the Dart app using custom script enabling debug modes.
 CMD []
 
 ENTRYPOINT ["/dart_runtime/dart_cloud_run.sh", "--port", "${PORT}", \
-  "--redis-url", "redis://10.0.0.4:6379"]
+  "--redis-url", "redis://10.0.0.4:6379", "--channel", "stable"]
