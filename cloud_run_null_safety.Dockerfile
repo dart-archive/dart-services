@@ -26,12 +26,13 @@ COPY --chown=dart:dart . /app
 RUN dart pub get --offline
 
 ENV PATH="/home/dart/.pub-cache/bin:${PATH}"
+ENV FLUTTER_CHANNEL="stable"
 
 # Set the Flutter SDK up for web compilation.
-RUN FLUTTER_CHANNEL=stable dart pub run grinder setup-flutter-sdk
+RUN dart pub run grinder setup-flutter-sdk
 
 # Build the dill file
-RUN FLUTTER_CHANNEL=stable dart pub run grinder build-storage-artifacts validate-storage-artifacts
+RUN dart pub run grinder build-storage-artifacts validate-storage-artifacts
 
 # Clear out any arguments the base images might have set and ensure we start
 # the Dart app using custom script enabling debug modes.
