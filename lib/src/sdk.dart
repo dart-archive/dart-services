@@ -118,7 +118,10 @@ class DownloadingSdkManager {
     await sdk.checkout(flutterVersion);
 
     // Force downloading of Dart SDK before constructing the Sdk singleton.
-    await sdk.init();
+    final exitCode = await sdk.init();
+    if (exitCode != 0) {
+      throw StateError('Initializing Flutter SDK resulted in error: $exitCode');
+    }
 
     return sdk.flutterSdkPath;
   }
@@ -150,10 +153,9 @@ class _DownloadedFlutterSdk {
 
   _DownloadedFlutterSdk(this.flutterSdkPath);
 
-  Future<void> init() async {
-    // `flutter --version` takes ~28s.
-    await _execLog('bin/flutter', ['--version'], flutterSdkPath);
-  }
+  Future<int> init() =>
+      // `flutter --version` takes ~28s.
+      _execLog('bin/flutter', ['--version'], flutterSdkPath);
 
   String get sdkPath => path.join(flutterSdkPath, 'bin/cache/dart-sdk');
 
