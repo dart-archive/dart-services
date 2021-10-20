@@ -21,7 +21,7 @@ void defineTests() {
       setUpAll(() async {
         final channel =
             Platform.environment['FLUTTER_CHANNEL'] ?? stableChannel;
-        compiler = Compiler(Sdk.create(channel), nullSafety);
+        compiler = Compiler(Sdk.create(channel));
         await compiler.warmup();
       });
 
@@ -55,8 +55,7 @@ void defineTests() {
 
       test(
         'compileDDC with web',
-        _generateCompilerDDCTest(
-            nullSafety ? sampleCodeWebNullSafe : sampleCodeWeb),
+        _generateCompilerDDCTest(sampleCodeWeb),
       );
 
       test(
@@ -66,36 +65,27 @@ void defineTests() {
 
       test(
         'compileDDC with Flutter Counter',
-        _generateCompilerDDCTest(nullSafety
-            ? sampleCodeFlutterCounterNullSafe
-            : sampleCodeFlutterCounter),
+        _generateCompilerDDCTest(sampleCodeFlutterCounter),
       );
 
       test(
         'compileDDC with Flutter Sunflower',
-        _generateCompilerDDCTest(nullSafety
-            ? sampleCodeFlutterSunflowerNullSafe
-            : sampleCodeFlutterSunflower),
+        _generateCompilerDDCTest(sampleCodeFlutterSunflower),
       );
 
       test(
         'compileDDC with Flutter Draggable Card',
-        _generateCompilerDDCTest(nullSafety
-            ? sampleCodeFlutterDraggableCardNullSafe
-            : sampleCodeFlutterDraggableCard),
+        _generateCompilerDDCTest(sampleCodeFlutterDraggableCard),
       );
 
       test(
         'compileDDC with Flutter Implicit Animations',
-        _generateCompilerDDCTest(nullSafety
-            ? sampleCodeFlutterImplicitAnimationsNullSafe
-            : sampleCodeFlutterImplicitAnimations),
+        _generateCompilerDDCTest(sampleCodeFlutterImplicitAnimations),
       );
 
       test(
         'compileDDC with async',
-        _generateCompilerDDCTest(
-            nullSafety ? sampleCodeAsyncNullSafe : sampleCodeAsync),
+        _generateCompilerDDCTest(sampleCodeAsync),
       );
 
       test('compileDDC with single error', () async {
@@ -135,14 +125,12 @@ void defineTests() {
       });
 
       test('simple web', () async {
-        final result = await compiler
-            .compile(nullSafety ? sampleCodeWebNullSafe : sampleCodeWeb);
+        final result = await compiler.compile(sampleCodeWeb);
         expect(result.success, true);
       });
 
       test('web async', () async {
-        final result = await compiler
-            .compile(nullSafety ? sampleCodeAsyncNullSafe : sampleCodeAsync);
+        final result = await compiler.compile(sampleCodeAsync);
         expect(result.success, true);
       });
 
