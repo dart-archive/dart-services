@@ -254,7 +254,6 @@ Future<void> _buildFlutterProjectTemplate({
     final dependencies = _dependencyVersions(packages, channel: channel);
     joinFile(projectDir, ['pubspec.yaml']).writeAsStringSync(createPubspec(
       includeFlutterWeb: true,
-      nullSafety: nullSafety,
       dependencies: dependencies,
     ));
     await _runDartPubGet(sdk.dartSdkPath, projectDir);
