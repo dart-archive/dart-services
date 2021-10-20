@@ -6,12 +6,14 @@ library services.common_server_api_protobuf_test;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:angel3_mock_request/angel3_mock_request.dart';
 import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/common_server_api.dart';
 import 'package:dart_services/src/common_server_impl.dart';
 import 'package:dart_services/src/protos/dart_services.pb.dart' as proto;
+import 'package:dart_services/src/sdk.dart';
 import 'package:dart_services/src/server_cache.dart';
 import 'package:logging/logging.dart';
 import 'package:protobuf/protobuf.dart';
@@ -90,7 +92,9 @@ void defineTests() {
     setUpAll(() async {
       container = MockContainer();
       cache = MockCache();
-      commonServerImpl = CommonServerImpl(container, cache, false);
+      final channel = Platform.environment['FLUTTER_CHANNEL'] ?? stableChannel;
+      final sdk = Sdk.create(channel);
+      commonServerImpl = CommonServerImpl(container, cache, sdk, false);
       commonServerApi = CommonServerApi(commonServerImpl);
       await commonServerImpl.init();
 
@@ -392,7 +396,8 @@ void main() {
     test('version', () async {
       final response = await _sendGetRequest('dartservices/v2/version');
       expect(response.statusCode, 200);
-      final data = json.decode(await response.transform(utf8.decoder).join());
+      final encoded = await response.transform(utf8.decoder).join();
+      final data = json.decode(encoded) as Map<String, dynamic>;
       expect(data['sdkVersion'], isNotNull);
       expect(data['runtimeVersion'], isNotNull);
     });

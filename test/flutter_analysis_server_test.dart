@@ -4,41 +4,31 @@
 
 library services.flutter_analyzer_server_test;
 
+import 'dart:io';
+
 import 'package:dart_services/src/analysis_server.dart';
 import 'package:dart_services/src/analysis_servers.dart';
 import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/common_server_impl.dart';
 import 'package:dart_services/src/protos/dart_services.pbserver.dart';
+import 'package:dart_services/src/sdk.dart';
 import 'package:dart_services/src/server_cache.dart';
 import 'package:test/test.dart';
 
-const _lintWarningTrigger = '''
-import 'package:flutter/material.dart';
-
-void main() async {
-  var unknown;
-  print(unknown);
-
-  runApp(MaterialApp(
-      debugShowCheckedModeBanner: false, home: Scaffold(body: HelloWorld())));
-}
-
-class HelloWorld extends StatelessWidget {
-  @override
-  Widget build(context) => const Center(child: Text('Hello world'));
-}
-''';
-
+final channel = Platform.environment['FLUTTER_CHANNEL'] ?? stableChannel;
 void main() => defineTests();
 
 void defineTests() {
   for (final nullSafety in [false, true]) {
-    group('Null ${nullSafety ? 'Safe' : 'Unsafe'} Flutter SDK analysis_server',
-        () {
+    final nullSafetyDescription = 'Null ${nullSafety ? 'Safe' : 'Unsafe'}';
+
+    group('$nullSafetyDescription Flutter SDK analysis_server', () {
       late AnalysisServerWrapper analysisServer;
 
       setUp(() async {
-        analysisServer = FlutterAnalysisServerWrapper(nullSafety);
+        final sdk = Sdk.create(channel);
+        analysisServer = FlutterAnalysisServerWrapper(
+            dartSdkPath: sdk.dartSdkPath, nullSafety: nullSafety);
         await analysisServer.init();
         await analysisServer.warmup();
       });
@@ -63,12 +53,14 @@ void defineTests() {
     });
 
     group(
-        'Null ${nullSafety ? 'Safe' : 'Unsafe'} Flutter SDK analysis_server with analysis servers',
-        () {
+        '$nullSafetyDescription Flutter SDK analysis_server with analysis '
+        'servers', () {
       late AnalysisServersWrapper analysisServersWrapper;
 
       setUp(() async {
-        analysisServersWrapper = AnalysisServersWrapper(nullSafety);
+        final sdk = Sdk.create(channel);
+        analysisServersWrapper =
+            AnalysisServersWrapper(sdk.dartSdkPath, nullSafety);
         await analysisServersWrapper.warmup();
       });
 
@@ -76,11 +68,52 @@ void defineTests() {
         await analysisServersWrapper.shutdown();
       });
 
+      test('reports errors with Flutter code', () async {
+        final results = await analysisServersWrapper.analyze('''
+import 'package:flutter/material.dart';
+
+String x = 7;
+
+void main() async {
+
+  runApp(MaterialApp(
+      debugShowCheckedModeBanner: false, home: Scaffold(body: HelloWorld())));
+}
+
+class HelloWorld extends StatelessWidget {
+  @override
+  Widget build(context) => const Center(child: Text('Hello world'));
+}
+''');
+        expect(results.issues, hasLength(1));
+        final issue = results.issues[0];
+        expect(issue.line, 3);
+        expect(issue.kind, 'error');
+        expect(
+            issue.message,
+            "A value of type 'int' can't be assigned to a variable of type "
+            "'String'.");
+      });
+
       // https://github.com/dart-lang/dart-pad/issues/2005
-      test('Trigger lint with Flutter code', () async {
-        final results =
-            await analysisServersWrapper.analyze(_lintWarningTrigger);
-        expect(results.issues.length, 1);
+      test('reports lint with Flutter code', () async {
+        final results = await analysisServersWrapper.analyze('''
+import 'package:flutter/material.dart';
+
+void main() async {
+  var unknown;
+  print(unknown);
+
+  runApp(MaterialApp(
+      debugShowCheckedModeBanner: false, home: Scaffold(body: HelloWorld())));
+}
+
+class HelloWorld extends StatelessWidget {
+  @override
+  Widget build(context) => const Center(child: Text('Hello world'));
+}
+''');
+        expect(results.issues, hasLength(1));
         final issue = results.issues[0];
         expect(issue.line, 4);
         expect(issue.kind, 'info');
@@ -103,9 +136,7 @@ void defineTests() {
       });
     });
 
-    group(
-        'Null ${nullSafety ? 'Safe' : 'Unsafe'} CommonServerImpl flutter analyze',
-        () {
+    group('$nullSafetyDescription CommonServerImpl flutter analyze', () {
       late CommonServerImpl commonServerImpl;
 
       _MockContainer container;
@@ -114,7 +145,8 @@ void defineTests() {
       setUp(() async {
         container = _MockContainer();
         cache = _MockCache();
-        commonServerImpl = CommonServerImpl(container, cache, nullSafety);
+        final sdk = Sdk.create(channel);
+        commonServerImpl = CommonServerImpl(container, cache, sdk, nullSafety);
         await commonServerImpl.init();
       });
 

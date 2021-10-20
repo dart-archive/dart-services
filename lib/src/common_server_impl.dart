@@ -37,6 +37,7 @@ abstract class ServerContainer {
 class CommonServerImpl {
   final ServerContainer _container;
   final ServerCache _cache;
+  final Sdk _sdk;
   final bool _nullSafety;
 
   late Compiler _compiler;
@@ -49,6 +50,7 @@ class CommonServerImpl {
   CommonServerImpl(
     this._container,
     this._cache,
+    this._sdk,
     this._nullSafety,
   ) {
     hierarchicalLoggingEnabled = true;
@@ -57,8 +59,8 @@ class CommonServerImpl {
 
   Future<void> init() async {
     log.info('Beginning CommonServer init().');
-    _analysisServers = AnalysisServersWrapper(_nullSafety);
-    _compiler = Compiler(Sdk.create(), _nullSafety);
+    _analysisServers = AnalysisServersWrapper(_sdk.dartSdkPath, _nullSafety);
+    _compiler = Compiler(_sdk, _nullSafety);
 
     await _compiler.warmup();
     await _analysisServers.warmup();
@@ -152,7 +154,6 @@ class CommonServerImpl {
   }
 
   Future<proto.VersionResponse> version(proto.VersionRequest _) {
-    final sdk = Sdk.create();
     final packageVersions = getPackageVersions(nullSafe: _nullSafety);
     final packageInfos = [
       for (var packageName in packageVersions.keys)
@@ -164,14 +165,14 @@ class CommonServerImpl {
 
     return Future.value(
       proto.VersionResponse()
-        ..sdkVersion = sdk.version
-        ..sdkVersionFull = sdk.versionFull
+        ..sdkVersion = _sdk.version
+        ..sdkVersionFull = _sdk.versionFull
         ..runtimeVersion = vmVersion
         ..servicesVersion = servicesVersion
         ..appEngineVersion = _container.version
-        ..flutterDartVersion = sdk.version
-        ..flutterDartVersionFull = sdk.versionFull
-        ..flutterVersion = sdk.flutterVersion
+        ..flutterDartVersion = _sdk.version
+        ..flutterDartVersionFull = _sdk.versionFull
+        ..flutterVersion = _sdk.flutterVersion
         ..packageVersions.addAll(packageVersions)
         ..packageInfo.addAll(packageInfos),
     );
@@ -189,7 +190,7 @@ class CommonServerImpl {
       final result = await _checkCache(memCacheKey);
       if (result != null) {
         log.info('CACHE: Cache hit for compileDart2js');
-        final resultObj = const JsonDecoder().convert(result);
+        final resultObj = json.decode(result) as Map<String, dynamic>;
         final response = proto.CompileResponse()
           ..result = resultObj['compiledJS'] as String;
         if (resultObj['sourceMap'] != null) {
@@ -245,7 +246,7 @@ class CommonServerImpl {
       final result = await _checkCache(memCacheKey);
       if (result != null) {
         log.info('CACHE: Cache hit for compileDDC');
-        final resultObj = const JsonDecoder().convert(result);
+        final resultObj = json.decode(result) as Map<String, dynamic>;
         return proto.CompileDDCResponse()
           ..result = resultObj['compiledJS'] as String
           ..modulesBaseUrl = resultObj['modulesBaseUrl'] as String;

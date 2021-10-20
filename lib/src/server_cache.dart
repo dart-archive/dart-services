@@ -5,7 +5,6 @@
 library services.server_cache;
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:quiver/cache.dart';
@@ -33,6 +32,8 @@ class RedisCache implements ServerCache {
 
   final Uri redisUri;
 
+  final Sdk _sdk;
+
   // Version of the server to add with keys.
   final String? serverVersion;
 
@@ -42,7 +43,7 @@ class RedisCache implements ServerCache {
   static const int _connectionRetryMaxMs = 60000;
   static const Duration cacheOperationTimeout = Duration(milliseconds: 10000);
 
-  RedisCache(String redisUriString, this.serverVersion)
+  RedisCache(String redisUriString, this._sdk, this.serverVersion)
       : redisUri = Uri.parse(redisUriString) {
     _reconnect();
   }
@@ -116,7 +117,7 @@ class RedisCache implements ServerCache {
           _setUpConnection(newConnection);
           // If the client disconnects, discard the client and try to connect again.
 
-          ((newConnection as dynamic).socket as Socket).done.then((_) {
+          newConnection.outputSink.done.then((_) {
             _resetConnection();
             log.warning('$_logPrefix: connection terminated, reconnecting');
             _reconnect();
@@ -143,10 +144,11 @@ class RedisCache implements ServerCache {
   /// We don't use the existing key directly so that different AppEngine
   /// versions using the same redis cache do not have collisions.
   String _genKey(String key) {
-    final sdk = Sdk.create();
     // the `rc` here is a differentiator to keep the `resp_client` documents
     // separate from the `dartis` documents.
-    return 'server:rc:$serverVersion:dart:${sdk.versionFull}:flutter:${sdk.flutterVersion}+$key';
+    return 'server:rc:$serverVersion:'
+        'dart:${_sdk.versionFull}:'
+        'flutter:${_sdk.flutterVersion}+$key';
   }
 
   @override
