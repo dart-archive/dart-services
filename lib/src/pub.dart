@@ -30,7 +30,7 @@ const _flutterPackages = [
 /// None of them changes during execution.
 late final Map<String, String> _nullSafePackageVersions =
     packageVersionsFromPubspecLock(
-        project.ProjectTemplates.projectTemplages.firebasePath);
+        project.ProjectTemplates.projectTemplates.firebasePath);
 
 /// Returns a mapping of Pub package name to package version.
 Map<String, String> getPackageVersions() => _nullSafePackageVersions;
