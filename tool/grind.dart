@@ -67,10 +67,10 @@ Future<void> serveNullSafety() async {
 const _dartImageName = 'dart';
 final _dockerVersionMatcher = RegExp('^FROM $_dartImageName:(.*)\$');
 const _dockerFileNames = [
-  'cloud_run.Dockerfile',
   'cloud_run_beta.Dockerfile',
   'cloud_run_dev.Dockerfile',
   'cloud_run_old.Dockerfile',
+  'cloud_run.Dockerfile',
 ];
 
 /// Returns the Flutter channel provided in environment variables.
