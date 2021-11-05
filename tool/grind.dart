@@ -577,6 +577,20 @@ void updatePubDependencies() async {
       flutterToolPath: sdk.flutterToolPath, channel: _channel);
 }
 
+/// Pinned version numbers for individual packages when extra stability is
+/// desired. Any constraint string is valid (e.g. '^1.2.3' or '>=1.0.0 <3.0.0').
+const Map<String, String> _packagePins = {
+  'cloud_firestore': '2.5.4',
+  'cloud_functions': '3.0.5',
+  'firebase': '9.0.2',
+  'firebase_analytics': '8.3.4',
+  'firebase_auth': '3.1.4',
+  'firebase_core': '1.8.0',
+  'firebase_database': '8.0.1',
+  'firebase_messaging': '10.0.9',
+  'firebase_storage': '10.0.6',
+};
+
 /// Updates the "dependencies file".
 ///
 /// The new set of dependency packages, and their version numbers, is determined
@@ -593,12 +607,14 @@ Future<void> _updateDependenciesFile({
     includeFlutterWeb: true,
     nullSafety: true,
     dependencies: {
-      // pkg:lints and pkg:flutter_lints
       'lints': 'any',
       'flutter_lints': 'any',
-      for (var package in firebasePackages) package: 'any',
-      for (var package in supportedFlutterPackages) package: 'any',
-      for (var package in supportedBasicDartPackages) package: 'any',
+      for (var package in firebasePackages)
+        package: _packagePins[package] ?? 'any',
+      for (var package in supportedFlutterPackages)
+        package: _packagePins[package] ?? 'any',
+      for (var package in supportedBasicDartPackages)
+        package: _packagePins[package] ?? 'any',
     },
   );
   joinFile(tempDir, ['pubspec.yaml']).writeAsStringSync(pubspec);
