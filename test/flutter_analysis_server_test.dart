@@ -72,7 +72,6 @@ import 'package:flutter/material.dart';
 String x = 7;
 
 void main() async {
-
   runApp(MaterialApp(
       debugShowCheckedModeBanner: false, home: Scaffold(body: HelloWorld())));
 }
