@@ -12,7 +12,6 @@ import 'package:dart_services/src/project.dart';
 import 'package:dart_services/src/pub.dart';
 import 'package:dart_services/src/sdk.dart';
 import 'package:grinder/grinder.dart';
-import 'package:grinder/src/run_utils.dart' show mergeWorkingDirectory;
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 
@@ -32,8 +31,7 @@ void analyze() async {
 
 @Task()
 @Depends(buildStorageArtifacts)
-Future<dynamic> test() =>
-    runWithLogging(Platform.executable, arguments: ['test']);
+Future<void> test() => runWithLogging(Platform.executable, arguments: ['test']);
 
 @DefaultTask()
 @Depends(analyze, test)
@@ -167,14 +165,21 @@ void buildProjectTemplates() async {
     sdk: sdk,
     channel: _channel,
     templatePath: templatesPath.path,
-    includeFirebase: false,
+    firebaseStyle: FirebaseStyle.none,
   );
 
   await _buildFlutterProjectTemplate(
     sdk: sdk,
     channel: _channel,
     templatePath: templatesPath.path,
-    includeFirebase: true,
+    firebaseStyle: FirebaseStyle.deprecated,
+  );
+
+  await _buildFlutterProjectTemplate(
+    sdk: sdk,
+    channel: _channel,
+    templatePath: templatesPath.path,
+    firebaseStyle: FirebaseStyle.flutterFire,
   );
 }
 
@@ -210,6 +215,17 @@ linter:
 ''');
 }
 
+enum FirebaseStyle {
+  /// Indicates that no Firebase is used.
+  none,
+
+  /// Indicates that the deprecated Firebase packages are used.
+  deprecated,
+
+  /// Indicates that the "pure Dart" Flutterfire packages are used.
+  flutterFire,
+}
+
 /// Builds a Flutter project template directory, complete with `pubspec.yaml`,
 /// `analysis_options.yaml`, and `web/index.html`.
 ///
@@ -220,11 +236,16 @@ Future<void> _buildFlutterProjectTemplate({
   required Sdk sdk,
   required String channel,
   required String templatePath,
-  required bool includeFirebase,
+  required FirebaseStyle firebaseStyle,
 }) async {
+  final projectDirName = firebaseStyle == FirebaseStyle.none
+      ? 'flutter_project'
+      : firebaseStyle == FirebaseStyle.deprecated
+          ? 'firebase_deprecated_project'
+          : 'firebase_project';
   final projectPath = path.join(
     templatePath,
-    includeFirebase ? 'firebase_project' : 'flutter_project',
+    projectDirName,
   );
   final projectDir = await Directory(projectPath).create(recursive: true);
   await Directory(path.join(projectPath, 'lib')).create();
@@ -233,7 +254,11 @@ Future<void> _buildFlutterProjectTemplate({
   var packages = {
     ...supportedBasicDartPackages,
     ...supportedFlutterPackages,
-    if (includeFirebase) ...registerableFirebasePackages,
+    if (firebaseStyle != FirebaseStyle.none) ...coreFirebasePackages,
+    if (firebaseStyle == FirebaseStyle.deprecated)
+      ...deprecatedFirebasePackages,
+    if (firebaseStyle == FirebaseStyle.flutterFire)
+      ...registerableFirebasePackages,
   };
   final dependencies = _dependencyVersions(packages, channel: channel);
   joinFile(projectDir, ['pubspec.yaml']).writeAsStringSync(createPubspec(
@@ -241,7 +266,7 @@ Future<void> _buildFlutterProjectTemplate({
     dependencies: dependencies,
   ));
   await _runFlutterPackagesGet(sdk.flutterToolPath, projectDir);
-  if (includeFirebase) {
+  if (firebaseStyle != FirebaseStyle.none) {
     // `flutter packages get` has been run with a _subset_ of all supported
     // Firebase packages, the ones that don't require a Firebase app to be
     // configured in JavaScript, before executing Dart. Now add the full set of
@@ -249,7 +274,7 @@ Future<void> _buildFlutterProjectTemplate({
     packages = {
       ...supportedBasicDartPackages,
       ...supportedFlutterPackages,
-      if (includeFirebase) ...firebasePackages,
+      ...firebasePackages,
     };
     final dependencies = _dependencyVersions(packages, channel: channel);
     joinFile(projectDir, ['pubspec.yaml']).writeAsStringSync(createPubspec(
@@ -268,24 +293,29 @@ linter:
 }
 
 Future<void> _runDartPubGet(String dartSdkPath, Directory dir) async {
-  log('running dart pub get (${dir.path})');
-
   await runWithLogging(
     path.join(dartSdkPath, 'bin', 'dart'),
     arguments: ['pub', 'get'],
     workingDirectory: dir.path,
+    environment: {'PUB_CACHE': _pubCachePath},
   );
 }
 
 Future<void> _runFlutterPackagesGet(
     String flutterToolPath, Directory dir) async {
-  log('running flutter packages get (${dir.path})');
-
   await runWithLogging(
     flutterToolPath,
     arguments: ['packages', 'get'],
     workingDirectory: dir.path,
+    environment: {'PUB_CACHE': _pubCachePath},
   );
+}
+
+/// Builds the local pub cache directory and returns the path.
+String get _pubCachePath {
+  final pubCachePath = path.join(Directory.current.path, 'local_pub_cache');
+  Directory(pubCachePath).createSync();
+  return pubCachePath;
 }
 
 @Task('build the sdk compilation artifacts for upload to google storage')
@@ -483,12 +513,17 @@ void generateProtos() async {
 
 Future<void> runWithLogging(String executable,
     {List<String> arguments = const [],
-    RunOptions? runOptions,
     String? workingDirectory,
+    Map<String, String> environment = const {},
     String? onErrorMessage}) async {
-  runOptions = mergeWorkingDirectory(workingDirectory, runOptions);
-  log("$executable ${arguments.join(' ')}");
+  log([
+    'Running $executable ${arguments.join(' ')}',
+    if (workingDirectory != null) "from directory: '$workingDirectory'",
+    if (environment.isNotEmpty) 'with additional environment: $environment',
+  ].join('\n  '));
 
+  final runOptions =
+      RunOptions(workingDirectory: workingDirectory, environment: environment);
   Process proc;
   try {
     proc = await Process.start(executable, arguments,
@@ -503,8 +538,8 @@ Future<void> runWithLogging(String executable,
     rethrow;
   }
 
-  proc.stdout.listen((out) => log(runOptions!.stdoutEncoding.decode(out)));
-  proc.stderr.listen((err) => log(runOptions!.stdoutEncoding.decode(err)));
+  proc.stdout.listen((out) => log(runOptions.stdoutEncoding.decode(out)));
+  proc.stderr.listen((err) => log(runOptions.stdoutEncoding.decode(err)));
   final exitCode = await proc.exitCode;
 
   if (exitCode != 0) {
