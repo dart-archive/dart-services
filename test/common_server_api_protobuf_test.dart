@@ -86,6 +86,18 @@ void defineTests() {
     return request.response;
   }
 
+  Future<void> tryWithReruns(FutureOr<void> Function() fn) async {
+    for (var i = 0; i < 3; i++) {
+      try {
+        await fn();
+        // If the function returns normally, continue.
+        return;
+      } catch (_) {
+        // Retry.
+      }
+    }
+  }
+
   group('CommonServerProto JSON', () {
     setUpAll(() async {
       container = MockContainer();
@@ -152,13 +164,19 @@ void defineTests() {
 
     test('analyze errors', () async {
       final request = proto.SourceRequest()..source = sampleCodeError;
-      final response =
-          await sendPostRequest('dartservices/v2/analyze', request);
-      expect(response.statusCode, 200);
-      expect(response.headers['content-type'],
-          ['application/json; charset=utf-8']);
-      final data = json.decode(await response.transform(utf8.decoder).join());
-      final reply = proto.AnalysisResults()..mergeFromProto3Json(data);
+      late proto.AnalysisResults reply;
+      await tryWithReruns(() async {
+        final response =
+            await sendPostRequest('dartservices/v2/analyze', request);
+        expect(response.statusCode, 200);
+        expect(response.headers['content-type'],
+            ['application/json; charset=utf-8']);
+        final data = json.decode(await response.transform(utf8.decoder).join());
+        reply = proto.AnalysisResults()..mergeFromProto3Json(data);
+        if (reply.issues.isEmpty) {
+          throw StateError('Flaky response');
+        }
+      });
       expect(reply.issues[0].kind, 'error');
       expect(reply.issues[0].line, 2);
       expect(reply.issues[0].sourceName, 'main.dart');
