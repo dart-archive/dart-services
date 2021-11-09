@@ -92,8 +92,11 @@ void defineTests() {
         await fn();
         // If the function returns normally, continue.
         return;
-      } catch (_) {
-        // Retry.
+      } catch (e) {
+        print('Setup function threw: $e;');
+        if (i < 2) {
+          print('Retrying...');
+        }
       }
     }
   }
