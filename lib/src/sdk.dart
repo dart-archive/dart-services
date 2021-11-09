@@ -85,7 +85,7 @@ class DownloadingSdkManager {
 
   static const String _flutterSdkConfigFile = 'flutter-sdk-version.yaml';
 
-  /// Read and return the Flutter sdk configuration file info
+  /// Read and return the Flutter SDK configuration file info
   /// (`flutter-sdk-version.yaml`).
   static String _readFlutterVersion(String channelName) {
     final file = File(path.join(Directory.current.path, _flutterSdkConfigFile));
@@ -93,14 +93,20 @@ class DownloadingSdkManager {
         (loadYaml(file.readAsStringSync()) as Map).cast<String, Object>();
 
     if (!sdkConfig.containsKey('flutter_sdk')) {
-      throw "No key 'flutter_sdk' found in '$_flutterSdkConfigFile'";
+      throw StateError(
+          "No key 'flutter_sdk' found in '$_flutterSdkConfigFile'");
     }
     final flutterConfig = sdkConfig['flutter_sdk'] as Map;
-    final versionKey = '${channelName}_version';
-    if (!flutterConfig.containsKey(versionKey)) {
-      throw "No key '$versionKey' found in '$_flutterSdkConfigFile'";
+    if (!flutterConfig.containsKey(channelName)) {
+      throw StateError(
+          "No key '$channelName' found in '$_flutterSdkConfigFile'");
     }
-    return flutterConfig[versionKey] as String;
+    final channelConfig = flutterConfig[channelName] as Map;
+    if (!channelConfig.containsKey('flutter_version')) {
+      throw StateError(
+          "No key 'flutter_version' found in '$_flutterSdkConfigFile'");
+    }
+    return channelConfig['flutter_version'] as String;
   }
 
   /// Creates a Flutter SDK in `flutter-sdks/` that is configured using the
