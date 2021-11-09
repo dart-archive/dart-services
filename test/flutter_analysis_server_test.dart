@@ -105,7 +105,9 @@ class HelloWorld extends StatelessWidget {
 
       // https://github.com/dart-lang/dart-pad/issues/2005
       test('reports lint with Flutter code', () async {
-        final results = await analysisServersWrapper.analyze('''
+        late AnalysisResults results;
+        await tryWithReruns(() async {
+          results = await analysisServersWrapper.analyze('''
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -121,6 +123,10 @@ class HelloWorld extends StatelessWidget {
   Widget build(context) => const Center(child: Text('Hello world'));
 }
 ''');
+          if (results.issues.isEmpty) {
+            throw StateError('Flaky result');
+          }
+        });
         expect(results.issues, hasLength(1));
         final issue = results.issues[0];
         expect(issue.line, 4);
