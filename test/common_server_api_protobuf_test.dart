@@ -20,6 +20,8 @@ import 'package:protobuf/protobuf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:test/test.dart';
 
+import 'utils.dart';
+
 const quickFixesCode = r'''
 import 'dart:async';
 void main() {
@@ -84,23 +86,6 @@ void defineTests() {
     await request.close();
     await shelf_io.handleRequest(request, commonServerApi.router);
     return request.response;
-  }
-
-  Future<void> tryWithReruns(FutureOr<void> Function() fn) async {
-    for (var i = 0; i < 3; i++) {
-      try {
-        await fn();
-        // If the function returns normally, continue.
-        return;
-      } catch (e) {
-        print('Setup function threw: $e;');
-        if (i < 2) {
-          print('Retrying...');
-        } else {
-          rethrow;
-        }
-      }
-    }
   }
 
   group('CommonServerProto JSON', () {
