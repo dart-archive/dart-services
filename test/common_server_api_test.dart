@@ -99,6 +99,8 @@ void defineTests() {
         print('Setup function threw: $e;');
         if (i < 2) {
           print('Retrying...');
+        } else {
+          rethrow;
         }
       }
     }
