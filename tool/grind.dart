@@ -165,7 +165,6 @@ void buildProjectTemplates() async {
       templatesPath,
       isNullSafe: nullSafety,
       dartLanguageVersion: readDartLanguageVersion(_channel),
-      enabledExperiments: readEnabledExperiments(_channel),
       dependenciesFile: _pubDependenciesFile(channel: _channel),
       log: log,
     );

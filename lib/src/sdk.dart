@@ -132,10 +132,6 @@ class DownloadingSdkManager {
 String readDartLanguageVersion(String channelName) =>
     _readVersionMap(channelName)['dart_language_version'] as String;
 
-List<String> readEnabledExperiments(String channelName) =>
-    ((_readVersionMap(channelName)['enabled_experiments'] ?? []) as List)
-        .cast<String>();
-
 /// Read and return the Flutter SDK configuration file info
 /// (`flutter-sdk-version.yaml`).
 Map<String, Object> _readVersionMap(String channelName) {
