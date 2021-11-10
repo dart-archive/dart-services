@@ -39,14 +39,12 @@ void defineTests() {
 
     test('project directory is created', () async {
       await d.dir('project_templates', [
-        d.dir('null-safe', [
-          d.dir('dart_project'),
-        ]),
+        d.dir('dart_project'),
       ]).validate();
     });
 
     test('pubspec is created', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('dart_project', [
           d.file(
               'pubspec.yaml',
@@ -59,13 +57,13 @@ void defineTests() {
     });
 
     test('pub get creates pubspec.lock', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('dart_project', [d.file('pubspec.lock', isNotEmpty)]),
       ]).validate();
     });
 
     test('recommended lints are enabled', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('dart_project', [
           d.file('analysis_options.yaml',
               matches('include: package:lints/recommended.yaml')),
@@ -82,14 +80,12 @@ void defineTests() {
 
     test('project directory is created', () async {
       await d.dir('project_templates', [
-        d.dir('null-safe', [
-          d.dir('flutter_project'),
-        ]),
+        d.dir('flutter_project'),
       ]).validate();
     });
 
     test('Flutter Web directories are created', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('flutter_project', [
           d.dir('lib'),
           d.dir('web', [d.file('index.html', isEmpty)]),
@@ -98,7 +94,7 @@ void defineTests() {
     });
 
     test('pubspec is created', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('flutter_project', [
           d.file(
               'pubspec.yaml',
@@ -112,13 +108,13 @@ void defineTests() {
     });
 
     test('pub get creates pubspec.lock', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('flutter_project', [d.file('pubspec.lock', isNotEmpty)]),
       ]).validate();
     });
 
     test('flutter lints are enabled', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('flutter_project', [
           d.file('analysis_options.yaml',
               matches('include: package:flutter_lints/flutter.yaml')),
@@ -127,7 +123,7 @@ void defineTests() {
     });
 
     test('plugins are registered', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('flutter_project/lib', [
           d.file('generated_plugin_registrant.dart',
               matches('UrlLauncherPlugin.registerWith')),
@@ -144,14 +140,12 @@ void defineTests() {
 
     test('project directory is created', () async {
       await d.dir('project_templates', [
-        d.dir('null-safe', [
-          d.dir('firebase_project'),
-        ]),
+        d.dir('firebase_project'),
       ]).validate();
     });
 
     test('Flutter Web directories are created', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('firebase_project', [
           d.dir('lib'),
           d.dir('web', [d.file('index.html', isEmpty)]),
@@ -160,7 +154,7 @@ void defineTests() {
     });
 
     test('pubspec is created', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('firebase_project', [
           d.file(
               'pubspec.yaml',
@@ -174,13 +168,13 @@ void defineTests() {
     });
 
     test('pub get creates pubspec.lock', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('firebase_project', [d.file('pubspec.lock', isNotEmpty)]),
       ]).validate();
     });
 
     test('flutter lints are enabled', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('firebase_project', [
           d.file('analysis_options.yaml',
               matches('include: package:flutter_lints/flutter.yaml')),
@@ -189,7 +183,7 @@ void defineTests() {
     });
 
     test('plugins are registered', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('firebase_project/lib', [
           d.file(
               'generated_plugin_registrant.dart',
@@ -216,14 +210,12 @@ void defineTests() {
 
     test('project directory is created', () async {
       await d.dir('project_templates', [
-        d.dir('null-safe', [
-          d.dir('firebase_deprecated_project'),
-        ]),
+        d.dir('firebase_deprecated_project'),
       ]).validate();
     });
 
     test('Flutter Web directories are created', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('firebase_deprecated_project', [
           d.dir('lib'),
           d.dir('web', [d.file('index.html', isEmpty)]),
@@ -232,7 +224,7 @@ void defineTests() {
     });
 
     test('pubspec is created', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('firebase_deprecated_project', [
           d.file(
               'pubspec.yaml',
@@ -246,14 +238,14 @@ void defineTests() {
     });
 
     test('pub get creates pubspec.lock', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('firebase_deprecated_project',
             [d.file('pubspec.lock', isNotEmpty)]),
       ]).validate();
     });
 
     test('flutter lints are enabled', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('firebase_deprecated_project', [
           d.file('analysis_options.yaml',
               matches('include: package:flutter_lints/flutter.yaml')),
@@ -262,7 +254,7 @@ void defineTests() {
     });
 
     test('plugins are registered', () async {
-      await d.dir('project_templates/null-safe', [
+      await d.dir('project_templates', [
         d.dir('firebase_deprecated_project/lib', [
           d.file(
               'generated_plugin_registrant.dart',
