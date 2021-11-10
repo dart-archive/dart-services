@@ -90,12 +90,11 @@ void defineTests() {
   }
 
   group('CommonServerProto JSON', () {
-    late String channel;
+    final channel = Platform.environment['FLUTTER_CHANNEL'] ?? stableChannel;
 
     setUp(() async {
       container = MockContainer();
       cache = MockCache();
-      channel = Platform.environment['FLUTTER_CHANNEL'] ?? stableChannel;
       final sdk = Sdk.create(channel);
       commonServerImpl = CommonServerImpl(container, cache, sdk, true);
       commonServerApi = CommonServerApi(commonServerImpl);
