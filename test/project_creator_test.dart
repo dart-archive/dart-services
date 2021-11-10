@@ -29,6 +29,7 @@ void defineTests() {
       templatesPath.io.path,
       isNullSafe: true,
       dartLanguageVersion: readDartLanguageVersion(channel),
+      enabledExperiments: readEnabledExperiments(channel),
       dependenciesFile: dependenciesFile.io,
       log: (_) {},
     );
@@ -92,6 +93,7 @@ void defineTests() {
         templatesPath.io.path,
         isNullSafe: false,
         dartLanguageVersion: readDartLanguageVersion(channel),
+        enabledExperiments: readEnabledExperiments(channel),
         dependenciesFile: dependenciesFile.io,
         log: (_) {},
       );

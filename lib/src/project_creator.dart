@@ -24,6 +24,8 @@ class ProjectCreator {
   /// The Dart Language Version to use for code using null safety.
   final String _dartLanguageVersion;
 
+  final List<String> _enabledExperiments;
+
   final File _dependenciesFile;
 
   final LogFunction _log;
@@ -33,12 +35,14 @@ class ProjectCreator {
     this._templatesPath, {
     required bool isNullSafe,
     required String dartLanguageVersion,
+    required List<String> enabledExperiments,
     required File dependenciesFile,
     required LogFunction log,
   })  : _dartSdkPath = sdk.dartSdkPath,
         _flutterToolPath = sdk.flutterToolPath,
         _isNullSafe = isNullSafe,
         _dartLanguageVersion = dartLanguageVersion,
+        _enabledExperiments = enabledExperiments,
         _dependenciesFile = dependenciesFile,
         _log = log;
 
@@ -60,11 +64,17 @@ class ProjectCreator {
     await _runDartPubGet(projectDirectory);
     File(path.join(projectPath, 'analysis_options.yaml')).writeAsStringSync('''
 include: package:lints/recommended.yaml
+analyzer:
+  enable-experiment:
+$_enabledExperimentsYaml
 linter:
   rules:
     avoid_print: false
 ''');
   }
+
+  String get _enabledExperimentsYaml =>
+      _enabledExperiments.map((e) => '    - $e').join('\n');
 
   /// Builds a Flutter project template directory, complete with `pubspec.yaml`,
   /// `analysis_options.yaml`, and `web/index.html`.
