@@ -28,6 +28,7 @@ void defineTests() {
       sdk,
       templatesPath.io.path,
       isNullSafe: true,
+      dartLanguageVersion: readDartLanguageVersion(channel),
       dependenciesFile: dependenciesFile.io,
       log: (_) {},
     );
@@ -90,6 +91,7 @@ void defineTests() {
         sdk,
         templatesPath.io.path,
         isNullSafe: false,
+        dartLanguageVersion: readDartLanguageVersion(channel),
         dependenciesFile: dependenciesFile.io,
         log: (_) {},
       );

@@ -79,34 +79,8 @@ class DownloadingSdkManager {
     if (!channels.contains(channel)) {
       throw StateError('Unknown channel name: $channel');
     }
-    final flutterVersion = _readFlutterVersion(channel);
+    final flutterVersion = readVersionMap(channel)['flutter_version']!;
     return DownloadingSdkManager._(channel, flutterVersion);
-  }
-
-  static const String _flutterSdkConfigFile = 'flutter-sdk-version.yaml';
-
-  /// Read and return the Flutter SDK configuration file info
-  /// (`flutter-sdk-version.yaml`).
-  static String _readFlutterVersion(String channelName) {
-    final file = File(path.join(Directory.current.path, _flutterSdkConfigFile));
-    final sdkConfig =
-        (loadYaml(file.readAsStringSync()) as Map).cast<String, Object>();
-
-    if (!sdkConfig.containsKey('flutter_sdk')) {
-      throw StateError(
-          "No key 'flutter_sdk' found in '$_flutterSdkConfigFile'");
-    }
-    final flutterConfig = sdkConfig['flutter_sdk'] as Map;
-    if (!flutterConfig.containsKey(channelName)) {
-      throw StateError(
-          "No key '$channelName' found in '$_flutterSdkConfigFile'");
-    }
-    final channelConfig = flutterConfig[channelName] as Map;
-    if (!channelConfig.containsKey('flutter_version')) {
-      throw StateError(
-          "No key 'flutter_version' found in '$_flutterSdkConfigFile'");
-    }
-    return channelConfig['flutter_version'] as String;
   }
 
   /// Creates a Flutter SDK in `flutter-sdks/` that is configured using the
@@ -153,6 +127,37 @@ class DownloadingSdkManager {
     return sdk;
   }
 }
+
+String readDartLanguageVersion(String channelName) =>
+    readVersionMap(channelName)['dart_language_version']!;
+
+/// Read and return the Flutter SDK configuration file info
+/// (`flutter-sdk-version.yaml`).
+Map<String, String> readVersionMap(String channelName) {
+  final file = File(path.join(Directory.current.path, _flutterSdkConfigFile));
+  final sdkConfig =
+      (loadYaml(file.readAsStringSync()) as Map).cast<String, Object>();
+
+  if (!sdkConfig.containsKey('flutter_sdk')) {
+    throw StateError("No key 'flutter_sdk' found in '$_flutterSdkConfigFile'");
+  }
+  final flutterConfig = sdkConfig['flutter_sdk'] as Map;
+  if (!flutterConfig.containsKey(channelName)) {
+    throw StateError("No key '$channelName' found in '$_flutterSdkConfigFile'");
+  }
+  final channelConfig = flutterConfig[channelName] as Map;
+  if (!channelConfig.containsKey('flutter_version')) {
+    throw StateError(
+        "No key 'flutter_version' found in '$_flutterSdkConfigFile'");
+  }
+  if (!channelConfig.containsKey('dart_language_version')) {
+    throw StateError(
+        "No key 'dart_language_version' found in '$_flutterSdkConfigFile'");
+  }
+  return channelConfig.cast<String, String>();
+}
+
+const String _flutterSdkConfigFile = 'flutter-sdk-version.yaml';
 
 class _DownloadedFlutterSdk {
   final String flutterSdkPath;
