@@ -19,6 +19,9 @@ class ProjectCreator {
 
   final String _templatesPath;
 
+  /// The Dart Language Version to use for code using null safety.
+  final String _dartLanguageVersion;
+
   final File _dependenciesFile;
 
   final LogFunction _log;
@@ -26,10 +29,12 @@ class ProjectCreator {
   ProjectCreator(
     Sdk sdk,
     this._templatesPath, {
+    required String dartLanguageVersion,
     required File dependenciesFile,
     required LogFunction log,
   })  : _dartSdkPath = sdk.dartSdkPath,
         _flutterToolPath = sdk.flutterToolPath,
+        _dartLanguageVersion = dartLanguageVersion,
         _dependenciesFile = dependenciesFile,
         _log = log;
 
@@ -43,6 +48,7 @@ class ProjectCreator {
     File(path.join(projectPath, 'pubspec.yaml'))
         .writeAsStringSync(createPubspec(
       includeFlutterWeb: false,
+      dartLanguageVersion: _dartLanguageVersion,
       dependencies: dependencies,
     ));
     await _runDartPubGet(projectDirectory);
@@ -89,6 +95,7 @@ linter:
     File(path.join(projectPath, 'pubspec.yaml'))
         .writeAsStringSync(createPubspec(
       includeFlutterWeb: true,
+      dartLanguageVersion: _dartLanguageVersion,
       dependencies: dependencies,
     ));
     await runFlutterPackagesGet(_flutterToolPath, projectPath, log: _log);
@@ -106,6 +113,7 @@ linter:
       File(path.join(projectPath, 'pubspec.yaml'))
           .writeAsStringSync(createPubspec(
         includeFlutterWeb: true,
+        dartLanguageVersion: _dartLanguageVersion,
         dependencies: dependencies,
       ));
       await _runDartPubGet(projectDir);
@@ -151,12 +159,13 @@ Map<String, String> parsePubDependenciesFile({required File dependenciesFile}) {
 /// Build a return a `pubspec.yaml` file.
 String createPubspec({
   required bool includeFlutterWeb,
+  required String dartLanguageVersion,
   Map<String, String> dependencies = const {},
 }) {
   var content = '''
 name: dartpad_sample
 environment:
-  sdk: '>=2.14.0 <3.0.0'
+  sdk: '>=$dartLanguageVersion <3.0.0'
 dependencies:
 ''';
 

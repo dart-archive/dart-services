@@ -160,6 +160,7 @@ void buildProjectTemplates() async {
   final projectCreator = ProjectCreator(
     sdk,
     templatesPath,
+    dartLanguageVersion: readDartLanguageVersion(_channel),
     dependenciesFile: _pubDependenciesFile(channel: _channel),
     log: log,
   );
@@ -203,6 +204,7 @@ Future<String> _buildStorageArtifacts(Directory dir, Sdk sdk,
   final dependenciesFile = _pubDependenciesFile(channel: channel);
   final pubspec = createPubspec(
     includeFlutterWeb: true,
+    dartLanguageVersion: readDartLanguageVersion(_channel),
     dependencies: parsePubDependenciesFile(dependenciesFile: dependenciesFile),
   );
   joinFile(dir, ['pubspec.yaml']).writeAsStringSync(pubspec);
@@ -411,6 +413,7 @@ Future<void> _updateDependenciesFile({
   final tempDir = Directory.systemTemp.createTempSync('pubspec-scratch');
   final pubspec = createPubspec(
     includeFlutterWeb: true,
+    dartLanguageVersion: readDartLanguageVersion(_channel),
     dependencies: {
       // pkg:lints and pkg:flutter_lints
       'lints': 'any',
