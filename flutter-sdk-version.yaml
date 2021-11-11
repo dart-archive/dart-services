@@ -16,5 +16,5 @@ flutter_sdk:
     flutter_version: 2.6.0-11.0.pre
     dart_language_version: 2.15.0-0
   old:
-    flutter_version: 2.5.1
+    flutter_version: 2.2.3
     dart_language_version: 2.13.0
