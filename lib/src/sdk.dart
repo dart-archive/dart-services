@@ -31,7 +31,7 @@ class Sdk {
   final String version;
 
   factory Sdk.create(String channel) {
-    final sdkPath = path.join(Sdk.flutterSdksPath, channel);
+    final sdkPath = path.join(Sdk._flutterSdksPath, channel);
     final flutterBinPath = path.join(sdkPath, 'bin');
     final dartSdkPath = path.join(flutterBinPath, 'cache', 'dart-sdk');
     return _instance ??= Sdk._(
@@ -63,7 +63,7 @@ class Sdk {
       (File(path.join(filePath, 'version')).readAsStringSync()).trim();
 
   /// Get the path to the Flutter SDKs.
-  static String get flutterSdksPath =>
+  static String get _flutterSdksPath =>
       path.join(Directory.current.path, 'flutter-sdks');
 }
 
@@ -79,28 +79,9 @@ class DownloadingSdkManager {
     if (!channels.contains(channel)) {
       throw StateError('Unknown channel name: $channel');
     }
-    final flutterVersion = _readFlutterVersion(channel);
+    final flutterVersion =
+        _readVersionMap(channel)['flutter_version'] as String;
     return DownloadingSdkManager._(channel, flutterVersion);
-  }
-
-  static const String _flutterSdkConfigFile = 'flutter-sdk-version.yaml';
-
-  /// Read and return the Flutter sdk configuration file info
-  /// (`flutter-sdk-version.yaml`).
-  static String _readFlutterVersion(String channelName) {
-    final file = File(path.join(Directory.current.path, _flutterSdkConfigFile));
-    final sdkConfig =
-        (loadYaml(file.readAsStringSync()) as Map).cast<String, Object>();
-
-    if (!sdkConfig.containsKey('flutter_sdk')) {
-      throw "No key 'flutter_sdk' found in '$_flutterSdkConfigFile'";
-    }
-    final flutterConfig = sdkConfig['flutter_sdk'] as Map;
-    final versionKey = '${channelName}_version';
-    if (!flutterConfig.containsKey(versionKey)) {
-      throw "No key '$versionKey' found in '$_flutterSdkConfigFile'";
-    }
-    return flutterConfig[versionKey] as String;
   }
 
   /// Creates a Flutter SDK in `flutter-sdks/` that is configured using the
@@ -127,7 +108,7 @@ class DownloadingSdkManager {
   }
 
   Future<_DownloadedFlutterSdk> _cloneSdkIfNecessary(String channel) async {
-    final sdkPath = path.join(Sdk.flutterSdksPath, channel);
+    final sdkPath = path.join(Sdk._flutterSdksPath, channel);
     final sdk = _DownloadedFlutterSdk(sdkPath);
 
     if (!Directory(sdk.flutterSdkPath).existsSync()) {
@@ -147,6 +128,37 @@ class DownloadingSdkManager {
     return sdk;
   }
 }
+
+String readDartLanguageVersion(String channelName) =>
+    _readVersionMap(channelName)['dart_language_version'] as String;
+
+/// Read and return the Flutter SDK configuration file info
+/// (`flutter-sdk-version.yaml`).
+Map<String, Object> _readVersionMap(String channelName) {
+  final file = File(path.join(Directory.current.path, _flutterSdkConfigFile));
+  final sdkConfig =
+      (loadYaml(file.readAsStringSync()) as Map).cast<String, Object>();
+
+  if (!sdkConfig.containsKey('flutter_sdk')) {
+    throw StateError("No key 'flutter_sdk' found in '$_flutterSdkConfigFile'");
+  }
+  final flutterConfig = sdkConfig['flutter_sdk'] as Map;
+  if (!flutterConfig.containsKey(channelName)) {
+    throw StateError("No key '$channelName' found in '$_flutterSdkConfigFile'");
+  }
+  final channelConfig = flutterConfig[channelName] as Map;
+  if (!channelConfig.containsKey('flutter_version')) {
+    throw StateError(
+        "No key 'flutter_version' found in '$_flutterSdkConfigFile'");
+  }
+  if (!channelConfig.containsKey('dart_language_version')) {
+    throw StateError(
+        "No key 'dart_language_version' found in '$_flutterSdkConfigFile'");
+  }
+  return channelConfig.cast<String, Object>();
+}
+
+const String _flutterSdkConfigFile = 'flutter-sdk-version.yaml';
 
 class _DownloadedFlutterSdk {
   final String flutterSdkPath;
