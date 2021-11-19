@@ -16,6 +16,16 @@ void main() => defineTests();
 void defineTests() {
   late Compiler compiler;
 
+  Future<void> Function() generateCompilerDDCTest(String sample) => () async {
+        final result = await compiler.compileDDC(sample);
+        expect(result.problems, isEmpty);
+        expect(result.success, true);
+        expect(result.compiledJS, isNotEmpty);
+        expect(result.modulesBaseUrl, isNotEmpty);
+
+        expect(result.compiledJS, contains("define('dartpad_main', ["));
+      };
+
   for (final nullSafety in [false, true]) {
     group('Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler', () {
       setUpAll(() async {
@@ -32,60 +42,50 @@ void defineTests() {
       test('simple', () async {
         final result = await compiler.compile(sampleCode);
 
+        expect(result.problems, isEmpty);
         expect(result.success, true);
         expect(result.compiledJS, isNotEmpty);
         expect(result.sourceMap, isNull);
       });
 
-      Future<void> Function() _generateCompilerDDCTest(String sample) =>
-          () async {
-            final result = await compiler.compileDDC(sample);
-
-            expect(result.success, true);
-            expect(result.compiledJS, isNotEmpty);
-            expect(result.modulesBaseUrl, isNotEmpty);
-
-            expect(result.compiledJS, contains("define('dartpad_main', ["));
-          };
-
       test(
         'compileDDC simple',
-        _generateCompilerDDCTest(sampleCode),
+        generateCompilerDDCTest(sampleCode),
       );
 
       test(
         'compileDDC with web',
-        _generateCompilerDDCTest(sampleCodeWeb),
+        generateCompilerDDCTest(sampleCodeWeb),
       );
 
       test(
         'compileDDC with Flutter',
-        _generateCompilerDDCTest(sampleCodeFlutter),
+        generateCompilerDDCTest(sampleCodeFlutter),
       );
 
       test(
         'compileDDC with Flutter Counter',
-        _generateCompilerDDCTest(sampleCodeFlutterCounter),
+        generateCompilerDDCTest(sampleCodeFlutterCounter),
       );
 
       test(
         'compileDDC with Flutter Sunflower',
-        _generateCompilerDDCTest(sampleCodeFlutterSunflower),
+        generateCompilerDDCTest(sampleCodeFlutterSunflower),
       );
 
       test(
         'compileDDC with Flutter Draggable Card',
-        _generateCompilerDDCTest(sampleCodeFlutterDraggableCard),
+        generateCompilerDDCTest(sampleCodeFlutterDraggableCard),
       );
 
       test(
         'compileDDC with Flutter Implicit Animations',
-        _generateCompilerDDCTest(sampleCodeFlutterImplicitAnimations),
+        generateCompilerDDCTest(sampleCodeFlutterImplicitAnimations),
       );
 
       test(
         'compileDDC with async',
-        _generateCompilerDDCTest(sampleCodeAsync),
+        generateCompilerDDCTest(sampleCodeAsync),
       );
 
       test('compileDDC with single error', () async {
@@ -201,11 +201,6 @@ import 'dart:foo';
 void main() { print ('foo'); }
 ''';
         final result = await compiler.compile(code);
-        expect(result.problems.length, 1);
-      });
-
-      test('errors for dart 2', () async {
-        final result = await compiler.compile(sampleDart2Error);
         expect(result.problems.length, 1);
       });
     });
