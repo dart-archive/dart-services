@@ -242,12 +242,8 @@ void defineTests() {
               'generated_plugin_registrant.dart',
               allOf([
                 matches('FirebaseFirestoreWeb.registerWith'),
-                matches('FirebaseFunctionsWeb.registerWith'),
-                matches('FirebaseFunctionsWeb.registerWith'),
                 matches('FirebaseAuthWeb.registerWith'),
                 matches('FirebaseCoreWeb.registerWith'),
-                matches('FirebaseDatabaseWeb.registerWith'),
-                matches('FirebaseStorageWeb.registerWith'),
                 matches('UrlLauncherPlugin.registerWith'),
               ])),
         ]),
