@@ -29,7 +29,6 @@ void defineTests() {
       analysisServer =
           FlutterAnalysisServerWrapper(dartSdkPath: sdk.dartSdkPath);
       await analysisServer.init();
-      await analysisServer.warmup();
     });
 
     tearDown(() async {

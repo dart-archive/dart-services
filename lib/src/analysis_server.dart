@@ -123,7 +123,7 @@ abstract class AnalysisServerWrapper {
       // Warmup.
       final errorStream =
           await _sendAddOverlays(<String, String>{mainPath: _warmupSrc});
-      await errorStream.toList();
+      await errorStream.drain();
       final errorStream2 = await _sendRemoveOverlays();
       await errorStream2.drain();
     } catch (err, st) {
@@ -287,8 +287,7 @@ abstract class AnalysisServerWrapper {
       sources = _getOverlayMapWithPaths(sources);
       final errorStream = await _loadSources(sources);
       final errors = await errorStream.toList();
-      final errorStream2 = await _unloadSources();
-      //await errorStream2.drain();
+      await _unloadSources();
 
       final unrawErrors = [
         for (var errorsForFile in errors) ...errorsForFile.errors,
@@ -353,10 +352,13 @@ abstract class AnalysisServerWrapper {
     return serverScheduler.schedule(ClosureTask<AssistsResult>(() async {
       final errorStream = await _loadSources(sources);
       await errorStream.drain();
-      const length = 1;
-      final assists =
-          await analysisServer.edit.getAssists(path, offset, length);
-      await _unloadSources();
+      final AssistsResult assists;
+      try {
+        assists =
+            await analysisServer.edit.getAssists(path, offset, 1 /* length */);
+      } finally {
+        await _unloadSources();
+      }
       return assists;
     }, timeoutDuration: _analysisServerTimeout));
   }
@@ -481,8 +483,12 @@ abstract class AnalysisServerWrapper {
         _getPathFromName(sourceName),
         offset,
       );
-      final results = await getCompletionResults(id.id);
-      await _unloadSources();
+      final CompletionResults results;
+      try {
+        results = await getCompletionResults(id.id);
+      } finally {
+        await _unloadSources();
+      }
       return results;
     }, timeoutDuration: _analysisServerTimeout));
   }
@@ -500,8 +506,12 @@ abstract class AnalysisServerWrapper {
     return serverScheduler.schedule(ClosureTask<FixesResult>(() async {
       final errorStream = await _loadSources(sources);
       await errorStream.drain();
-      final fixes = await analysisServer.edit.getFixes(path, offset);
-      await _unloadSources();
+      final FixesResult fixes;
+      try {
+        fixes = await analysisServer.edit.getFixes(path, offset);
+      } finally {
+        await _unloadSources();
+      }
       return fixes;
     }, timeoutDuration: _analysisServerTimeout));
   }
@@ -510,10 +520,14 @@ abstract class AnalysisServerWrapper {
     _logger.fine('FormatImpl: Scheduler queue: ${serverScheduler.queueCount}');
 
     return serverScheduler.schedule(ClosureTask<FormatResult>(() async {
-      await _loadSources(<String, String>{mainPath: src});
-      final result = await analysisServer.edit.format(mainPath, offset, 0);
-      final errorStream2 = await _unloadSources();
-      //await errorStream2.drain();
+      final errorStream = await _loadSources({mainPath: src});
+      await errorStream.drain();
+      final FormatResult result;
+      try {
+        result = await analysisServer.edit.format(mainPath, offset, 0);
+      } finally {
+        await _unloadSources();
+      }
       return result;
     }, timeoutDuration: _analysisServerTimeout));
   }
@@ -529,15 +543,14 @@ abstract class AnalysisServerWrapper {
   String _getPathFromName(String sourceName) =>
       path.join(_sourceDirPath, sourceName);
 
-  /// Warm up the analysis server to be ready for use.
-  Future<void> warmup() async {} //=> complete(_warmupSrc, 10);
-
   final Set<String> _overlayPaths = <String>{};
 
   Future<Stream<AnalysisErrors>> _loadSources(
       Map<String, String> sources) async {
     if (_overlayPaths.isNotEmpty) {
-      throw 'bad! $_overlayPaths';
+      throw StateError(
+          'There should be no overlay paths while loading sources, but we '
+          'have: $_overlayPaths');
     }
     final errorStream = await _sendAddOverlays(sources);
     await analysisServer.analysis.setPriorityFiles(sources.keys.toList());
@@ -614,10 +627,8 @@ abstract class AnalysisServerWrapper {
           errorController.close();
           _errorStreamControllers.removeFirst();
         } else {
-          // Report error.
+          // TODO(srawlins): Report error.
         }
-      } else {
-        ////print('analysis STILL analyzing "${analysis.analysisTarget}"');
       }
     });
   }
@@ -630,22 +641,11 @@ abstract class AnalysisServerWrapper {
 
   void listenForErrors() {
     analysisServer.analysis.onErrors.listen((AnalysisErrors result) {
-      /*if (result.errors.isEmpty) {
-        /*if (result.file.contains('main.dart')) {
-          print('${result.file}: empty error');
-        }*/
-        //_errors.remove(result.file);
-      } else {
-        /*if (result.file.contains('main.dart')) {
-          print('${result.file}: ${result.errors.length} errors');
-        }*/
-        //_errors[result.file] = result.errors;
-      }*/
       final errorController = _currentErrorStreamController;
       if (errorController != null) {
         errorController.add(result);
       } else {
-        // log bad.
+        throw StateError('No current error stream controller');
       }
     });
   }
