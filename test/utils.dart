@@ -6,7 +6,7 @@ import 'dart:async';
 
 /// Runs [fn] up to three times, catching thrown exceptions, until it returns
 /// normally.
-Future<void> tryWithReruns(FutureOr<void> Function() fn) async {
+Future<void> xtryWithReruns(FutureOr<void> Function() fn) async {
   for (var i = 0; i < 3; i++) {
     try {
       await fn();
