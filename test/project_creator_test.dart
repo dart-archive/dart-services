@@ -132,8 +132,7 @@ void defineTests() {
         ]),
       ]).validate();
     });
-    // TODO: https://github.com/dart-lang/dart-pad/issues/2133
-  }, skip: true);
+  });
 
   group('Firebase project template', () {
     setUpAll(() async {
@@ -199,6 +198,5 @@ void defineTests() {
         ]),
       ]).validate();
     });
-    // TODO: https://github.com/dart-lang/dart-pad/issues/2133
-  }, skip: true);
+  });
 }
