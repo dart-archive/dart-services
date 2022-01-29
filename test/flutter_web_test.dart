@@ -28,45 +28,53 @@ void defineTests() {
     });
 
     test('usesFlutterWeb', () {
-      expect(usesFlutterWeb({_FakeImportDirective('')}), isFalse);
-      expect(usesFlutterWeb({dartHtmlImport}), isFalse);
-      expect(usesFlutterWeb({dartUiImport}), isTrue);
-      expect(usesFlutterWeb({packageFlutterImport}), isTrue);
+      expect(usesFlutterWeb({_FakeImportDirective('')}, channel: 'stable'),
+          isFalse);
+      expect(usesFlutterWeb({dartHtmlImport}, channel: 'stable'), isFalse);
+      expect(usesFlutterWeb({dartUiImport}, channel: 'stable'), isTrue);
+      expect(usesFlutterWeb({packageFlutterImport}, channel: 'stable'), isTrue);
     });
 
     test('getUnsupportedImport allows dart:html', () {
       expect(
-          getUnsupportedImports([_FakeImportDirective('dart:html')]), isEmpty);
+          getUnsupportedImports([_FakeImportDirective('dart:html')],
+              channel: 'stable'),
+          isEmpty);
     });
 
     test('getUnsupportedImport allows dart:ui', () {
-      expect(getUnsupportedImports([dartUiImport]), isEmpty);
+      expect(getUnsupportedImports([dartUiImport], channel: 'stable'), isEmpty);
     });
 
     test('getUnsupportedImport allows package:flutter', () {
-      expect(getUnsupportedImports([packageFlutterImport]), isEmpty);
+      expect(getUnsupportedImports([packageFlutterImport], channel: 'stable'),
+          isEmpty);
     });
 
     test('getUnsupportedImport allows package:path', () {
       final packagePathImport = _FakeImportDirective('package:path');
-      expect(getUnsupportedImports([packagePathImport]), isEmpty);
+      expect(getUnsupportedImports([packagePathImport], channel: 'stable'),
+          isEmpty);
     });
 
     test('getUnsupportedImport does now allow package:unsupported', () {
       final usupportedPackageImport =
           _FakeImportDirective('package:unsupported');
-      expect(getUnsupportedImports([usupportedPackageImport]),
+      expect(
+          getUnsupportedImports([usupportedPackageImport], channel: 'stable'),
           contains(usupportedPackageImport));
     });
 
     test('getUnsupportedImport does now allow local imports', () {
       final localFooImport = _FakeImportDirective('foo.dart');
-      expect(getUnsupportedImports([localFooImport]), contains(localFooImport));
+      expect(getUnsupportedImports([localFooImport], channel: 'stable'),
+          contains(localFooImport));
     });
 
     test('getUnsupportedImport does not allow VM-only imports', () {
       final dartIoImport = _FakeImportDirective('dart:io');
-      expect(getUnsupportedImports([dartIoImport]), contains(dartIoImport));
+      expect(getUnsupportedImports([dartIoImport], channel: 'stable'),
+          contains(dartIoImport));
     });
   });
 

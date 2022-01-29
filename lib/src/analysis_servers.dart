@@ -86,57 +86,78 @@ class AnalysisServersWrapper {
     ]);
   }
 
-  AnalysisServerWrapper _getCorrectAnalysisServer(String source) {
+  AnalysisServerWrapper _getCorrectAnalysisServer(String source,
+      {required String channel}) {
     final imports = getAllImportsFor(source);
-    return project.usesFlutterWeb(imports)
+    return project.usesFlutterWeb(imports, channel: channel)
         ? _flutterAnalysisServer
         : _dartAnalysisServer;
   }
 
-  Future<proto.AnalysisResults> analyze(String source) => _perfLogAndRestart(
-      source,
-      () => _getCorrectAnalysisServer(source).analyze(source),
-      'analysis',
-      'Error during analyze on "$source"');
-
-  Future<proto.CompleteResponse> complete(String source, int offset) =>
+  Future<proto.AnalysisResults> analyze(String source,
+          {required String channel}) =>
       _perfLogAndRestart(
           source,
-          () => _getCorrectAnalysisServer(source).complete(source, offset),
+          () => _getCorrectAnalysisServer(source, channel: channel)
+              .analyze(source),
+          'analysis',
+          'Error during analyze on "$source"',
+          channel: channel);
+
+  Future<proto.CompleteResponse> complete(String source, int offset,
+          {required String channel}) =>
+      _perfLogAndRestart(
+          source,
+          () => _getCorrectAnalysisServer(source, channel: channel)
+              .complete(source, offset),
           'completions',
-          'Error during complete on "$source" at $offset');
+          'Error during complete on "$source" at $offset',
+          channel: channel);
 
-  Future<proto.FixesResponse> getFixes(String source, int offset) =>
+  Future<proto.FixesResponse> getFixes(String source, int offset,
+          {required String channel}) =>
       _perfLogAndRestart(
           source,
-          () => _getCorrectAnalysisServer(source).getFixes(source, offset),
+          () => _getCorrectAnalysisServer(source, channel: channel)
+              .getFixes(source, offset),
           'fixes',
-          'Error during fixes on "$source" at $offset');
+          'Error during fixes on "$source" at $offset',
+          channel: channel);
 
-  Future<proto.AssistsResponse> getAssists(String source, int offset) =>
+  Future<proto.AssistsResponse> getAssists(String source, int offset,
+          {required String channel}) =>
       _perfLogAndRestart(
           source,
-          () => _getCorrectAnalysisServer(source).getAssists(source, offset),
+          () => _getCorrectAnalysisServer(source, channel: channel)
+              .getAssists(source, offset),
           'assists',
-          'Error during assists on "$source" at $offset');
+          'Error during assists on "$source" at $offset',
+          channel: channel);
 
-  Future<proto.FormatResponse> format(String source, int offset) =>
+  Future<proto.FormatResponse> format(String source, int offset,
+          {required String channel}) =>
       _perfLogAndRestart(
           source,
-          () => _getCorrectAnalysisServer(source).format(source, offset),
+          () => _getCorrectAnalysisServer(source, channel: channel)
+              .format(source, offset),
           'format',
-          'Error during format on "$source" at $offset');
+          'Error during format on "$source" at $offset',
+          channel: channel);
 
-  Future<Map<String, String>> dartdoc(String source, int offset) =>
+  Future<Map<String, String>> dartdoc(String source, int offset,
+          {required String channel}) =>
       _perfLogAndRestart(
           source,
-          () => _getCorrectAnalysisServer(source).dartdoc(source, offset),
+          () => _getCorrectAnalysisServer(source, channel: channel)
+              .dartdoc(source, offset),
           'dartdoc',
-          'Error during dartdoc on "$source" at $offset');
+          'Error during dartdoc on "$source" at $offset',
+          channel: channel);
 
   Future<T> _perfLogAndRestart<T>(String source, Future<T> Function() body,
-      String action, String errorDescription) async {
-    await _checkPackageReferences(source);
+      String action, String errorDescription,
+      {required String channel}) async {
+    await _checkPackageReferences(source, channel: channel);
     try {
       final watch = Stopwatch()..start();
       final response = await body();
@@ -150,9 +171,10 @@ class AnalysisServersWrapper {
   }
 
   /// Check that the set of packages referenced is valid.
-  Future<void> _checkPackageReferences(String source) async {
-    final unsupportedImports =
-        project.getUnsupportedImports(getAllImportsFor(source));
+  Future<void> _checkPackageReferences(String source,
+      {required String channel}) async {
+    final unsupportedImports = project
+        .getUnsupportedImports(getAllImportsFor(source), channel: channel);
 
     if (unsupportedImports.isNotEmpty) {
       // TODO(srawlins): Do the work so that each unsupported input is its own
