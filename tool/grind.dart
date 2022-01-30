@@ -390,7 +390,7 @@ Future<void> _run(
 void updatePubDependencies() async {
   final sdk = _getSdk();
   await _updateDependenciesFile(
-      flutterToolPath: sdk.flutterToolPath, channel: _channel);
+      flutterToolPath: sdk.flutterToolPath, channel: _channel, sdk: sdk);
 }
 
 /// Updates the "dependencies file".
@@ -403,6 +403,7 @@ void updatePubDependencies() async {
 Future<void> _updateDependenciesFile({
   required String flutterToolPath,
   required String channel,
+  required Sdk sdk,
 }) async {
   final tempDir = Directory.systemTemp.createTempSync('pubspec-scratch');
   final pubspec = createPubspec(
@@ -412,7 +413,7 @@ Future<void> _updateDependenciesFile({
       'lints': 'any',
       'flutter_lints': 'any',
       for (var package in firebasePackages) package: 'any',
-      for (var package in supportedFlutterPackages(devMode: channel == 'dev'))
+      for (var package in supportedFlutterPackages(devMode: sdk.devMode))
         package: 'any',
       for (var package in supportedBasicDartPackages) package: 'any',
       // Overwrite with important constraints:
