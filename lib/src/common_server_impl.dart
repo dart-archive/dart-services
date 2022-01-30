@@ -77,8 +77,7 @@ class CommonServerImpl {
       throw BadRequest('Missing parameter: \'source\'');
     }
 
-    return _analysisServers.analyze(request.source,
-        devMode: _sdk.devMode);
+    return _analysisServers.analyze(request.source, devMode: _sdk.devMode);
   }
 
   Future<proto.CompileResponse> compile(proto.CompileRequest request) {
