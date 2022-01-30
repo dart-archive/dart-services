@@ -162,11 +162,11 @@ void buildProjectTemplates() async {
   await projectCreator.buildDartProjectTemplate();
   await projectCreator.buildFlutterProjectTemplate(
     firebaseStyle: FirebaseStyle.none,
-    channel: sdk.channel,
+    devMode: sdk.devMode,
   );
   await projectCreator.buildFlutterProjectTemplate(
     firebaseStyle: FirebaseStyle.flutterFire,
-    channel: sdk.channel,
+    devMode: sdk.devMode,
   );
 }
 
@@ -412,7 +412,7 @@ Future<void> _updateDependenciesFile({
       'lints': 'any',
       'flutter_lints': 'any',
       for (var package in firebasePackages) package: 'any',
-      for (var package in supportedFlutterPackages(channel: channel))
+      for (var package in supportedFlutterPackages(devMode: channel == 'dev'))
         package: 'any',
       for (var package in supportedBasicDartPackages) package: 'any',
       // Overwrite with important constraints:

@@ -30,8 +30,8 @@ class Sdk {
   /// The current version of the SDK, not including any `-dev` suffix.
   final String version;
 
-  /// The channel SDK in use. One of `old`, `stable`, `beta` or `dev`.
-  final String channel;
+  /// Is this SDK being used in development mode. True if channel is `dev`.
+  final bool devMode;
 
   factory Sdk.create(String channel) {
     final sdkPath = path.join(Sdk._flutterSdksPath, channel);
@@ -53,12 +53,12 @@ class Sdk {
     required this.dartSdkPath,
     required this.versionFull,
     required this.flutterVersion,
-    required this.channel,
+    required String channel,
   })  : _flutterBinPath = flutterBinPath,
         version = versionFull.contains('-')
             ? versionFull.substring(0, versionFull.indexOf('-'))
             : versionFull,
-        assert(channels.contains(channel));
+        devMode = channel == 'dev';
 
   /// The path to the 'flutter' tool (binary).
   String get flutterToolPath => path.join(_flutterBinPath, 'flutter');

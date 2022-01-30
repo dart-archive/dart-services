@@ -51,7 +51,7 @@ class Compiler {
   }) async {
     final imports = getAllImportsFor(input);
     final unsupportedImports =
-        getUnsupportedImports(imports, channel: _sdk.channel);
+        getUnsupportedImports(imports, devMode: _sdk.devMode);
     if (unsupportedImports.isNotEmpty) {
       return CompilationResults(problems: [
         for (var import in unsupportedImports)
@@ -121,7 +121,7 @@ class Compiler {
   Future<DDCCompilationResults> compileDDC(String input) async {
     final imports = getAllImportsFor(input);
     final unsupportedImports =
-        getUnsupportedImports(imports, channel: _sdk.channel);
+        getUnsupportedImports(imports, devMode: _sdk.devMode);
     if (unsupportedImports.isNotEmpty) {
       return DDCCompilationResults.failed([
         for (var import in unsupportedImports)
@@ -133,7 +133,7 @@ class Compiler {
     _logger.info('Temp directory created: ${temp.path}');
 
     try {
-      final usingFlutter = usesFlutterWeb(imports, channel: _sdk.channel);
+      final usingFlutter = usesFlutterWeb(imports, devMode: _sdk.devMode);
       if (usesFirebase(imports)) {
         await copyPath(_projectTemplates.firebasePath, temp.path);
       } else if (usingFlutter) {

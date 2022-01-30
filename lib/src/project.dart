@@ -76,21 +76,21 @@ const Set<String> firebasePackages = {
 };
 
 /// The set of supported Flutter-oriented packages.
-Set<String> supportedFlutterPackages({required String channel}) => {
+Set<String> supportedFlutterPackages({required bool devMode}) => {
       'flutter_bloc',
       'flutter_hooks',
       'flutter_lints',
       'flutter_riverpod',
       'hooks_riverpod',
       'url_launcher',
-      if (channel == 'dev') 'english_words',
+      if (devMode) 'english_words',
     };
 
 /// The set of packages which indicate that Flutter Web is being used.
-Set<String> _packagesIndicatingFlutter({required String channel}) => {
+Set<String> _packagesIndicatingFlutter({required bool devMode}) => {
       'flutter',
       'flutter_test',
-      ...supportedFlutterPackages(channel: channel),
+      ...supportedFlutterPackages(devMode: devMode),
       ...firebasePackages,
     };
 
@@ -136,7 +136,7 @@ const Set<String> _allowedDartImports = {
 
 /// Returns whether [imports] denote use of Flutter Web.
 bool usesFlutterWeb(Iterable<ImportDirective> imports,
-    {required String channel}) {
+    {required bool devMode}) {
   return imports.any((import) {
     final uriString = import.uri.stringValue;
     if (uriString == null) return false;
@@ -144,7 +144,7 @@ bool usesFlutterWeb(Iterable<ImportDirective> imports,
 
     final packageName = _packageNameFromPackageUri(uriString);
     return packageName != null &&
-        _packagesIndicatingFlutter(channel: channel).contains(packageName);
+        _packagesIndicatingFlutter(devMode: devMode).contains(packageName);
   });
 }
 
@@ -170,7 +170,7 @@ String? _packageNameFromPackageUri(String uriString) {
 }
 
 List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports,
-    {required String channel}) {
+    {required bool devMode}) {
   return imports.where((import) {
     final uriString = import.uri.stringValue;
     if (uriString == null) {
@@ -188,7 +188,7 @@ List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports,
     if (uri.scheme == 'package') {
       if (uri.pathSegments.isEmpty) return true;
       final package = uri.pathSegments.first;
-      return !isSupportedPackage(package, channel: channel);
+      return !isSupportedPackage(package, devMode: devMode);
     }
 
     // Don't allow file imports.
@@ -196,6 +196,6 @@ List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports,
   }).toList();
 }
 
-bool isSupportedPackage(String package, {required String channel}) =>
-    _packagesIndicatingFlutter(channel: channel).contains(package) ||
+bool isSupportedPackage(String package, {required bool devMode}) =>
+    _packagesIndicatingFlutter(devMode: devMode).contains(package) ||
     supportedBasicDartPackages.contains(package);
