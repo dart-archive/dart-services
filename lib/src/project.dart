@@ -86,10 +86,10 @@ Set<String> supportedFlutterPackages({required bool devMode}) => {
       if (devMode) ...[
         'english_words',
         'flame',
+        'flame_fire_atlas',
         'flame_forge2d',
         'flame_splash_screen',
         'flame_tiled',
-        'flame_fire_atlas',
       ],
     };
 
