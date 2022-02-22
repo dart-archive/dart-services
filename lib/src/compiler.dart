@@ -25,13 +25,12 @@ class Compiler {
   final Sdk _sdk;
   final String _dartPath;
   final BazelWorkerDriver _ddcDriver;
-  final bool _nullSafety;
+
   final ProjectTemplates _projectTemplates;
 
-  Compiler(Sdk sdk, bool nullSafety)
-      : this._(sdk, nullSafety, path.join(sdk.dartSdkPath, 'bin', 'dart'));
+  Compiler(Sdk sdk) : this._(sdk, path.join(sdk.dartSdkPath, 'bin', 'dart'));
 
-  Compiler._(this._sdk, this._nullSafety, this._dartPath)
+  Compiler._(this._sdk, this._dartPath)
       : _ddcDriver = BazelWorkerDriver(
             () => Process.start(_dartPath, [
                   path.join(_sdk.dartSdkPath, 'bin', 'snapshots',
@@ -39,9 +38,7 @@ class Compiler {
                   '--persistent_worker'
                 ]),
             maxWorkers: 1),
-        _projectTemplates = _nullSafety
-            ? ProjectTemplates.nullSafe
-            : ProjectTemplates.nullUnsafe;
+        _projectTemplates = ProjectTemplates.projectTemplates;
 
   Future<CompilationResults> warmup({bool useHtml = false}) async {
     return compile(useHtml ? sampleCodeWeb : sampleCode);
@@ -53,7 +50,8 @@ class Compiler {
     bool returnSourceMap = false,
   }) async {
     final imports = getAllImportsFor(input);
-    final unsupportedImports = getUnsupportedImports(imports);
+    final unsupportedImports =
+        getUnsupportedImports(imports, devMode: _sdk.devMode);
     if (unsupportedImports.isNotEmpty) {
       return CompilationResults(problems: [
         for (var import in unsupportedImports)
@@ -75,11 +73,10 @@ class Compiler {
         '--terse',
         if (!returnSourceMap) '--no-source-maps',
         '--packages=${path.join('.dart_tool', 'package_config.json')}',
-        if (_nullSafety) ...[
-          '--sound-null-safety',
-        ],
+        '--sound-null-safety',
         '--enable-asserts',
-        ...['-o', '$kMainDart.js'],
+        '-o',
+        '$kMainDart.js',
         path.join('lib', kMainDart),
       ];
 
@@ -123,7 +120,8 @@ class Compiler {
   /// Compile the given string and return the resulting [DDCCompilationResults].
   Future<DDCCompilationResults> compileDDC(String input) async {
     final imports = getAllImportsFor(input);
-    final unsupportedImports = getUnsupportedImports(imports);
+    final unsupportedImports =
+        getUnsupportedImports(imports, devMode: _sdk.devMode);
     if (unsupportedImports.isNotEmpty) {
       return DDCCompilationResults.failed([
         for (var import in unsupportedImports)
@@ -135,10 +133,8 @@ class Compiler {
     _logger.info('Temp directory created: ${temp.path}');
 
     try {
-      final usingFlutter = usesFlutterWeb(imports);
-      if (usesDeprecatedFirebase(imports)) {
-        await copyPath(_projectTemplates.firebaseDeprecatedPath, temp.path);
-      } else if (usesFirebase(imports)) {
+      final usingFlutter = usesFlutterWeb(imports, devMode: _sdk.devMode);
+      if (usesFirebase(imports)) {
         await copyPath(_projectTemplates.firebasePath, temp.path);
       } else if (usingFlutter) {
         await copyPath(_projectTemplates.flutterPath, temp.path);
@@ -162,15 +158,12 @@ class Compiler {
           '-s',
           _projectTemplates.summaryFilePath,
           '-s',
-          '${_sdk.flutterWebSdkPath}/' +
-              (_nullSafety
-                  ? 'flutter_ddc_sdk_sound.dill'
-                  : 'flutter_ddc_sdk.dill'),
+          '${_sdk.flutterWebSdkPath}/flutter_ddc_sdk_sound.dill',
         ],
         ...['-o', path.join(temp.path, '$kMainDart.js')],
         ...['--module-name', 'dartpad_main'],
         '--enable-asserts',
-        if (_nullSafety) '--sound-null-safety',
+        '--sound-null-safety',
         bootstrapPath,
         '--packages=${path.join(temp.path, '.dart_tool', 'package_config.json')}',
       ];
@@ -197,8 +190,7 @@ class Compiler {
 
         final results = DDCCompilationResults(
           compiledJS: processedJs,
-          modulesBaseUrl: 'https://storage.googleapis.com/'
-              '${_nullSafety ? 'nnbd_artifacts' : 'compilation_artifacts'}'
+          modulesBaseUrl: 'https://storage.googleapis.com/nnbd_artifacts'
               '/${_sdk.versionFull}/',
         );
         return results;

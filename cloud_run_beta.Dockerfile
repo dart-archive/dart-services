@@ -1,4 +1,4 @@
-FROM dart:2.14.4
+FROM dart:2.16.1
 
 # We install unzip and remove the apt-index again to keep the
 # docker image diff small.
@@ -39,4 +39,4 @@ RUN dart pub run grinder build-storage-artifacts validate-storage-artifacts
 CMD []
 
 ENTRYPOINT ["/dart_runtime/dart_cloud_run.sh", "--port", "${PORT}", \
-  "--redis-url", "redis://10.0.0.4:6379", "--null-safety", "--channel", "beta"]
+  "--redis-url", "redis://10.0.0.4:6379", "--channel", "beta"]

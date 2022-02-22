@@ -19,16 +19,7 @@ import 'package:logging/logging.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:test/test.dart';
 
-import 'utils.dart';
-
 const versions = ['v1', 'v2'];
-
-const quickFixesCode = r'''
-import 'dart:async';
-void main() {
-  int i = 0;
-}
-''';
 
 const preFormattedCode = r'''
 void main()
@@ -50,20 +41,11 @@ void main()
 }
 ''';
 
-const assistCode = r'''
-main() {
-  int v = 0;
-}
-''';
-
 void main() => defineTests();
 
 void defineTests() {
   late CommonServerApi commonServerApi;
   late CommonServerImpl commonServerImpl;
-
-  MockContainer container;
-  MockCache cache;
 
   Future<MockHttpResponse> sendPostRequest(
     String path,
@@ -93,10 +75,10 @@ void defineTests() {
     final channel = Platform.environment['FLUTTER_CHANNEL'] ?? stableChannel;
 
     setUp(() async {
-      container = MockContainer();
-      cache = MockCache();
+      final container = MockContainer();
+      final cache = MockCache();
       final sdk = Sdk.create(channel);
-      commonServerImpl = CommonServerImpl(container, cache, sdk, true);
+      commonServerImpl = CommonServerImpl(container, cache, sdk);
       commonServerApi = CommonServerApi(commonServerImpl);
       await commonServerImpl.init();
 
@@ -172,13 +154,12 @@ void main() {
         expect(json.decode(data), <dynamic, dynamic>{});
       }
     },
-        // TODO(srawlins): Change to `channel == old` when Flutter stable has
-        // Dart 2.15.
-        skip: channel != 'beta');
+        // TODO(srawlins): delete when channel `old` >= 2.15
+        skip: channel == 'old');
 
     test('analyze counterApp', () async {
       for (final version in versions) {
-        final jsonData = {'source': sampleCodeFlutterCounterNullSafe};
+        final jsonData = {'source': sampleCodeFlutterCounter};
         final response =
             await sendPostRequest('dartservices/$version/analyze', jsonData);
         expect(response.statusCode, 200);
@@ -191,7 +172,7 @@ void main() {
 
     test('analyze draggableAndPhysicsApp', () async {
       for (final version in versions) {
-        final jsonData = {'source': sampleCodeFlutterDraggableCardNullSafe};
+        final jsonData = {'source': sampleCodeFlutterDraggableCard};
         final response =
             await sendPostRequest('dartservices/$version/analyze', jsonData);
         expect(response.statusCode, 200);
@@ -205,19 +186,13 @@ void main() {
     test('analyze errors', () async {
       for (final version in versions) {
         final jsonData = {'source': sampleCodeError};
-        late Map<String, Object> dataMap;
-        await tryWithReruns(() async {
-          final response =
-              await sendPostRequest('dartservices/$version/analyze', jsonData);
-          expect(response.statusCode, 200);
-          expect(response.headers['content-type'],
-              ['application/json; charset=utf-8']);
-          final data = await response.transform(utf8.decoder).join();
-          dataMap = (json.decode(data) as Map).cast<String, Object>();
-          if (dataMap.isEmpty) {
-            throw StateError('Flaky result');
-          }
-        });
+        final response =
+            await sendPostRequest('dartservices/$version/analyze', jsonData);
+        expect(response.statusCode, 200);
+        expect(response.headers['content-type'],
+            ['application/json; charset=utf-8']);
+        final data = await response.transform(utf8.decoder).join();
+        final dataMap = (json.decode(data) as Map).cast<String, Object>();
         expect(
           dataMap,
           {
@@ -463,6 +438,12 @@ void main() {
     });
 
     test('fix', () async {
+      final quickFixesCode = '''
+import 'dart:async';
+void main() {
+  int i = 0;
+}
+''';
       for (final version in versions) {
         final jsonData = {'source': quickFixesCode, 'offset': 10};
         final response =
@@ -514,6 +495,11 @@ void main() {
     });
 
     test('assist', () async {
+      final assistCode = '''
+main() {
+  int v = 0;
+}
+''';
       for (final version in versions) {
         final jsonData = {'source': assistCode, 'offset': 15};
         final response =

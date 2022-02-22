@@ -19,8 +19,6 @@ class ProjectCreator {
 
   final String _templatesPath;
 
-  final bool _isNullSafe;
-
   /// The Dart Language Version to use for code using null safety.
   final String _dartLanguageVersion;
 
@@ -31,13 +29,11 @@ class ProjectCreator {
   ProjectCreator(
     Sdk sdk,
     this._templatesPath, {
-    required bool isNullSafe,
     required String dartLanguageVersion,
     required File dependenciesFile,
     required LogFunction log,
   })  : _dartSdkPath = sdk.dartSdkPath,
         _flutterToolPath = sdk.flutterToolPath,
-        _isNullSafe = isNullSafe,
         _dartLanguageVersion = dartLanguageVersion,
         _dependenciesFile = dependenciesFile,
         _log = log;
@@ -45,15 +41,13 @@ class ProjectCreator {
   /// Builds a basic Dart project template directory, complete with `pubspec.yaml`
   /// and `analysis_options.yaml`.
   Future<void> buildDartProjectTemplate() async {
-    final projectPath = path.join(_templatesPath,
-        _isNullSafe ? 'null-safe' : 'null-unsafe', 'dart_project');
+    final projectPath = path.join(_templatesPath, 'dart_project');
     final projectDirectory = Directory(projectPath);
     await projectDirectory.create(recursive: true);
     final dependencies = _dependencyVersions(supportedBasicDartPackages);
     File(path.join(projectPath, 'pubspec.yaml'))
         .writeAsStringSync(createPubspec(
       includeFlutterWeb: false,
-      nullSafety: _isNullSafe,
       dartLanguageVersion: _dartLanguageVersion,
       dependencies: dependencies,
     ));
@@ -69,20 +63,18 @@ linter:
   /// Builds a Flutter project template directory, complete with `pubspec.yaml`,
   /// `analysis_options.yaml`, and `web/index.html`.
   ///
-  /// Depending on [includeFirebase], Firebase packages are included in
+  /// Depending on [firebaseStyle], Firebase packages are included in
   /// `pubspec.yaml` which affects how `flutter packages get` will register
   /// plugins.
   Future<void> buildFlutterProjectTemplate({
     required FirebaseStyle firebaseStyle,
+    required bool devMode,
   }) async {
     final projectDirName = firebaseStyle == FirebaseStyle.none
         ? 'flutter_project'
-        : firebaseStyle == FirebaseStyle.deprecated
-            ? 'firebase_deprecated_project'
-            : 'firebase_project';
+        : 'firebase_project';
     final projectPath = path.join(
       _templatesPath,
-      _isNullSafe ? 'null-safe' : 'null-unsafe',
       projectDirName,
     );
     final projectDir = await Directory(projectPath).create(recursive: true);
@@ -91,10 +83,8 @@ linter:
     await File(path.join(projectPath, 'web', 'index.html')).create();
     var packages = {
       ...supportedBasicDartPackages,
-      ...supportedFlutterPackages,
+      ...supportedFlutterPackages(devMode: devMode),
       if (firebaseStyle != FirebaseStyle.none) ...coreFirebasePackages,
-      if (firebaseStyle == FirebaseStyle.deprecated)
-        ...deprecatedFirebasePackages,
       if (firebaseStyle == FirebaseStyle.flutterFire)
         ...registerableFirebasePackages,
     };
@@ -102,7 +92,6 @@ linter:
     File(path.join(projectPath, 'pubspec.yaml'))
         .writeAsStringSync(createPubspec(
       includeFlutterWeb: true,
-      nullSafety: _isNullSafe,
       dartLanguageVersion: _dartLanguageVersion,
       dependencies: dependencies,
     ));
@@ -114,14 +103,13 @@ linter:
       // supported Firebase pacakges. This workaround is a very fragile hack.
       packages = {
         ...supportedBasicDartPackages,
-        ...supportedFlutterPackages,
+        ...supportedFlutterPackages(devMode: devMode),
         ...firebasePackages,
       };
       final dependencies = _dependencyVersions(packages);
       File(path.join(projectPath, 'pubspec.yaml'))
           .writeAsStringSync(createPubspec(
         includeFlutterWeb: true,
-        nullSafety: _isNullSafe,
         dartLanguageVersion: _dartLanguageVersion,
         dependencies: dependencies,
       ));
@@ -154,9 +142,19 @@ linter:
         parsePubDependenciesFile(dependenciesFile: _dependenciesFile);
     return {
       for (var package in packages) package: allVersions[package] ?? 'any',
+      // Overwrite with important constraints:
+      ...packageVersionConstraints,
     };
   }
 }
+
+/// A mapping of version constraints for certain packages.
+const packageVersionConstraints = {
+  // Ensure that pub version solving keeps these at sane minimum versions.
+  'cloud_firestore': '^3.1.0',
+  'firebase_auth': '^3.3.0',
+  'firebase_core': '^1.10.0',
+};
 
 /// Parses [dependenciesFile] as a JSON Map of Strings.
 Map<String, String> parsePubDependenciesFile({required File dependenciesFile}) {
@@ -168,14 +166,13 @@ Map<String, String> parsePubDependenciesFile({required File dependenciesFile}) {
 /// Build a return a `pubspec.yaml` file.
 String createPubspec({
   required bool includeFlutterWeb,
-  required bool nullSafety,
   required String dartLanguageVersion,
   Map<String, String> dependencies = const {},
 }) {
   var content = '''
 name: dartpad_sample
 environment:
-  sdk: '>=${nullSafety ? dartLanguageVersion : '2.10.0'} <3.0.0'
+  sdk: '>=$dartLanguageVersion <3.0.0'
 dependencies:
 ''';
 
@@ -217,9 +214,6 @@ String get _pubCachePath {
 enum FirebaseStyle {
   /// Indicates that no Firebase is used.
   none,
-
-  /// Indicates that the deprecated Firebase packages are used.
-  deprecated,
 
   /// Indicates that the "pure Dart" Flutterfire packages are used.
   flutterFire,

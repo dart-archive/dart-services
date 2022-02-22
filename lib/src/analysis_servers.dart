@@ -21,9 +21,8 @@ final Logger _logger = Logger('analysis_servers');
 
 class AnalysisServersWrapper {
   final String _dartSdkPath;
-  final bool _nullSafety;
 
-  AnalysisServersWrapper(this._dartSdkPath, this._nullSafety);
+  AnalysisServersWrapper(this._dartSdkPath);
 
   late DartAnalysisServerWrapper _dartAnalysisServer;
   late FlutterAnalysisServerWrapper _flutterAnalysisServer;
@@ -40,12 +39,11 @@ class AnalysisServersWrapper {
   bool get isHealthy => (_restartingSince == null ||
       DateTime.now().difference(_restartingSince!).inMinutes < 30);
 
-  Future<List<void>> warmup() async {
+  Future<void> warmup() async {
     _logger.info('Beginning AnalysisServersWrapper init().');
-    _dartAnalysisServer = DartAnalysisServerWrapper(
-        dartSdkPath: _dartSdkPath, nullSafety: _nullSafety);
-    _flutterAnalysisServer = FlutterAnalysisServerWrapper(
-        dartSdkPath: _dartSdkPath, nullSafety: _nullSafety);
+    _dartAnalysisServer = DartAnalysisServerWrapper(dartSdkPath: _dartSdkPath);
+    _flutterAnalysisServer =
+        FlutterAnalysisServerWrapper(dartSdkPath: _dartSdkPath);
 
     await _dartAnalysisServer.init();
     _logger.info('Dart analysis server initialized.');
@@ -68,11 +66,6 @@ class AnalysisServersWrapper {
     }));
 
     _restartingSince = null;
-
-    return Future.wait([
-      _flutterAnalysisServer.warmup(),
-      _dartAnalysisServer.warmup(),
-    ]);
   }
 
   Future<void> _restart() async {
@@ -93,57 +86,78 @@ class AnalysisServersWrapper {
     ]);
   }
 
-  AnalysisServerWrapper _getCorrectAnalysisServer(String source) {
+  AnalysisServerWrapper _getCorrectAnalysisServer(String source,
+      {required bool devMode}) {
     final imports = getAllImportsFor(source);
-    return project.usesFlutterWeb(imports)
+    return project.usesFlutterWeb(imports, devMode: devMode)
         ? _flutterAnalysisServer
         : _dartAnalysisServer;
   }
 
-  Future<proto.AnalysisResults> analyze(String source) => _perfLogAndRestart(
-      source,
-      () => _getCorrectAnalysisServer(source).analyze(source),
-      'analysis',
-      'Error during analyze on "$source"');
-
-  Future<proto.CompleteResponse> complete(String source, int offset) =>
+  Future<proto.AnalysisResults> analyze(String source,
+          {required bool devMode}) =>
       _perfLogAndRestart(
           source,
-          () => _getCorrectAnalysisServer(source).complete(source, offset),
+          () => _getCorrectAnalysisServer(source, devMode: devMode)
+              .analyze(source),
+          'analysis',
+          'Error during analyze on "$source"',
+          devMode: devMode);
+
+  Future<proto.CompleteResponse> complete(String source, int offset,
+          {required bool devMode}) =>
+      _perfLogAndRestart(
+          source,
+          () => _getCorrectAnalysisServer(source, devMode: devMode)
+              .complete(source, offset),
           'completions',
-          'Error during complete on "$source" at $offset');
+          'Error during complete on "$source" at $offset',
+          devMode: devMode);
 
-  Future<proto.FixesResponse> getFixes(String source, int offset) =>
+  Future<proto.FixesResponse> getFixes(String source, int offset,
+          {required bool devMode}) =>
       _perfLogAndRestart(
           source,
-          () => _getCorrectAnalysisServer(source).getFixes(source, offset),
+          () => _getCorrectAnalysisServer(source, devMode: devMode)
+              .getFixes(source, offset),
           'fixes',
-          'Error during fixes on "$source" at $offset');
+          'Error during fixes on "$source" at $offset',
+          devMode: devMode);
 
-  Future<proto.AssistsResponse> getAssists(String source, int offset) =>
+  Future<proto.AssistsResponse> getAssists(String source, int offset,
+          {required bool devMode}) =>
       _perfLogAndRestart(
           source,
-          () => _getCorrectAnalysisServer(source).getAssists(source, offset),
+          () => _getCorrectAnalysisServer(source, devMode: devMode)
+              .getAssists(source, offset),
           'assists',
-          'Error during assists on "$source" at $offset');
+          'Error during assists on "$source" at $offset',
+          devMode: devMode);
 
-  Future<proto.FormatResponse> format(String source, int offset) =>
+  Future<proto.FormatResponse> format(String source, int offset,
+          {required bool devMode}) =>
       _perfLogAndRestart(
           source,
-          () => _getCorrectAnalysisServer(source).format(source, offset),
+          () => _getCorrectAnalysisServer(source, devMode: devMode)
+              .format(source, offset),
           'format',
-          'Error during format on "$source" at $offset');
+          'Error during format on "$source" at $offset',
+          devMode: devMode);
 
-  Future<Map<String, String>> dartdoc(String source, int offset) =>
+  Future<Map<String, String>> dartdoc(String source, int offset,
+          {required bool devMode}) =>
       _perfLogAndRestart(
           source,
-          () => _getCorrectAnalysisServer(source).dartdoc(source, offset),
+          () => _getCorrectAnalysisServer(source, devMode: devMode)
+              .dartdoc(source, offset),
           'dartdoc',
-          'Error during dartdoc on "$source" at $offset');
+          'Error during dartdoc on "$source" at $offset',
+          devMode: devMode);
 
   Future<T> _perfLogAndRestart<T>(String source, Future<T> Function() body,
-      String action, String errorDescription) async {
-    await _checkPackageReferences(source);
+      String action, String errorDescription,
+      {required bool devMode}) async {
+    await _checkPackageReferences(source, devMode: devMode);
     try {
       final watch = Stopwatch()..start();
       final response = await body();
@@ -157,9 +171,10 @@ class AnalysisServersWrapper {
   }
 
   /// Check that the set of packages referenced is valid.
-  Future<void> _checkPackageReferences(String source) async {
-    final unsupportedImports =
-        project.getUnsupportedImports(getAllImportsFor(source));
+  Future<void> _checkPackageReferences(String source,
+      {required bool devMode}) async {
+    final unsupportedImports = project
+        .getUnsupportedImports(getAllImportsFor(source), devMode: devMode);
 
     if (unsupportedImports.isNotEmpty) {
       // TODO(srawlins): Do the work so that each unsupported input is its own

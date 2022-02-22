@@ -20,15 +20,6 @@ import 'package:protobuf/protobuf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:test/test.dart';
 
-import 'utils.dart';
-
-const quickFixesCode = r'''
-import 'dart:async';
-void main() {
-  int i = 0;
-}
-''';
-
 const preFormattedCode = r'''
 void main()
 {
@@ -49,20 +40,11 @@ void main()
 }
 ''';
 
-const assistCode = r'''
-main() {
-  int v = 0;
-}
-''';
-
 void main() => defineTests();
 
 void defineTests() {
   late CommonServerApi commonServerApi;
   late CommonServerImpl commonServerImpl;
-
-  MockContainer container;
-  MockCache cache;
 
   Future<MockHttpResponse> sendPostRequest(
     String path,
@@ -90,11 +72,11 @@ void defineTests() {
 
   group('CommonServerProto JSON', () {
     setUpAll(() async {
-      container = MockContainer();
-      cache = MockCache();
+      final container = MockContainer();
+      final cache = MockCache();
       final channel = Platform.environment['FLUTTER_CHANNEL'] ?? stableChannel;
       final sdk = Sdk.create(channel);
-      commonServerImpl = CommonServerImpl(container, cache, sdk, false);
+      commonServerImpl = CommonServerImpl(container, cache, sdk);
       commonServerApi = CommonServerApi(commonServerImpl);
       await commonServerImpl.init();
 
@@ -155,18 +137,14 @@ void defineTests() {
     test('analyze errors', () async {
       final request = proto.SourceRequest()..source = sampleCodeError;
       late proto.AnalysisResults reply;
-      await tryWithReruns(() async {
-        final response =
-            await sendPostRequest('dartservices/v2/analyze', request);
-        expect(response.statusCode, 200);
-        expect(response.headers['content-type'],
-            ['application/json; charset=utf-8']);
-        final data = json.decode(await response.transform(utf8.decoder).join());
-        reply = proto.AnalysisResults()..mergeFromProto3Json(data);
-        if (reply.issues.isEmpty) {
-          throw StateError('Flaky response');
-        }
-      });
+      final response =
+          await sendPostRequest('dartservices/v2/analyze', request);
+      expect(response.statusCode, 200);
+      expect(response.headers['content-type'],
+          ['application/json; charset=utf-8']);
+      final data = json.decode(await response.transform(utf8.decoder).join());
+      reply = proto.AnalysisResults()..mergeFromProto3Json(data);
+      expect(reply.issues, hasLength(1));
       expect(reply.issues[0].kind, 'error');
       expect(reply.issues[0].line, 2);
       expect(reply.issues[0].sourceName, 'main.dart');
@@ -341,6 +319,12 @@ void defineTests() {
     });
 
     test('fix', () async {
+      final quickFixesCode = '''
+import 'dart:async';
+void main() {
+  int i = 0;
+}
+''';
       final request = proto.SourceRequest()
         ..source = quickFixesCode
         ..offset = 10;
@@ -378,6 +362,11 @@ void main() {
     });
 
     test('assist', () async {
+      final assistCode = '''
+main() {
+  int v = 0;
+}
+''';
       final request = proto.SourceRequest()
         ..source = assistCode
         ..offset = 15;
