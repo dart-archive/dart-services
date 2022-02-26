@@ -81,6 +81,7 @@ Set<String> supportedFlutterPackages({required bool devMode}) => {
       'flutter_hooks',
       'flutter_lints',
       'flutter_riverpod',
+      'google_fonts',
       'hooks_riverpod',
       if (devMode) ...[
         'english_words',
@@ -112,7 +113,6 @@ const Set<String> supportedBasicDartPackages = {
   'bloc',
   'characters',
   'collection',
-  'google_fonts',
   'http',
   'intl',
   'js',
