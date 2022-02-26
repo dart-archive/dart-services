@@ -83,6 +83,7 @@ Set<String> supportedFlutterPackages({required bool devMode}) => {
       'flutter_riverpod',
       'google_fonts',
       'hooks_riverpod',
+      'provider',
       if (devMode) ...[
         'english_words',
         'firebase_analytics',
@@ -120,7 +121,6 @@ const Set<String> supportedBasicDartPackages = {
   'meta',
   'path',
   'pedantic',
-  'provider',
   'riverpod',
   'vector_math',
 };
