@@ -15,8 +15,8 @@ import 'package:dart_services/src/sdk.dart';
 import 'package:dart_services/src/utils.dart';
 import 'package:grinder/grinder.dart';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart' as path;
 import 'package:package_config/package_config.dart';
+import 'package:path/path.dart' as path;
 
 Future<void> main(List<String> args) async {
   return grind(args);
