@@ -14,7 +14,6 @@ import 'package:path/path.dart' as path;
 
 import 'common.dart';
 import 'project.dart';
-import 'pub.dart';
 import 'sdk.dart';
 
 Logger _logger = Logger('compiler');
@@ -46,12 +45,18 @@ class Compiler {
 
   /// Compile the given string and return the resulting [CompilationResults].
   Future<CompilationResults> compile(
-    String input, {
+    String inputSrcOrSources, {
     bool returnSourceMap = false,
   }) async {
-    final imports = getAllImportsFor(input);
-    final unsupportedImports =
-        getUnsupportedImports(imports, devMode: _sdk.devMode);
+    final Map<String, String> files =
+        getSourcesAndActiveSourceName(inputSrcOrSources).sources;
+    if (files.isEmpty) {
+      return CompilationResults(
+          problems: [CompilationProblem._('file list empty')]);
+    }
+    final imports = getAllImportsForFiles(files);
+    final unsupportedImports = getUnsupportedImports(imports,
+        sourcesFileList: files.keys.toList(), devMode: _sdk.devMode);
     if (unsupportedImports.isNotEmpty) {
       return CompilationResults(problems: [
         for (var import in unsupportedImports)
@@ -80,9 +85,11 @@ class Compiler {
         path.join('lib', kMainDart),
       ];
 
-      final compileTarget = path.join(temp.path, 'lib', kMainDart);
-      final mainDart = File(compileTarget);
-      await mainDart.writeAsString(input);
+      files.forEach((filename, content) async {
+        final compileTarget = path.join(temp.path, 'lib', filename);
+        final aDartFile = File(compileTarget);
+        await aDartFile.writeAsString(content);
+      });
 
       final mainJs = File(path.join(temp.path, '$kMainDart.js'));
       final mainSourceMap = File(path.join(temp.path, '$kMainDart.js.map'));
@@ -118,10 +125,16 @@ class Compiler {
   }
 
   /// Compile the given string and return the resulting [DDCCompilationResults].
-  Future<DDCCompilationResults> compileDDC(String input) async {
-    final imports = getAllImportsFor(input);
-    final unsupportedImports =
-        getUnsupportedImports(imports, devMode: _sdk.devMode);
+  Future<DDCCompilationResults> compileDDC(String inputSrcOrSources) async {
+    final Map<String, String> files =
+        getSourcesAndActiveSourceName(inputSrcOrSources).sources;
+    if (files.isEmpty) {
+      return DDCCompilationResults.failed(
+          [CompilationProblem._('file list empty')]);
+    }
+    final imports = getAllImportsForFiles(files);
+    final unsupportedImports = getUnsupportedImports(imports,
+        sourcesFileList: files.keys.toList(), devMode: _sdk.devMode);
     if (unsupportedImports.isNotEmpty) {
       return DDCCompilationResults.failed([
         for (var import in unsupportedImports)
@@ -144,13 +157,16 @@ class Compiler {
 
       await Directory(path.join(temp.path, 'lib')).create(recursive: true);
 
-      final mainPath = path.join(temp.path, 'lib', kMainDart);
       final bootstrapPath = path.join(temp.path, 'lib', kBootstrapDart);
       final bootstrapContents =
           usingFlutter ? kBootstrapFlutterCode : kBootstrapDartCode;
-
       await File(bootstrapPath).writeAsString(bootstrapContents);
-      await File(mainPath).writeAsString(input);
+
+      files.forEach((filename, content) async {
+        final compileTarget = path.join(temp.path, 'lib', filename);
+        final aDartFile = File(compileTarget);
+        await aDartFile.writeAsString(content);
+      });
 
       final arguments = <String>[
         '--modules=amd',

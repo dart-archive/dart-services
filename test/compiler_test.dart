@@ -5,6 +5,7 @@
 library services.compiler_test;
 
 import 'dart:io';
+import 'dart:convert' show json;
 
 import 'package:dart_services/src/common.dart';
 import 'package:dart_services/src/compiler.dart';
@@ -204,5 +205,296 @@ void main() { print ('foo'); }
         expect(result.problems.length, 1);
       });
     });
+
+    group('Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler  files={} multifile', () {
+      //-----------------------------------------------------------
+      // Now test multi file 'files:{}' source format
+      Map<String,String> files = {};
+      Map<String,dynamic> filesinfo ={};
+      const kMainDart = 'main.dart';
+
+      files[kMainDart] = sampleCode;
+      filesinfo['files'] = files;
+      filesinfo['active_source_name'] = kMainDart;
+      String filesInfoJson = json.encode(filesinfo);
+      test(
+        'files:{} compileDDC simple',
+        generateCompilerDDCTest(filesInfoJson),
+      );
+
+
+      files[kMainDart] = sampleCodeWeb;
+      filesInfoJson = json.encode(filesinfo);
+      test(
+        'files:{} compileDDC with web',
+        generateCompilerDDCTest(filesInfoJson),
+      );
+
+      // try not using 'main.dart' filename, should be handled OK
+      files.clear();
+      files['mymainthing.dart'] = sampleCodeFlutter;
+      filesinfo['active_source_name'] = 'mymainthing.dart';
+      filesInfoJson = json.encode(filesinfo);
+      test(
+        'files:{} compileDDC with Flutter',
+        generateCompilerDDCTest(filesInfoJson),
+      );
+
+      // filename other than 'main.dart'
+      files.clear();
+      files['different.dart'] = sampleCodeFlutterCounter;
+      filesinfo['active_source_name'] = 'different.dart';
+      filesInfoJson = json.encode(filesinfo);
+      test(
+        'files:{} compileDDC with Flutter Counter',
+        generateCompilerDDCTest(filesInfoJson),
+      );
+
+      // 2 separate files, main importing various
+      files.clear();
+      files[kMainDart] = sampleCodeFlutterImplicitAnimationsImports +
+                  "\nimport 'various.dart';\n" + sampleCodeFlutterImplicitAnimationsMain;
+      files['various.dart'] = sampleCodeFlutterImplicitAnimationsImports + 
+                                       sampleCodeFlutterImplicitAnimationsDiscData +
+                                       sampleCodeFlutterImplicitAnimationsVarious;
+      filesinfo['active_source_name'] = kMainDart;
+      filesInfoJson = json.encode(filesinfo);
+      test(
+        'files:{} compileDDC with 2 file',
+        generateCompilerDDCTest(filesInfoJson),
+      );
+
+      // 2 separate filesm main importing various but with 
+      //    up paths in names... test sanitizing filenames of '..\.../..' and '..'
+      //    santizing should strip off all up dir chars and leave just the plain filenames
+      files.clear();
+      files['..\\.../../'+kMainDart] =  sampleCodeFlutterImplicitAnimationsImports + 
+                        "\nimport 'various.dart';\n" + sampleCodeFlutterImplicitAnimationsMain;
+      files['../various.dart'] = sampleCodeFlutterImplicitAnimationsImports +
+                                                      sampleCodeFlutterImplicitAnimationsDiscData +
+                                                      sampleCodeFlutterImplicitAnimationsVarious;
+      filesinfo['active_source_name'] = kMainDart;
+      filesInfoJson = json.encode(filesinfo);
+      test(
+        'files:{} compileDDC with 2 files and file names sanitized',
+        generateCompilerDDCTest(filesInfoJson),
+      );
+
+      // Using "part 'various.dart'" to bring in second file
+      files.clear();
+      files[kMainDart] = 'library testanim;\n' + sampleCodeFlutterImplicitAnimationsImports +
+                        "\npart 'various.dart';\n\n" + sampleCodeFlutterImplicitAnimationsMain;
+      files['various.dart'] = 'part of testanim;\n' + sampleCodeFlutterImplicitAnimationsDiscData +
+                              sampleCodeFlutterImplicitAnimationsVarious;
+      filesinfo['active_source_name'] = kMainDart;
+      filesInfoJson = json.encode(filesinfo);
+      test(
+        'files:{} compileDDC with 2 file using LIBRARY/PART/PART OF',
+        generateCompilerDDCTest(filesInfoJson),
+      );
+
+      // Using "part 'various.dart'" and "part 'discdata.dart'" to bring in second/third file
+      files.clear();
+      files[kMainDart] = 'library testanim;\n' + sampleCodeFlutterImplicitAnimationsImports +
+                        "\npart 'discdart.dart';\npart 'various.dart';\n" + sampleCodeFlutterImplicitAnimationsMain;
+      files['discdart.dart'] = 'part of testanim;\n' + sampleCodeFlutterImplicitAnimationsDiscData;
+      files['various.dart'] = 'part of testanim;\n' + sampleCodeFlutterImplicitAnimationsVarious;
+      filesinfo['active_source_name'] = kMainDart;
+      filesInfoJson = json.encode(filesinfo);
+      test(
+        'files:{} compileDDC with 3 files using LIBRARY/PART/PART OF',
+        generateCompilerDDCTest(filesInfoJson),
+      );
+
+      // Check sanitizing of package:, dart:, http:// from filenames
+      files.clear();
+      files['package:'+kMainDart] = 'library testanim;\n' + sampleCodeFlutterImplicitAnimationsImports +
+                        "\npart 'discdart.dart';\npart 'various.dart';\n" + sampleCodeFlutterImplicitAnimationsMain;
+      files['dart:discdart.dart'] = 'part of testanim;\n' + sampleCodeFlutterImplicitAnimationsDiscData;
+      files['http://various.dart'] = 'part of testanim;\n' + sampleCodeFlutterImplicitAnimationsVarious;
+      filesinfo['active_source_name'] = 'package:'+kMainDart;  // check that this gets sanitized also
+      filesInfoJson = json.encode(filesinfo);
+      test(
+        'files:{} compileDDC with 3 SANITIZED files using LIBRARY/PART/PART OF',
+        generateCompilerDDCTest(filesInfoJson),
+      );
+
+      // test renaming the file with the main function ('mymain.dart') to be kMainDart if none found
+      files.clear();
+      files['discdart.dart'] = 'part of testanim;\n' + sampleCodeFlutterImplicitAnimationsDiscData;
+      files['various.dart'] = 'part of testanim;\n' + sampleCodeFlutterImplicitAnimationsVarious;
+      files['mymain.dart'] = 'library testanim;\n' + sampleCodeFlutterImplicitAnimationsImports +
+                        "\npart 'discdart.dart';\npart 'various.dart';\n" + sampleCodeFlutterImplicitAnimationsMain;
+      filesinfo['active_source_name'] = 'mymain.dart';
+      filesInfoJson = json.encode(filesinfo);
+      test(
+        'files:{} compileDDC with 3 files and none named kMainDart',
+        generateCompilerDDCTest(filesInfoJson),
+      );
+
+      // make the 'active_source_name' entry be the first one in the fileinfo json
+      Map<String,dynamic> filesinfoActiveSourceFirst ={};
+      filesinfoActiveSourceFirst['active_source_name'] = kMainDart;
+      files.clear();
+      files[kMainDart] = sampleCode;
+      filesinfoActiveSourceFirst['files'] = files;
+      filesInfoJson = json.encode(filesinfo);
+      test(
+        'files:{} compileDDC "active_source_name" first - simple',
+        generateCompilerDDCTest(filesInfoJson),
+      );
+
+      // Two separate files, illegal import in second file
+      //  test that illegal imports on all files are detected
+      files.clear();
+      String badImports = '''
+                            import 'package:foo';
+                            import 'package:bar';
+                            ''';
+      files[kMainDart] = sampleCodeFlutterImplicitAnimationsImports +
+                  "\nimport 'various.dart';\n" + sampleCodeFlutterImplicitAnimationsMain;
+      files['various.dart'] = sampleCodeFlutterImplicitAnimationsImports + badImports + 
+                                              sampleCodeFlutterImplicitAnimationsDiscData +
+                                              sampleCodeFlutterImplicitAnimationsVarious;
+      filesinfo['active_source_name'] = kMainDart;
+      filesInfoJson = json.encode(filesinfo);
+      test('multiple files, second file with multiple bad imports compile', () async {
+              final result = await compiler.compile(filesInfoJson);
+              expect(result.problems, hasLength(2));
+              expect(result.problems[0].message,
+                  equals('unsupported import: package:foo'));
+              expect(result.problems[1].message,
+                  equals('unsupported import: package:bar'));
+            });
+      test('multiple files, second file with multiple bad imports compileDDC()', () async {
+              final result = await compiler.compileDDC(filesInfoJson);
+              expect(result.problems, hasLength(2));
+              expect(result.problems[0].message,
+                  equals('unsupported import: package:foo'));
+              expect(result.problems[1].message,
+                  equals('unsupported import: package:bar'));
+            });
+
+    });
+
   }
 }
+
+/// Code fragments for testing multi file compiling
+///  these are just taken from [sampleCodeFlutterImplicitAnimations] but
+///  re-arranged to facilitate testing
+
+const sampleCodeFlutterImplicitAnimationsImports = r'''
+import 'dart:math';
+import 'package:flutter/material.dart';
+''';
+
+const sampleCodeFlutterImplicitAnimationsMain = r'''
+
+
+void main() async {
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Container(
+          color: const Color(0xFF15202D),
+          child: const SizedBox.expand(
+            child: VariousDiscs(50),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+''';
+
+
+const sampleCodeFlutterImplicitAnimationsDiscData = r'''
+
+class DiscData {
+  static final _rng = Random();
+
+  final double size;
+  final Color color;
+  final Alignment alignment;
+
+  DiscData()
+      : size = _rng.nextDouble() * 40 + 10,
+        color = Color.fromARGB(
+          _rng.nextInt(200),
+          _rng.nextInt(255),
+          _rng.nextInt(255),
+          _rng.nextInt(255),
+        ),
+        alignment = Alignment(
+          _rng.nextDouble() * 2 - 1,
+          _rng.nextDouble() * 2 - 1,
+        );
+}
+''';
+
+const sampleCodeFlutterImplicitAnimationsVarious = r'''
+
+class VariousDiscs extends StatefulWidget {
+  final int numberOfDiscs;
+
+  const VariousDiscs(this.numberOfDiscs);
+
+  @override
+  _VariousDiscsState createState() => _VariousDiscsState();
+}
+
+class _VariousDiscsState extends State<VariousDiscs> {
+  final _discs = <DiscData>[];
+
+  @override
+  void initState() {
+    super.initState();
+    _makeDiscs();
+  }
+
+  void _makeDiscs() {
+    _discs.clear();
+    for (int i = 0; i < widget.numberOfDiscs; i++) {
+      _discs.add(DiscData());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => setState(() {
+        _makeDiscs();
+      }),
+      child: Stack(
+        children: [
+          const Center(
+            child: Text(
+              'Click a disc!',
+              style: TextStyle(color: Colors.white, fontSize: 50),
+            ),
+          ),
+          for (final disc in _discs)
+            Positioned.fill(
+              child: AnimatedAlign(
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+                alignment: disc.alignment,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 500),
+                  decoration: BoxDecoration(
+                    color: disc.color,
+                    shape: BoxShape.circle,
+                  ),
+                  height: disc.size,
+                  width: disc.size,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+''';
