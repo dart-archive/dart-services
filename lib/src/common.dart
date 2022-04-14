@@ -193,7 +193,7 @@ class SunflowerPainter extends CustomPainter {
 
 class Sunflower extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
+  State<Sunflower> createState() {
     return _SunflowerState();
   }
 }
@@ -309,7 +309,7 @@ class DraggableCard extends StatefulWidget {
   const DraggableCard({required this.child});
 
   @override
-  _DraggableCardState createState() => _DraggableCardState();
+  State<DraggableCard> createState() => _DraggableCardState();
 }
 
 class _DraggableCardState extends State<DraggableCard>
@@ -437,7 +437,7 @@ class VariousDiscs extends StatefulWidget {
   const VariousDiscs(this.numberOfDiscs);
 
   @override
-  _VariousDiscsState createState() => _VariousDiscsState();
+  State<VariousDiscs> createState() => _VariousDiscsState();
 }
 
 class _VariousDiscsState extends State<VariousDiscs> {
