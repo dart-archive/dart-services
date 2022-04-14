@@ -4,8 +4,8 @@
 
 library services.analyzer_server_test;
 
-import 'dart:io';
 import 'dart:convert' show json;
+import 'dart:io';
 
 import 'package:dart_services/src/analysis_server.dart';
 import 'package:dart_services/src/common.dart';
@@ -249,12 +249,8 @@ void defineTests() {
     });
   });
 
-
-
   //--------------------------------------------------------
-  // Testing the files={} multi file group format
-
-
+  // Testing the json files={} multi file group format
   group('Platform SDK analysis_server multifile files={}', () {
     setUp(() async {
       final sdk = Sdk.create(channel);
@@ -268,11 +264,11 @@ void defineTests() {
     const kMainDart = 'main.dart';
 
     test('files={} simple_completion', () async {
-      final Map<String,String> files = {};
-      final Map<String,dynamic> filesinfo ={};
+      final Map<String, String> files = {};
+      final Map<String, dynamic> filesinfo = {};
       filesinfo['files'] = files;
       filesinfo['active_source_name'] = kMainDart;
-      
+
       files[kMainDart] = completionCode;
       final String filesInfoJson = json.encode(filesinfo);
 
@@ -286,11 +282,10 @@ void defineTests() {
       expect(completionsContains(results, 'codeUnitAt'), false);
     });
 
-
     // https://github.com/dart-lang/dart-pad/issues/2005
     test('files={} Trigger lint with Dart code', () async {
-      final Map<String,String> files = {};
-      final Map<String,dynamic> filesinfo ={};
+      final Map<String, String> files = {};
+      final Map<String, dynamic> filesinfo = {};
       filesinfo['files'] = files;
       filesinfo['active_source_name'] = kMainDart;
 
@@ -306,10 +301,10 @@ void defineTests() {
           issue.message, 'Prefer typing uninitialized variables and fields.');
     });
 
-
-    test('files={} repro #126 - completions polluted on second request', () async {
-      final Map<String,String> files = {};
-      final Map<String,dynamic> filesinfo ={};
+    test('files={} repro #126 - completions polluted on second request',
+        () async {
+      final Map<String, String> files = {};
+      final Map<String, dynamic> filesinfo = {};
       filesinfo['files'] = files;
       filesinfo['active_source_name'] = kMainDart;
 
@@ -318,9 +313,7 @@ void defineTests() {
 
       // https://github.com/dart-lang/dart-services/issues/126
       return analysisServer.complete(filesInfoJson, 17).then((results) {
-        return analysisServer
-            .complete(filesInfoJson, 17)
-            .then((results) {
+        return analysisServer.complete(filesInfoJson, 17).then((results) {
           expect(results.replacementLength, 2);
           expect(results.replacementOffset, 16);
           expect(completionsContains(results, 'print'), true);
@@ -329,14 +322,13 @@ void defineTests() {
       });
     });
 
-    
     test('files={} import_test', () async {
       // We're testing here that we don't have any path imports - we don't want
       // to enable browsing the file system.
       final testCode = "import '/'; main() { int a = 0; a. }";
 
-      final Map<String,String> files = {};
-      final Map<String,dynamic> filesinfo ={};
+      final Map<String, String> files = {};
+      final Map<String, dynamic> filesinfo = {};
 
       files[kMainDart] = testCode;
       filesinfo['files'] = files;
@@ -357,14 +349,14 @@ void defineTests() {
       // Ensure we can import dart: imports.
       final testCode = "import 'dart:c'; main() { int a = 0; a. }";
 
-      final Map<String,String> files = {};
-      final Map<String,dynamic> filesinfo ={};
+      final Map<String, String> files = {};
+      final Map<String, dynamic> filesinfo = {};
       filesinfo['files'] = files;
       filesinfo['active_source_name'] = kMainDart;
 
       files[kMainDart] = testCode;
       final String filesInfoJson = json.encode(filesinfo);
-      
+
       final results = await analysisServer.complete(filesInfoJson, 14);
       final completions = results.completions;
 
@@ -383,8 +375,8 @@ void defineTests() {
     test('files={} import_and_other_test', () async {
       final testCode = "import '/'; main() { int a = 0; a. }";
 
-      final Map<String,String> files = {};
-      final Map<String,dynamic> filesinfo ={};
+      final Map<String, String> files = {};
+      final Map<String, dynamic> filesinfo = {};
       filesinfo['files'] = files;
       filesinfo['active_source_name'] = kMainDart;
 
@@ -397,8 +389,8 @@ void defineTests() {
     });
 
     test('files={} simple_quickFix', () async {
-      final Map<String,String> files = {};
-      final Map<String,dynamic> filesinfo ={};
+      final Map<String, String> files = {};
+      final Map<String, dynamic> filesinfo = {};
       filesinfo['files'] = files;
       filesinfo['active_source_name'] = kMainDart;
 
@@ -472,8 +464,8 @@ void defineTests() {
     */
 
     test('files={} analyze', () async {
-      final Map<String,String> files = {};
-      final Map<String,dynamic> filesinfo ={};
+      final Map<String, String> files = {};
+      final Map<String, dynamic> filesinfo = {};
       filesinfo['files'] = files;
       filesinfo['active_source_name'] = kMainDart;
 
@@ -484,8 +476,8 @@ void defineTests() {
     });
 
     test('files={} analyze with errors', () async {
-      final Map<String,String> files = {};
-      final Map<String,dynamic> filesinfo ={};
+      final Map<String, String> files = {};
+      final Map<String, dynamic> filesinfo = {};
       filesinfo['files'] = files;
       filesinfo['active_source_name'] = kMainDart;
 
@@ -497,8 +489,8 @@ void defineTests() {
     });
 
     test('files={} filter completions', () async {
-      final Map<String,String> files = {};
-      final Map<String,dynamic> filesinfo ={};
+      final Map<String, String> files = {};
+      final Map<String, dynamic> filesinfo = {};
       filesinfo['files'] = files;
       filesinfo['active_source_name'] = kMainDart;
 
@@ -508,8 +500,7 @@ void defineTests() {
       // just after A
       final idx = 61;
       expect(completionLargeNamespaces.substring(idx - 1, idx), 'A');
-      final results =
-          await analysisServer.complete(filesInfoJson, 61);
+      final results = await analysisServer.complete(filesInfoJson, 61);
       expect(completionsContains(results, 'A'), true);
       expect(completionsContains(results, 'AB'), true);
       expect(completionsContains(results, 'ABC'), true);
@@ -517,5 +508,4 @@ void defineTests() {
       expect(completionsContains(results, 'ZZ'), false);
     });
   });
-
 }
