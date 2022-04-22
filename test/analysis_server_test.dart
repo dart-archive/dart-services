@@ -263,10 +263,9 @@ void defineTests() {
     const kMainDart = 'main.dart';
 
     test('files={} simple_completion', () async {
-      final Map<String, String> files = {kMainDart: completionCode};
       // Just after i.
       final results =
-          await analysisServer.completeFiles(files, Location(kMainDart, 32));
+          await analysisServer.completeFiles({kMainDart: completionCode}, Location(kMainDart, 32));
       expect(results.replacementLength, 0);
       expect(results.replacementOffset, 32);
       final completions =
