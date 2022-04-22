@@ -10,6 +10,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analysis_server_lib/analysis_server_lib.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
 
@@ -138,14 +139,12 @@ abstract class AnalysisServerWrapper {
     });
   }
 
-  Future<proto.CompleteResponse> complete(
-      String srcOrSources, int offset) async {
-    final sourcesAndActiveSourceName =
-        getSourcesAndActiveSourceName(srcOrSources);
-    final sources = sourcesAndActiveSourceName.sources;
-    final location =
-        Location(sourcesAndActiveSourceName.activeSourceName, offset);
+  Future<proto.CompleteResponse> complete(String src, int offset) async {
+    return completeFiles({kMainDart: src}, Location(kMainDart, offset));
+  }
 
+  Future<proto.CompleteResponse> completeFiles(
+      Map<String, String> sources, Location location) async {
     final results =
         await _completeImpl(sources, location.sourceName, location.offset);
     var suggestions = results.results;
@@ -192,17 +191,8 @@ abstract class AnalysisServerWrapper {
             }))));
   }
 
-  Future<proto.FixesResponse> getFixes(String srcOrSources, int offset) {
-    final sourcesAndActiveSourceName =
-        getSourcesAndActiveSourceName(srcOrSources);
-    final sources = sourcesAndActiveSourceName.sources;
-    final location =
-        Location(sourcesAndActiveSourceName.activeSourceName, offset);
-
-    return getFixesMulti(
-      sources,
-      location,
-    );
+  Future<proto.FixesResponse> getFixes(String src, int offset) {
+    return getFixesMulti({kMainDart: src}, Location(kMainDart, offset));
   }
 
   Future<proto.FixesResponse> getFixesMulti(
@@ -215,15 +205,14 @@ abstract class AnalysisServerWrapper {
     return proto.FixesResponse()..fixes.addAll(responseFixes);
   }
 
-  Future<proto.AssistsResponse> getAssists(
-      String srcOrSources, int offset) async {
-    final sourcesAndActiveSourceName =
-        getSourcesAndActiveSourceName(srcOrSources);
-    final sources = sourcesAndActiveSourceName.sources;
-    final sourceName =
-        Location(sourcesAndActiveSourceName.activeSourceName, offset)
-            .sourceName;
-    final results = await _getAssistsImpl(sources, sourceName, offset);
+  Future<proto.AssistsResponse> getAssists(String src, int offset) async {
+    return getAssistsMulti({kMainDart: src}, Location(kMainDart, offset));
+  }
+
+  Future<proto.AssistsResponse> getAssistsMulti(
+      Map<String, String> sources, Location location) async {
+    final sourceName = location.sourceName;
+    final results = await _getAssistsImpl(sources, sourceName, location.offset);
     final fixes =
         _convertSourceChangesToCandidateFixes(results.assists, sourceName);
     return proto.AssistsResponse()..assists.addAll(fixes);
@@ -255,20 +244,22 @@ abstract class AnalysisServerWrapper {
     });
   }
 
-  Future<Map<String, String>> dartdoc(String srcOrSources, int offset) {
+  Future<Map<String, String>> dartdoc(String src, int offset) {
+    return dartdocMulti({kMainDart: src}, Location(kMainDart, offset));
+  }
+
+  Future<Map<String, String>> dartdocMulti(
+      Map<String, String> sources, Location location) {
     _logger.fine('dartdoc: Scheduler queue: ${serverScheduler.queueCount}');
-    final sourcesAndActiveSourceName =
-        getSourcesAndActiveSourceName(srcOrSources);
-    var sources = sourcesAndActiveSourceName.sources;
 
     sources = _getOverlayMapWithPaths(sources);
-    final sourcepath =
-        _getPathFromName(sourcesAndActiveSourceName.activeSourceName);
+    final sourcepath = _getPathFromName(location.sourceName);
 
     return serverScheduler.schedule(ClosureTask<Map<String, String>>(() async {
       await _loadSources(sources);
 
-      final result = await analysisServer.analysis.getHover(sourcepath, offset);
+      final result =
+          await analysisServer.analysis.getHover(sourcepath, location.offset);
       await _unloadSources();
 
       if (result.hovers.isEmpty) {
@@ -295,11 +286,12 @@ abstract class AnalysisServerWrapper {
     }, timeoutDuration: _analysisServerTimeout));
   }
 
-  Future<proto.AnalysisResults> analyze(String srcOrSources) {
-    final sourcesAndActiveSourceName =
-        getSourcesAndActiveSourceName(srcOrSources);
-    var sources = sourcesAndActiveSourceName.sources;
+  Future<proto.AnalysisResults> analyze(String src) {
+    return analyzeFiles({kMainDart: src});
+  }
 
+  Future<proto.AnalysisResults> analyzeFiles(Map<String, String> sources,
+      {List<ImportDirective>? imports}) {
     _logger.fine('analyze: Scheduler queue: ${serverScheduler.queueCount}');
 
     return serverScheduler
@@ -350,10 +342,12 @@ abstract class AnalysisServerWrapper {
         return a.charStart.compareTo(b.charStart);
       });
 
+      // get imports if they were not passed in
+      imports ??= getAllImportsForFiles(sources);
+
       // Calculate the imports.
       final packageImports = {
-        for (final source in sources.values)
-          ...getAllImportsFor(source).filterSafePackages(),
+        ...imports!.filterSafePackages(),
       };
 
       return proto.AnalysisResults()
