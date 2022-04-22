@@ -14,6 +14,7 @@ import 'package:path/path.dart' as path;
 
 import 'common.dart';
 import 'project.dart';
+import 'pub.dart';
 import 'sdk.dart';
 
 Logger _logger = Logger('compiler');
@@ -45,15 +46,22 @@ class Compiler {
 
   /// Compile the given string and return the resulting [CompilationResults].
   Future<CompilationResults> compile(
-    String inputSrcOrSources, {
+    String source, {
     bool returnSourceMap = false,
   }) async {
-    final Map<String, String> files =
-        getSourcesAndActiveSourceName(inputSrcOrSources).sources;
+    return compileFiles({kMainDart: source}, returnSourceMap: returnSourceMap);
+  }
+
+  /// Compile the given string and return the resulting [CompilationResults].
+  Future<CompilationResults> compileFiles(
+    final Map<String, String> files, {
+    bool returnSourceMap = false,
+  }) async {
     if (files.isEmpty) {
       return CompilationResults(
           problems: [CompilationProblem._('file list empty')]);
     }
+    sanitizeAndCheckFilenames(files);
     final imports = getAllImportsForFiles(files);
     final unsupportedImports = getUnsupportedImports(imports,
         sourcesFileList: files.keys.toList(), devMode: _sdk.devMode);
@@ -125,13 +133,20 @@ class Compiler {
   }
 
   /// Compile the given string and return the resulting [DDCCompilationResults].
-  Future<DDCCompilationResults> compileDDC(String inputSrcOrSources) async {
-    final Map<String, String> files =
-        getSourcesAndActiveSourceName(inputSrcOrSources).sources;
+  Future<DDCCompilationResults> compileDDC(String source) async {
+    return compileFilesDDC({kMainDart: source});
+  }
+
+  /// Compile the given set of source files and return the resulting [DDCCompilationResults].
+  /// [files] is a map containing the source files in the format
+  ///   `{ "filename1":"sourcecode1" .. "filenameN":"sourcecodeN"}`
+  Future<DDCCompilationResults> compileFilesDDC(
+      Map<String, String> files) async {
     if (files.isEmpty) {
       return DDCCompilationResults.failed(
           [CompilationProblem._('file list empty')]);
     }
+    sanitizeAndCheckFilenames(files);
     final imports = getAllImportsForFiles(files);
     final unsupportedImports = getUnsupportedImports(imports,
         sourcesFileList: files.keys.toList(), devMode: _sdk.devMode);
