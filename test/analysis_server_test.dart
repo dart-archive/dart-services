@@ -4,7 +4,6 @@
 
 library services.analyzer_server_test;
 
-import 'dart:convert' show json;
 import 'dart:io';
 
 import 'package:dart_services/src/analysis_server.dart';
@@ -250,7 +249,7 @@ void defineTests() {
   });
 
   //--------------------------------------------------------
-  // Testing the json files={} multi file group format
+  // Testing the multi file group files={} map entry points
   group('Platform SDK analysis_server multifile files={}', () {
     setUp(() async {
       final sdk = Sdk.create(channel);
@@ -264,16 +263,10 @@ void defineTests() {
     const kMainDart = 'main.dart';
 
     test('files={} simple_completion', () async {
-      final Map<String, String> files = {};
-      final Map<String, dynamic> filesinfo = {};
-      filesinfo['files'] = files;
-      filesinfo['active_source_name'] = kMainDart;
-
-      files[kMainDart] = completionCode;
-      final String filesInfoJson = json.encode(filesinfo);
-
+      final Map<String, String> files = {kMainDart: completionCode};
       // Just after i.
-      final results = await analysisServer.complete(filesInfoJson, 32);
+      final results =
+          await analysisServer.completeFiles(files, Location(kMainDart, 32));
       expect(results.replacementLength, 0);
       expect(results.replacementOffset, 32);
       final completions =
@@ -284,15 +277,8 @@ void defineTests() {
 
     // https://github.com/dart-lang/dart-pad/issues/2005
     test('files={} Trigger lint with Dart code', () async {
-      final Map<String, String> files = {};
-      final Map<String, dynamic> filesinfo = {};
-      filesinfo['files'] = files;
-      filesinfo['active_source_name'] = kMainDart;
-
-      files[kMainDart] = lintWarningTrigger;
-      final String filesInfoJson = json.encode(filesinfo);
-
-      final results = await analysisServer.analyze(filesInfoJson);
+      final results =
+          await analysisServer.analyzeFiles({kMainDart: lintWarningTrigger});
       expect(results.issues.length, 1);
       final issue = results.issues[0];
       expect(issue.line, 2);
@@ -303,17 +289,11 @@ void defineTests() {
 
     test('files={} repro #126 - completions polluted on second request',
         () async {
-      final Map<String, String> files = {};
-      final Map<String, dynamic> filesinfo = {};
-      filesinfo['files'] = files;
-      filesinfo['active_source_name'] = kMainDart;
-
-      files[kMainDart] = completionFilterCode;
-      final String filesInfoJson = json.encode(filesinfo);
-
+      final Map<String, String> files = {kMainDart: completionFilterCode};
+      final Location location = Location(kMainDart, 17);
       // https://github.com/dart-lang/dart-services/issues/126
-      return analysisServer.complete(filesInfoJson, 17).then((results) {
-        return analysisServer.complete(filesInfoJson, 17).then((results) {
+      return analysisServer.completeFiles(files, location).then((results) {
+        return analysisServer.completeFiles(files, location).then((results) {
           expect(results.replacementLength, 2);
           expect(results.replacementOffset, 16);
           expect(completionsContains(results, 'print'), true);
@@ -327,15 +307,8 @@ void defineTests() {
       // to enable browsing the file system.
       final testCode = "import '/'; main() { int a = 0; a. }";
 
-      final Map<String, String> files = {};
-      final Map<String, dynamic> filesinfo = {};
-
-      files[kMainDart] = testCode;
-      filesinfo['files'] = files;
-      filesinfo['active_source_name'] = kMainDart;
-      final String filesInfoJson = json.encode(filesinfo);
-
-      final results = await analysisServer.complete(filesInfoJson, 9);
+      final results = await analysisServer
+          .completeFiles({kMainDart: testCode}, Location(kMainDart, 9));
       final completions = results.completions;
 
       if (completions.isNotEmpty) {
@@ -349,15 +322,8 @@ void defineTests() {
       // Ensure we can import dart: imports.
       final testCode = "import 'dart:c'; main() { int a = 0; a. }";
 
-      final Map<String, String> files = {};
-      final Map<String, dynamic> filesinfo = {};
-      filesinfo['files'] = files;
-      filesinfo['active_source_name'] = kMainDart;
-
-      files[kMainDart] = testCode;
-      final String filesInfoJson = json.encode(filesinfo);
-
-      final results = await analysisServer.complete(filesInfoJson, 14);
+      final results = await analysisServer
+          .completeFiles({kMainDart: testCode}, Location(kMainDart, 14));
       final completions = results.completions;
 
       expect(
@@ -375,29 +341,16 @@ void defineTests() {
     test('files={} import_and_other_test', () async {
       final testCode = "import '/'; main() { int a = 0; a. }";
 
-      final Map<String, String> files = {};
-      final Map<String, dynamic> filesinfo = {};
-      filesinfo['files'] = files;
-      filesinfo['active_source_name'] = kMainDart;
-
-      files[kMainDart] = testCode;
-      final String filesInfoJson = json.encode(filesinfo);
-
-      final results = await analysisServer.complete(filesInfoJson, 34);
+      final results = await analysisServer
+          .completeFiles({kMainDart: testCode}, Location(kMainDart, 34));
 
       expect(completionsContains(results, 'abs'), true);
     });
 
-    test('files={} simple_quickFix', () async {
-      final Map<String, String> files = {};
-      final Map<String, dynamic> filesinfo = {};
-      filesinfo['files'] = files;
-      filesinfo['active_source_name'] = kMainDart;
-
-      files[kMainDart] = quickFixesCode;
-      final String filesInfoJson = json.encode(filesinfo);
-
-      final results = await analysisServer.getFixes(filesInfoJson, 25);
+    test('files={} myRandomName.dart + simple_quickFix', () async {
+      final results = await analysisServer.getFixesMulti(
+          {'myRandomName.dart': quickFixesCode},
+          Location('myRandomName.dart', 25));
 
       expect(results.fixes.length, 2);
 
@@ -420,87 +373,24 @@ void defineTests() {
       expect(candidateFix.edits[0].replacement, ';');
     });
 
-    /* CURRENTLTY FORMAT ACCEPTS ONLY SINGLE FILE 
-      syntax (as it was before multi file PR)
-      may change so that it is accepted and only 'active_source_name'
-      gets formatted..
-
-    test('files={} simple_format', () async {
-      final Map<String,String> files = {};
-      final Map<String,dynamic> filesinfo ={};
-      filesinfo['files'] = files;
-      filesinfo['active_source_name'] = kMainDart;
-
-      files[kMainDart] = badFormatCode;
-      filesInfoJson = json.encode(filesinfo);
-      final results = await analysisServer.format(filesInfoJson, 0);
-      expect(results.newString, formattedCode);
-    });
-
-    test('files={} format good code', () async {
-      final Map<String,String> files = {};
-      final Map<String,dynamic> filesinfo ={};
-      filesinfo['files'] = files;
-      filesinfo['active_source_name'] = kMainDart;
-
-      files[kMainDart] = formattedCode.replaceAll('\n', ' ');
-      filesInfoJson = json.encode(filesinfo);
-      final results =
-          await analysisServer.format(filesInfoJson, 0);
-      expect(results.newString, formattedCode);
-    });
-
-    test('files={} format with issues', () async {
-      final Map<String,String> files = {};
-      final Map<String,dynamic> filesinfo ={};
-      filesinfo['files'] = files;
-      filesinfo['active_source_name'] = kMainDart;
-
-      files[kMainDart] = formatWithIssues;
-      filesInfoJson = json.encode(filesinfo);
-      final results = await analysisServer.format(filesInfoJson, 0);
-      expect(results.newString, formatWithIssues);
-    });
-    */
-
     test('files={} analyze', () async {
-      final Map<String, String> files = {};
-      final Map<String, dynamic> filesinfo = {};
-      filesinfo['files'] = files;
-      filesinfo['active_source_name'] = kMainDart;
-
-      files[kMainDart] = sampleCode;
-      final String filesInfoJson = json.encode(filesinfo);
-      final results = await analysisServer.analyze(filesInfoJson);
+      final results =
+          await analysisServer.analyzeFiles({kMainDart: sampleCode});
       expect(results.issues, isEmpty);
     });
 
     test('files={} analyze with errors', () async {
-      final Map<String, String> files = {};
-      final Map<String, dynamic> filesinfo = {};
-      filesinfo['files'] = files;
-      filesinfo['active_source_name'] = kMainDart;
-
-      files[kMainDart] = sampleCodeError;
-      final String filesInfoJson = json.encode(filesinfo);
-
-      final results = await analysisServer.analyze(filesInfoJson);
+      final results =
+          await analysisServer.analyzeFiles({kMainDart: sampleCodeError});
       expect(results.issues, hasLength(1));
     });
 
     test('files={} filter completions', () async {
-      final Map<String, String> files = {};
-      final Map<String, dynamic> filesinfo = {};
-      filesinfo['files'] = files;
-      filesinfo['active_source_name'] = kMainDart;
-
-      files[kMainDart] = completionLargeNamespaces;
-      final String filesInfoJson = json.encode(filesinfo);
-
       // just after A
       final idx = 61;
       expect(completionLargeNamespaces.substring(idx - 1, idx), 'A');
-      final results = await analysisServer.complete(filesInfoJson, 61);
+      final results = await analysisServer.completeFiles(
+          {kMainDart: completionLargeNamespaces}, Location(kMainDart, 61));
       expect(completionsContains(results, 'A'), true);
       expect(completionsContains(results, 'AB'), true);
       expect(completionsContains(results, 'ABC'), true);
