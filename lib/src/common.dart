@@ -770,19 +770,6 @@ class _SourcesGroupFile {
   _SourcesGroupFile(this.filename, this.content);
 }
 
-/*
-/// Holds all source files as well as reference to source
-/// file that is active on client
-class SourcesAndActiveSourceName {
-  /// map of filename:content for all files in sources group
-  final Map<String, String> sources;
-
-  /// active source on client
-  final String activeSourceName;
-
-  const SourcesAndActiveSourceName(this.sources, this.activeSourceName);
-}
-*/
 
 ///this RegExp matches a variety of possible `main` function definition formats
 ///Like:
