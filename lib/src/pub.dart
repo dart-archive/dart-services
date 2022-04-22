@@ -11,11 +11,23 @@ import 'package:yaml/yaml.dart';
 
 import 'project.dart' as project;
 
+/// Extract all imports from [dartSource] source code
 List<ImportDirective> getAllImportsFor(String? dartSource) {
   if (dartSource == null) return [];
 
   final unit = parseString(content: dartSource, throwIfDiagnostics: false).unit;
   return unit.directives.whereType<ImportDirective>().toList();
+}
+
+/// Takes a map of a set of {"filename":"sourcecode"} source
+/// files and extracts the imports from each file's sourcecode and
+/// returns an overall list of all imports across all files in the set
+List<ImportDirective> getAllImportsForFiles(Map<String, String> files) {
+  final List<ImportDirective> imports = [];
+  files.forEach((filename, content) {
+    imports.addAll(getAllImportsFor(content));
+  });
+  return imports;
 }
 
 /// Flutter packages which do not have version numbers in pubspec.lock.
