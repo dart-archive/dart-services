@@ -770,7 +770,6 @@ class _SourcesGroupFile {
   _SourcesGroupFile(this.filename, this.content);
 }
 
-
 ///this RegExp matches a variety of possible `main` function definition formats
 ///Like:
 ///`Future<void> main(List<String> args) async {`
