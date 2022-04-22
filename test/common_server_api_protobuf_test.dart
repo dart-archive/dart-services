@@ -48,12 +48,14 @@ void defineTests() {
 
   Future<MockHttpResponse> sendPostRequest(
     String path,
-    GeneratedMessage message,
+    GeneratedMessage? message,
   ) async {
     final uri = Uri.parse('/api/$path');
     final request = MockHttpRequest('POST', uri);
     request.headers.add('content-type', jsonContentType);
-    request.add(utf8.encode(json.encode(message.toProto3Json())));
+    if (message != null) {
+      request.add(utf8.encode(json.encode(message.toProto3Json())));
+    }
     await request.close();
     await shelf_io.handleRequest(request, commonServerApi.router);
     return request.response;
@@ -383,6 +385,15 @@ main() {
           assists.where((candidateFix) =>
               candidateFix.message == 'Remove type annotation'),
           isNotEmpty);
+    });
+
+    test('version', () async {
+      final response = await sendPostRequest('dartservices/v2/version', null);
+      expect(response.statusCode, 200);
+      final encoded = await response.transform(utf8.decoder).join();
+      final data = json.decode(encoded) as Map<String, dynamic>;
+      expect(data['sdkVersion'], isNotNull);
+      expect(data['runtimeVersion'], isNotNull);
     });
 
     test('version', () async {
