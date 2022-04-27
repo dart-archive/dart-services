@@ -264,8 +264,8 @@ void defineTests() {
 
     test('files={} simple_completion', () async {
       // Just after i.
-      final results =
-          await analysisServer.completeFiles({kMainDart: completionCode}, Location(kMainDart, 32));
+      final results = await analysisServer
+          .completeFiles({kMainDart: completionCode}, Location(kMainDart, 32));
       expect(results.replacementLength, 0);
       expect(results.replacementOffset, 32);
       final completions =
