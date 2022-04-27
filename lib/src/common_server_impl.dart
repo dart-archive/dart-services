@@ -7,6 +7,7 @@ library services.common_server_impl;
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:logging/logging.dart';
 
@@ -400,10 +401,13 @@ String _hashSources(Map<String, String> sources) {
     return sha1.convert(sources[sources.keys.first]!.codeUnits).toString();
   } else {
     // >1 source files
-    final List<int> digestBytes = [];
+    final AccumulatorSink<Digest> hashoutput = AccumulatorSink<Digest>();
+    final ByteConversionSink sha1Chunker =
+        sha1.startChunkedConversion(hashoutput);
     for (final filename in sources.keys) {
-      digestBytes.addAll(sha1.convert(sources[filename]!.codeUnits).bytes);
+      sha1Chunker.add(sources[filename]!.codeUnits);
     }
-    return sha1.convert(digestBytes).toString();
+    sha1Chunker.close();
+    return hashoutput.events.single.toString();
   }
 }
