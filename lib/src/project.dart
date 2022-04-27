@@ -179,15 +179,8 @@ String? _packageNameFromPackageUri(String uriString) {
   return uri.pathSegments.first;
 }
 
-/// Goes through imports list and returns list of unsupported imports
-/// Optional [sourcesFileList] contains a list of the source filenames
-/// which are all part of this overal sources file set.
-/// (These are be allowed).  Note that filenames in [sourcesFileList]
-/// were previously sanitized of any 'package:'/etc syntax
-/// within `getSourcesAndActiveSourceName`, so the filenames list
-/// can't be used to bypass unsupported imports.
 List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports,
-    {List<String>? sourcesFileList, required bool devMode}) {
+    {required bool devMode}) {
   return imports.where((import) {
     final uriString = import.uri.stringValue;
     if (uriString == null) {
@@ -196,11 +189,6 @@ List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports,
     // All non-VM 'dart:' imports are ok.
     if (uriString.startsWith('dart:')) {
       return !_allowedDartImports.contains(uriString);
-    }
-    // if it is a import of a file in file group's own filelist then thats ok
-    // (these filenames have been sanitized to prevent 'package:')
-    if (sourcesFileList != null && sourcesFileList.contains(uriString)) {
-      return false;
     }
 
     final uri = Uri.tryParse(uriString);
