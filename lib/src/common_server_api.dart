@@ -107,7 +107,7 @@ class CommonServerApi {
           decodeFromProto: (bytes) => proto.VersionRequest.fromBuffer(bytes),
           transform: _impl.version);
 
-  // Multi File files={}  : End points for files map accepting versions
+  // Beginning of multi file map end points:
   @Route.post('$protoApiUrlPrefix/analyzeFiles')
   Future<Response> analyzeFiles(Request request, String apiVersion) =>
       _processRequest(request,
@@ -170,7 +170,7 @@ class CommonServerApi {
           decodeFromProto: (bytes) =>
               proto.SourceFilesRequest.fromBuffer(bytes),
           transform: _impl.documentFiles);
-  // End of Multi file files={} file map end points
+  // End of Multi file files={} file map end points.
 
   Router get router => _$CommonServerApiRouter(this);
 

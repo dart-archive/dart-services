@@ -219,7 +219,7 @@ abstract class AnalysisServerWrapper {
     return proto.AssistsResponse()..assists.addAll(fixes);
   }
 
-  /// format the source [src] of the single passed in file.  The [offset] is
+  /// Format the source [src] of the single passed in file.  The [offset] is
   /// the current cursor location and a modified offset is returned if necessary
   /// to maintain the cursors original position in the formatted code.
   Future<proto.FormatResponse> format(String src, int offset) {
@@ -301,8 +301,8 @@ abstract class AnalysisServerWrapper {
       await _loadSources(sources);
       final List<AnalysisError> errors = [];
 
-      // loop over all files and collect errors -
-      // sources now has filenames with full paths as keys after _getOverlayMapWithPaths() call
+      // Loop over all files and collect errors (sources now has filenames
+      // with full paths as keys after _getOverlayMapWithPaths() call).
       for (final sourcepath in sources.keys) {
         errors.addAll(
             (await analysisServer.analysis.getErrors(sourcepath)).errors);
@@ -343,12 +343,12 @@ abstract class AnalysisServerWrapper {
         return a.charStart.compareTo(b.charStart);
       });
 
-      // get imports if they were not passed in
+      // Ensure we have imports if they were not passed in.
       imports ??= getAllImportsForFiles(sources);
 
-      // Calculate the imports.
+      // Calculate the package: imports (and defensively sanitize).
       final packageImports = {
-        if (imports != null) ...imports!.filterSafePackages(),
+        ...?imports?.filterSafePackages(),
       };
 
       return proto.AnalysisResults()

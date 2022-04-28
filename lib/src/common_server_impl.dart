@@ -155,7 +155,7 @@ class CommonServerImpl {
           .dartdoc(request.source, request.offset, devMode: _sdk.devMode));
   }
 
-  // files map entry points
+  // Beginning of multi files map entry points:
   Future<proto.AnalysisResults> analyzeFiles(proto.SourceFilesRequest request) {
     if (request.files.isEmpty) {
       throw BadRequest('Missing parameter: \'files\'');
@@ -251,7 +251,7 @@ class CommonServerImpl {
           request.files, request.activeSourceName, request.offset,
           devMode: _sdk.devMode));
   }
-  // end files map entry points
+  // End of files map entry points.
 
   Future<proto.VersionResponse> version(proto.VersionRequest _) {
     final packageVersions = getPackageVersions();
@@ -397,10 +397,10 @@ String _printCompileProblem(CompilationProblem problem) => problem.message;
 
 String _hashSources(Map<String, String> sources) {
   if (sources.length == 1) {
-    // special case optimized for single source file to work as before
+    // Special case optimized for single source file (and to work as before).
     return sha1.convert(sources[sources.keys.first]!.codeUnits).toString();
   } else {
-    // >1 source files
+    // Use chunk hashing method for >1 source files.
     final AccumulatorSink<Digest> hashoutput = AccumulatorSink<Digest>();
     final ByteConversionSink sha1Chunker =
         sha1.startChunkedConversion(hashoutput);

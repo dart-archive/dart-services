@@ -206,7 +206,7 @@ void main() { print ('foo'); }
     });
 
     //---------------------------------------------------------------
-    // Multi file group files={} tests
+    // Beginning of multi file files={} tests group:
     Future<void> Function() generateCompilerFilesTest(
             Map<String, String> files) =>
         () async {
@@ -234,7 +234,7 @@ void main() { print ('foo'); }
     group('Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler  files={} multifile',
         () {
       //-----------------------------------------------------------
-      // Now test multi file 'files:{}' source format
+      // Now test multi file 'files:{}' source format:
       const kMainDart = 'main.dart';
 
       test(
@@ -247,20 +247,20 @@ void main() { print ('foo'); }
         generateCompilerFilesDDCTest({kMainDart: sampleCodeWeb}),
       );
 
-      // try not using 'main.dart' filename, should be handled OK
+      // Try not using 'main.dart' filename, should be handled OK.
       test(
         'files:{} compileFilesDDC with Flutter',
         generateCompilerFilesDDCTest({'mymainthing.dart': sampleCodeFlutter}),
       );
 
-      // filename other than 'main.dart'
+      // Filename other than 'main.dart'.
       test(
         'files:{} no main.dart (different.dart) compileFilesDDC with Flutter Counter',
         generateCompilerFilesDDCTest(
             {'different.dart': sampleCodeFlutterCounter}),
       );
 
-      // 2 separate files, main importing various
+      // 2 separate files, main importing 'various.dart'.
       test(
         'files:{} compileFilesDDC with 2 files using import',
         generateCompilerFilesDDCTest({
@@ -269,8 +269,8 @@ void main() { print ('foo'); }
         }),
       );
 
-      // 3 separate files, main importing various.dart and discdata.dart,
-      //  various.dart importing discdata.dart
+      // 3 separate files, main importing 'various.dart' and 'discdata.dart',
+      // and 'various.dart' importing 'discdata.dart'.
       test(
         'files:{} compileFilesDDC with 3 file using imports',
         generateCompilerFilesDDCTest({
@@ -280,9 +280,10 @@ void main() { print ('foo'); }
         }),
       );
 
-      // 2 separate filesm main importing various but with
-      //    up paths in names... test sanitizing filenames of '..\.../..' and '..'
-      //    santizing should strip off all up dir chars and leave just the plain filenames
+      // 2 separate files, main importing 'various.dart' but with
+      // up paths in names...test sanitizing filenames of '..\.../..' and '..'
+      // santizing should strip off all up dir chars and leave just the
+      // plain filenames.
       test(
         'files:{} compileFilesDDC with 2 files and file names sanitized',
         generateCompilerFilesDDCTest({
@@ -291,7 +292,7 @@ void main() { print ('foo'); }
         }),
       );
 
-      // 2 files Using "part 'various.dart'" to bring in second file
+      // 2 files using "part 'various.dart'" to bring in second file.
       test(
         'files:{} compileFilesDDC with 2 file using LIBRARY/PART/PART OF',
         generateCompilerFilesDDCTest({
@@ -300,7 +301,8 @@ void main() { print ('foo'); }
         }),
       );
 
-      // 3 files Using "part 'various.dart'" and "part 'discdata.dart'" to bring in second/third file
+      // 3 files using "part 'various.dart'" and "part 'discdata.dart'" to bring
+      // in second and third files.
       test(
         'files:{} compileFilesDDC with 3 files using LIBRARY/PART/PART OF',
         generateCompilerFilesDDCTest({
@@ -310,7 +312,7 @@ void main() { print ('foo'); }
         }),
       );
 
-      // Check sanitizing of package:, dart:, http:// from filenames
+      // Check sanitizing of package:, dart:, http:// from filenames.
       test(
         'files:{} compileFilesDDC with 3 SANITIZED files using LIBRARY/PART/PART OF',
         generateCompilerFilesDDCTest({
@@ -320,7 +322,8 @@ void main() { print ('foo'); }
         }),
       );
 
-      // test renaming the file with the main function ('mymain.dart') to be kMainDart if none found
+      // Test renaming the file with the main function ('mymain.dart') to be
+      // kMainDart when no file named kMainDart is found.
       test(
         'files:{} compileFilesDDC with 3 files and none named kMainDart',
         generateCompilerFilesDDCTest({
@@ -331,7 +334,7 @@ void main() { print ('foo'); }
       );
 
       // Two separate files, illegal import in second file
-      //  test that illegal imports on all files are detected
+      // test that illegal imports on all files are detected.
       final Map<String, String> filesVar2BadImports = {};
       const String badImports = '''
                             import 'package:foo';
@@ -368,7 +371,7 @@ void main() { print ('foo'); }
       });
 
       //------------------------------------------------------------------
-      // Similiar test as above but targeting compileFiles()
+      // Similiar test as above but targeting compileFiles():
       test(
         'files:{} compileFiles simple',
         generateCompilerFilesTest({kMainDart: sampleCode}),
@@ -379,16 +382,17 @@ void main() { print ('foo'); }
         generateCompilerFilesTest({kMainDart: sampleCodeWeb}),
       );
 
-      // 2 separate files, main importing various
+      // 2 separate files, main importing 'various.dart'.
       test(
         'files:{} compileFiles with 2 file',
         generateCompilerFilesTest(
             {kMainDart: sampleCodeMultiFoo, 'bar.dart': sampleCodeMultiBar}),
       );
 
-      // 2 separate filesm main importing various but with
-      //    up paths in names... test sanitizing filenames of '..\.../..' and '..'
-      //    santizing should strip off all up dir chars and leave just the plain filenames
+      // 2 separate files, main importing 'various.dart' but with
+      // up paths in names...test sanitizing filenames of '..\.../..' and '..'
+      // santizing should strip off all up dir chars and leave just the
+      // plain filenames.
       test(
         'files:{} compileFiles with 2 files and file names sanitized',
         generateCompilerFilesTest({
@@ -397,7 +401,7 @@ void main() { print ('foo'); }
         }),
       );
 
-      // Using "part 'various.dart'" to bring in second file
+      // Using "part 'various.dart'" to bring in second file.
       test(
         'files:{} compileFiles with 2 file using LIBRARY/PART/PART OF',
         generateCompilerFilesTest({
@@ -406,7 +410,7 @@ void main() { print ('foo'); }
         }),
       );
 
-      // Check sanitizing of package:, dart:, http:// from filenames
+      // Check sanitizing of package:, dart:, http:// from filenames.
       test(
         'files:{} compileFiles with 2 sanitized files using LIBRARY/PART/PART OF',
         generateCompilerFilesTest({
@@ -415,7 +419,8 @@ void main() { print ('foo'); }
         }),
       );
 
-      // test renaming the file with the main function ('mymain.dart') to be kMainDart if none found
+      // Test renaming the file with the main function ('mymain.dart') to be
+      // kMainDart when no file named kMainDat is found.
       test(
         'files:{} compileFiles with 2 files and none named kMainDart',
         generateCompilerFilesTest({
@@ -424,5 +429,6 @@ void main() { print ('foo'); }
         }),
       );
     });
+    // End of multi file files={} map testing.
   }
 }

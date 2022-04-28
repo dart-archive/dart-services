@@ -171,7 +171,7 @@ class HelloWorld extends StatelessWidget {
   });
 
   ///----------------------------------------------------------------
-  /// Multi file group files={} tests
+  /// Beginning of multi file files={} tests group:
 
   group('Flutter SDK analysis_server files={} variation', () {
     late AnalysisServerWrapper analysisServer;

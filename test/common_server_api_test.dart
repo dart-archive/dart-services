@@ -533,7 +533,7 @@ main() {
   });
 
   //-------------------------------------------------------------------------
-  // Multi file group files={} tests
+  // Beginning of multi file files={} tests group:
   group('CommonServerProto JSON for Multi file group files={}', () {
     final channel = Platform.environment['FLUTTER_CHANNEL'] ?? stableChannel;
 
@@ -697,7 +697,7 @@ void main() {
       }
     });
 
-    // compileFiles entry point testing
+    // Begin compileFiles entry point testing:
     test('compileFiles files={}', () async {
       for (final version in versions) {
         final jsonData = {
@@ -711,7 +711,7 @@ void main() {
       }
     });
 
-    // 2 separate files, main importing various
+    // 2 separate files, main importing 'various.dart'.
     test('compileFiles files={} with 2 files using import', () async {
       for (final version in versions) {
         final jsonData = {
@@ -728,9 +728,10 @@ void main() {
       }
     });
 
-    // 2 separate filesm main importing various but with
-    //    up paths in names... test sanitizing filenames of '..\.../..' and '..'
-    //    santizing should strip off all up dir chars and leave just the plain filenames
+    // 2 separate files, main importing 'various.dart' but with
+    // up paths in names... test sanitizing filenames of '..\.../..' and '..'
+    // santizing should strip off all up dir chars and leave just the
+    // plain filenames.
     test('compileFiles files={} with 2 files using import need sanitizing',
         () async {
       for (final version in versions) {
@@ -748,7 +749,7 @@ void main() {
       }
     });
 
-    // 2 files Using "part 'bar.dart'" to bring in second file
+    // 2 files using "part 'bar.dart'" to bring in second file.
     test('compileFiles files={} with 2 files using library/part', () async {
       for (final version in versions) {
         final jsonData = {
@@ -809,8 +810,7 @@ void main() {
       }
     });
 
-    // compileFilesDDC entry point testing
-    // DDC testing
+    // Begin compileFilesDDC entry point testing DDC testing:
     test('compileFilesDDC files={}', () async {
       for (final version in versions) {
         final jsonData = {
@@ -824,7 +824,7 @@ void main() {
       }
     });
 
-    // 2 separate files, main importing various
+    // 2 separate files, main importing 'various.dart'.
     test('compileFilesDDC files={} with 2 files using import', () async {
       for (final version in versions) {
         final jsonData = {
@@ -841,7 +841,7 @@ void main() {
       }
     });
 
-    // 3 separate files, main importing various.dart and discdata.dart,
+    // 3 separate files, main importing 'various.dart' and 'discdata.dart'.
     test('compileFilesDDC files={} with 3 files using import', () async {
       for (final version in versions) {
         final jsonData = {
@@ -859,9 +859,10 @@ void main() {
       }
     });
 
-    // 2 separate filesm main importing various but with
-    //    up paths in names... test sanitizing filenames of '..\.../..' and '..'
-    //    santizing should strip off all up dir chars and leave just the plain filenames
+    // 2 separate files, main importing 'various.dart' but with
+    // up paths in names... test sanitizing filenames of '..\.../..' and '..'
+    // santizing should strip off all up dir chars and leave just the
+    // plain filenames.
     test('compileFilesDDC files={} with 2 files using import need sanitizing',
         () async {
       for (final version in versions) {
@@ -880,7 +881,7 @@ void main() {
       }
     });
 
-    // 2 files Using "part 'various.dart'" to bring in second file
+    // 2 files using "part 'various.dart'" to bring in second file.
     test('compileFilesDDC files={} with 2 files using import', () async {
       for (final version in versions) {
         final jsonData = {
@@ -897,7 +898,8 @@ void main() {
       }
     });
 
-    // 3 files Using "part 'various.dart'" and "part 'discdata.dart'" to bring in second/third file
+    // 3 files using "part 'various.dart'" and "part 'discdata.dart'" to bring
+    // in second and third files.
     test('compileFilesDDC files={} with 3 files using import', () async {
       for (final version in versions) {
         final jsonData = {
@@ -915,7 +917,7 @@ void main() {
       }
     });
 
-    // Check sanitizing of package:, dart:, http:// from filenames
+    // Check sanitizing of package:, dart:, http:// from filenames.
     test('compileFilesDDC files={} with 3 files using import needs sanitizing',
         () async {
       for (final version in versions) {
@@ -934,7 +936,8 @@ void main() {
       }
     });
 
-    // test renaming the file with the main function ('mymain.dart') to be kMainDart if none found
+    // Test renaming the file with the main function ('mymain.dart') to be
+    // kMainDart when no file named kMainDart is found.
     test('compileFilesDDC files={} with 3 files using import', () async {
       for (final version in versions) {
         final jsonData = {
@@ -1228,6 +1231,7 @@ main() {
       }
     });
   });
+  // End of multi file files={} tests group.
   //-------------------------------------------------------------------------
 }
 

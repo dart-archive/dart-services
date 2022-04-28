@@ -564,9 +564,9 @@ void main(List<String> argv) {
 }
 ''';
 
-/// Code fragments for testing multi file compiling
-///  these are just taken from [sampleCodeFlutterImplicitAnimations] but
-///  re-arranged to facilitate testing multi file tests
+/// Code fragments for testing multi file compiling.
+/// These fragments are taken from [sampleCodeFlutterImplicitAnimations] and
+/// only separated and re-arranged to facilitate testing multi file tests.
 
 const sampleCode3PartFlutterImplicitAnimationsImports = r'''
 import 'dart:math';
@@ -682,7 +682,7 @@ class _VariousDiscsState extends State<VariousDiscs> {
 }
 ''';
 
-// for multi file 2 part testing using imports
+/// Create 2 files for multi file testing using imports.
 const sampleCode2PartImportMain =
     sampleCode3PartFlutterImplicitAnimationsImports +
         "\nimport 'various.dart';\n" +
@@ -692,8 +692,9 @@ const sampleCode2PartImportVarious =
         sampleCode3PartFlutterImplicitAnimationsDiscData +
         sampleCode3PartFlutterImplicitAnimationsVarious;
 
-// 3 separate files, main importing various.dart and discdata.dart,
-//  various.dart importing discdata.dart
+/// Create 3 separate files for multi file testing using imports.
+/// Here main.dart will be importing various.dart and discdata.dart,
+/// and various.dart importing discdata.dart.
 const sampleCode3PartImportMain =
     sampleCode3PartFlutterImplicitAnimationsImports +
         "\nimport 'various.dart';\nimport 'discdata.dart';" +
@@ -706,7 +707,7 @@ const sampleCode3PartImportVarious =
         "\nimport 'discdata.dart';" +
         sampleCode3PartFlutterImplicitAnimationsVarious;
 
-// 2 Part Using "part 'various.dart'" to bring in second file
+/// Create 2 file test using "part 'various.dart'" to bring in second file.
 const sampleCode2PartLibraryMain = 'library testanim;\n' +
     sampleCode3PartFlutterImplicitAnimationsImports +
     "\npart 'various.dart';\n\n" +
@@ -715,7 +716,8 @@ const sampleCode2PartVariousAndDiscDataPartOfTestAnim = 'part of testanim;\n' +
     sampleCode3PartFlutterImplicitAnimationsDiscData +
     sampleCode3PartFlutterImplicitAnimationsVarious;
 
-// 3 Part Using "part 'various.dart'" and "part 'discdata.dart'" to bring in second/third file
+/// Create 3 file test using "part 'various.dart'" and "part 'discdata.dart'"
+/// to bring in second and third files.
 const sampleCode3PartLibraryMain = 'library testanim;\n' +
     sampleCode3PartFlutterImplicitAnimationsImports +
     "\npart 'discdata.dart';\npart 'various.dart';\n" +
@@ -770,39 +772,43 @@ class _SourcesGroupFile {
   _SourcesGroupFile(this.filename, this.content);
 }
 
-///this RegExp matches a variety of possible `main` function definition formats
+///This RegExp matches a variety of possible `main` function definition formats
 ///Like:
-///`Future<void> main(List<String> args) async {`
-///`void main(List<String> args) async {`
-///`void main() {`
-///`void main( List < String >  args ) async {`
-///`void main(Args arg) {`
-///`main() {`
-///`void main() {}`
-///`void main() => runApp(MyApp());`
+/// - `Future<void> main(List<String> args) async {`
+/// - `void main(List<String> args) async {`
+/// - `void main() {`
+/// - `void main( List < String >  args ) async {`
+/// - `void main(Args arg) {`
+/// - `main() {`
+/// - `void main() {}`
+/// - `void main() => runApp(MyApp());`
 final RegExp mainFunctionDefinition = RegExp(
     r'''[\s]*(Future)?[\<]?(void)?[\>]?[\s]*main[\s]*\((\s*\w*\s*\<?\s*\w*\s*\>?\s*\w*\s*)?\)\s*(async)?\s*[\{|\=]+''');
 
-/// remove 2 or more '..' and any number of following slashes of / or \ and
+/// Used to remove 2 or more '..' and any number of following slashes of '/' or '\'.
 final RegExp sanitizeUpDirectories = RegExp(r'[\.]{2,}[\\\/]*');
 
-/// this will get 'package:', 'dart:', 'http://', 'https://' etc.
+/// Used to remove 'package:', 'dart:', 'http://', 'https://' etc.
 final RegExp sanitizePackageDartHttp = RegExp(r'[\w]*[\:][\/]*');
 
-/// remove anything like package:, dart: http:// from filename
-/// remove runs of more han '.' (no '..' up directories to escape temp)
+/// Sanitizes [filename] by using the regular expressions
+/// [sanitizeUpDirectories] and [sanitizePackageDartHttp] to remove
+/// anything like 'package:', 'dart:' or 'http://', and then removing
+/// runs of more than a single '.' (do not allow '..' up directories to
+/// escape temp directory).
 String _sanitizeFileName(String filename) {
   filename = filename.replaceAll(sanitizePackageDartHttp, '');
   filename = filename.replaceAll(sanitizeUpDirectories, '');
   return filename;
 }
 
-/// Goes through map of source files and sanitized the filenames and
-/// ensures that the main entry point file is called [kMainDart]
+/// Goes through [sources] map of source files and sanitizes the filenames
+/// and ensures that the file containing the main entry point that bootstrap
+/// will be calling is called [kMainDart].
 /// [sources] is a map containing the source files in the format
-///   `{ "filename1":"sourcecode1" .. "filenameN":"sourcecodeN"}`
-/// [activeSourceName] is the name of the source file active in the editor
-/// Returns [activeSourceName] or a new name if sanitized or renamed
+///   `{ "filename1":"sourcecode1" .. "filenameN":"sourcecodeN"}`.
+/// [activeSourceName] is the name of the source file active in the editor.
+/// Returns [activeSourceName] or a new name if sanitized or renamed.
 String sanitizeAndCheckFilenames(Map<String, String> sources,
     [String activeSourceName = kMainDart]) {
   activeSourceName = _sanitizeFileName(activeSourceName);
@@ -811,21 +817,22 @@ String sanitizeAndCheckFilenames(Map<String, String> sources,
       sources.entries.map((e) => _SourcesGroupFile(e.key, e.value)).toList();
 
   bool foundKMain = false;
-  // check for kMainDart file and also sanitize filenames
+  // Check for kMainDart file and also sanitize filenames.
   for (final sourceFile in files) {
     sourceFile.filename = _sanitizeFileName(sourceFile.filename);
     if (sourceFile.filename == kMainDart) {
       foundKMain = true;
     }
   }
-  //one of the files must be called kMainDart!! this isn what
-  //the bootstrap dart file will import and call main() on
+  // One of the files must be named kMainDart. This is the file that the
+  // bootstrap dart file will import and call main() on.
   if (!foundKMain && files.isNotEmpty) {
-    // We need to rename one to kMainDart, We really want the one with the main() function
+    // We need to rename the file containing the main() function to kMainDart.
     for (final sourceFile in files) {
       if (mainFunctionDefinition.hasMatch(sourceFile.content)) {
-        // this has a main() function, rename file file kMainDart
-        // (and change activeSourceName if this was that)
+        // This file has a main() function, rename it to kMainDart
+        // and also change activeSourceName if that is the file being
+        // renamed.
         if (sourceFile.filename == activeSourceName) {
           activeSourceName = kMainDart;
         }
@@ -835,7 +842,7 @@ String sanitizeAndCheckFilenames(Map<String, String> sources,
       }
     }
     if (!foundKMain) {
-      // still no kMainDart found, so just change the first file to be kMainDart
+      // No kMainDart was found so just change the first file to be kMainDart.
       if (files[0].filename == activeSourceName) {
         activeSourceName = kMainDart;
       }
@@ -843,7 +850,7 @@ String sanitizeAndCheckFilenames(Map<String, String> sources,
     }
   }
 
-  // take our files list and remake a files {filename:content} map
+  // Take our files list and create a new files {filename:content} map.
   sources.clear();
   for (final sourceFiles in files) {
     sources[sourceFiles.filename] = sourceFiles.content;
@@ -852,8 +859,7 @@ String sanitizeAndCheckFilenames(Map<String, String> sources,
   return activeSourceName;
 }
 
-/// Count the lines in the all files in [sources] file map and
-/// without copying string data
+/// Count the total lines across all files in [sources] file map.
 int countLines(Map<String, String> sources) {
   int totalLines = 0;
   for (final filename in sources.keys) {
@@ -866,10 +872,10 @@ int countLines(Map<String, String> sources) {
 const int _lf = 10;
 const int _cr = 13;
 
-/// Count lines in string (CR, LF or CR-LF can be line separators)
-/// Gives correct result as opposed to .split('\n').length which
-/// reports 1 extra line in many cases AND WITHOUT the
-/// work of copying strings while making list of strings
+/// Count lines in string (CR, LF or CR-LF can be line separators).
+/// (Gives correct result as opposed to .split('\n').length, which
+/// reports 1 extra line in many cases, and this does so without the
+/// extra work .split() would do by creating the list of copied strings).
 int countLinesInString(String str) {
   final List<int> data = str.codeUnits;
   int lines = 0;

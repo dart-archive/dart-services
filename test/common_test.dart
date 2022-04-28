@@ -59,13 +59,13 @@ void defineTests() {
 
   test('countLines', () {
     final Map<String, String> sources = {
-      'file1': '\n\n\n\n\n', //5
+      'file1': '\n\n\n\n\n', // 5 lines,
       'file2': r'''THis is line 1,
                     This is line 2,
-                    THis is line 3''', //3
-      'file3': 'line1\r\nline2\r\nline 3\r\n', //3
-      'file4': 'line1\nline2\nline3\n', //3
-      'file5': 'line1\rline2\rline3\r', //3
+                    THis is line 3''', // 3 lines,
+      'file3': 'line1\r\nline2\r\nline 3\r\n', // 3 lines,
+      'file4': 'line1\nline2\nline3\n', // 3 lines,
+      'file5': 'line1\rline2\rline3\r', // and 3 lines makes 17 total lines.
     };
     expect(countLines(sources), 17);
   });
@@ -92,7 +92,7 @@ void defineTests() {
     expect(filesSanitize.keys.elementAt(0), kMainDart);
     expect(filesSanitize.keys.elementAt(1), 'various.dart');
 
-    // Using "part 'various.dart'" to bring in second file
+    // Using "part 'various.dart'" to bring in second file.
     final Map<String, String> filesVar2 = {
       'mymain.dart': 'void main() => ();',
       'various.dart': '',

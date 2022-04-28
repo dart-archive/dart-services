@@ -249,7 +249,7 @@ void defineTests() {
   });
 
   //--------------------------------------------------------
-  // Testing the multi file group files={} map entry points
+  // Begin testing the multi file group files={} map entry points:
   group('Platform SDK analysis_server multifile files={}', () {
     setUp(() async {
       final sdk = Sdk.create(channel);
@@ -259,7 +259,7 @@ void defineTests() {
 
     tearDown(() => analysisServer.shutdown());
 
-    // Now test multi file 'files:{}' source format
+    // Now test multi file 'files:{}' source format.
     const kMainDart = 'main.dart';
 
     test('files={} simple_completion', () async {

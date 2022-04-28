@@ -407,7 +407,7 @@ main() {
   });
 
   //-----------------------------------------------------------------
-  // multi file groups files={} tests
+  // Beginning of multi file files={} group tests:
   group('CommonServerProto JSON Multi File Group files={}', () {
     setUpAll(() async {
       final container = MockContainer();
@@ -733,8 +733,7 @@ main() {
           isNotEmpty);
     });
   });
-
-  /// End Multi Files Group   files={}
+  // End of multi file files={} tests group.
 }
 
 class MockContainer implements ServerContainer {

@@ -11,7 +11,7 @@ import 'package:yaml/yaml.dart';
 
 import 'project.dart' as project;
 
-/// Extract all imports from [dartSource] source code
+/// Extract all imports from [dartSource] source code.
 List<ImportDirective> getAllImportsFor(String? dartSource) {
   if (dartSource == null) return [];
 
@@ -21,7 +21,7 @@ List<ImportDirective> getAllImportsFor(String? dartSource) {
 
 /// Takes a map of a set of {"filename":"sourcecode"} source
 /// files and extracts the imports from each file's sourcecode and
-/// returns an overall list of all imports across all files in the set
+/// returns an overall list of all imports across all files in the set.
 List<ImportDirective> getAllImportsForFiles(Map<String, String> files) {
   final List<ImportDirective> imports = [];
   files.forEach((filename, content) {
