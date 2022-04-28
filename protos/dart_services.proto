@@ -14,7 +14,7 @@ message CompileRequest {
   bool returnSourceMap = 2;
 }
 
-/// Compile request for a multiple file set
+/// Compile request for a multiple file set.
 message CompileFilesRequest {
   // The Dart source files set. map of { filename1:sourcecode1 .. filenameN:sourcecodeN }
   map<string, string> files = 1;
@@ -28,7 +28,7 @@ message CompileDDCRequest {
   string source = 1;
 }
 
-/// DDC Compile request for a multiple file set
+/// DDC Compile request for a multiple file set.
 message CompileFilesDDCRequest {
   // The Dart source files set. map of { filename1:sourcecode1 .. filenameN:sourcecodeN }
   map<string, string> files = 1;

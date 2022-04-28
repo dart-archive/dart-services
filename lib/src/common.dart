@@ -693,8 +693,8 @@ const sampleCode2PartImportVarious =
         sampleCode3PartFlutterImplicitAnimationsVarious;
 
 /// Create 3 separate files for multi file testing using imports.
-/// Here main.dart will be importing various.dart and discdata.dart,
-/// and various.dart importing discdata.dart.
+/// Here main.dart will be importing 'various.dart' and 'discdata.dart',
+/// and 'various.dart' importing 'discdata.dart'.
 const sampleCode3PartImportMain =
     sampleCode3PartFlutterImplicitAnimationsImports +
         "\nimport 'various.dart';\nimport 'discdata.dart';" +
