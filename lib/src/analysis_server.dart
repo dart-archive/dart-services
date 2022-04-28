@@ -199,8 +199,9 @@ abstract class AnalysisServerWrapper {
       Map<String, String> sources, Location location) async {
     final results =
         await _getFixesImpl(sources, location.sourceName, location.offset);
-    final responseFixes = results.fixes.map((aef) {
-      return _convertAnalysisErrorFix(aef, location.sourceName);
+    final responseFixes = results.fixes.map((availableAnalysisErrorFixes) {
+      return _convertAnalysisErrorFix(
+          availableAnalysisErrorFixes, location.sourceName);
     });
     return proto.FixesResponse()..fixes.addAll(responseFixes);
   }
@@ -347,7 +348,7 @@ abstract class AnalysisServerWrapper {
 
       // Calculate the imports.
       final packageImports = {
-        ...imports!.filterSafePackages(),
+        if (imports != null) ...imports!.filterSafePackages(),
       };
 
       return proto.AnalysisResults()
