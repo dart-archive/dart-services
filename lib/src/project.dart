@@ -198,7 +198,7 @@ List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports,
       return !_allowedDartImports.contains(uriString);
     }
     // Filenames from within this compilation files={} sources file set
-    // are OK. (These filenames have been sanitized to prevent 'package:' 
+    // are OK. (These filenames have been sanitized to prevent 'package:'
     // (and other) prefixes, so the a filename cannot be used to bypass
     // import restrictions).
     if (sourcesFileList != null && sourcesFileList.contains(uriString)) {
