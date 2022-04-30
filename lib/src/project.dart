@@ -181,10 +181,10 @@ String? _packageNameFromPackageUri(String uriString) {
 
 /// Goes through imports list and returns list of unsupported imports
 /// Optional [sourcesFileList] contains a list of the source filenames
-/// which are all part of this overal sources file set.
-/// (These are be allowed).  Note that filenames in [sourcesFileList]
+/// which are all part of this overall sources file set.
+/// (These are to be allowed).  Note that filenames in [sourcesFileList]
 /// were previously sanitized of any 'package:'/etc syntax
-/// within `getSourcesAndActiveSourceName`, so the filenames list
+/// within [sanitizeAndCheckFilenames], so the filenames list
 /// can't be used to bypass unsupported imports.
 List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports,
     {List<String>? sourcesFileList, required bool devMode}) {
@@ -197,8 +197,10 @@ List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports,
     if (uriString.startsWith('dart:')) {
       return !_allowedDartImports.contains(uriString);
     }
-    // if it is a import of a file in file group's own filelist then thats ok
-    // (these filenames have been sanitized to prevent 'package:')
+    // Filenames from within this compilation files={} sources file set
+    // are OK. (These filenames have been sanitized to prevent 'package:' 
+    // (and other) prefixes, so the a filename cannot be used to bypass
+    // import restrictions).
     if (sourcesFileList != null && sourcesFileList.contains(uriString)) {
       return false;
     }
