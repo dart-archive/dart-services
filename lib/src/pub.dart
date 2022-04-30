@@ -23,11 +23,7 @@ List<ImportDirective> getAllImportsFor(String? dartSource) {
 /// files and extracts the imports from each file's sourcecode and
 /// returns an overall list of all imports across all files in the set.
 List<ImportDirective> getAllImportsForFiles(Map<String, String> files) {
-  final List<ImportDirective> imports = [];
-  files.forEach((filename, content) {
-    imports.addAll(getAllImportsFor(content));
-  });
-  return imports;
+  return [for (final content in files.values) ...getAllImportsFor(content)];
 }
 
 /// Flutter packages which do not have version numbers in pubspec.lock.

@@ -398,15 +398,15 @@ String _printCompileProblem(CompilationProblem problem) => problem.message;
 String _hashSources(Map<String, String> sources) {
   if (sources.length == 1) {
     // Special case optimized for single source file (and to work as before).
-    return sha1.convert(sources[sources.keys.first]!.codeUnits).toString();
+    return sha1.convert(sources.values.first.codeUnits).toString();
   } else {
     // Use chunk hashing method for >1 source files.
     final AccumulatorSink<Digest> hashoutput = AccumulatorSink<Digest>();
     final ByteConversionSink sha1Chunker =
         sha1.startChunkedConversion(hashoutput);
-    for (final filename in sources.keys) {
-      sha1Chunker.add(sources[filename]!.codeUnits);
-    }
+    sources.forEach((_, filecontents) {
+      sha1Chunker.add(filecontents.codeUnits);
+    });
     sha1Chunker.close();
     return hashoutput.events.single.toString();
   }
