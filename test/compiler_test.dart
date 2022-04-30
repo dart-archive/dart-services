@@ -337,18 +337,20 @@ void main() { print ('foo'); }
       // illegal imports within all files are detected.
       final Map<String, String> filesVar2BadImports = {};
       const String badImports = '''
-                            import 'package:foo';
-                            import 'package:bar';
-                            ''';
-      filesVar2BadImports[kMainDart] =
-          sampleCode3PartFlutterImplicitAnimationsImports +
-              "\nimport 'various.dart';\n" +
-              sampleCode3PartFlutterImplicitAnimationsMain;
-      filesVar2BadImports['various.dart'] =
-          sampleCode3PartFlutterImplicitAnimationsImports +
-              badImports +
-              sampleCode3PartFlutterImplicitAnimationsDiscData +
-              sampleCode3PartFlutterImplicitAnimationsVarious;
+import 'package:foo';
+import 'package:bar';
+''';
+      filesVar2BadImports[kMainDart] = '''
+$sampleCode3PartFlutterImplicitAnimationsImports
+import 'various.dart';
+$sampleCode3PartFlutterImplicitAnimationsMain
+''';
+      filesVar2BadImports['various.dart'] = '''
+$sampleCode3PartFlutterImplicitAnimationsImports
+$badImports
+$sampleCode3PartFlutterImplicitAnimationsDiscData
+$sampleCode3PartFlutterImplicitAnimationsVarious
+''';
       test(
           'multiple files, second file with multiple bad imports compileFiles()',
           () async {

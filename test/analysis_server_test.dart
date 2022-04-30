@@ -88,7 +88,7 @@ void defineTests() {
     tearDown(() => analysisServer.shutdown());
 
     test('simple_completion', () async {
-      // Just after i.
+      // Just after `i.` on line 3 of [completionCode]
       final results = await analysisServer.complete(completionCode, 32);
       expect(results.replacementLength, 0);
       expect(results.replacementOffset, 32);
@@ -263,7 +263,7 @@ void defineTests() {
     const kMainDart = 'main.dart';
 
     test('files={} simple_completion', () async {
-      // Just after i.
+      // Just after `i.` on line 3 of [completionCode]
       final results = await analysisServer
           .completeFiles({kMainDart: completionCode}, Location(kMainDart, 32));
       expect(results.replacementLength, 0);
