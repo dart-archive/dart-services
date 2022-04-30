@@ -184,7 +184,7 @@ String? _packageNameFromPackageUri(String uriString) {
 /// which are all part of this overall sources file set.
 /// (These are to be allowed).  Note that filenames in [sourcesFileList]
 /// were previously sanitized of any 'package:'/etc syntax
-/// within [sanitizeAndCheckFilenames], so the filenames list
+/// within [sanitizeAndCheckFilenames()], so the filenames list
 /// can't be used to bypass unsupported imports.
 List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports,
     {List<String>? sourcesFileList, required bool devMode}) {
