@@ -136,7 +136,8 @@ class Compiler {
     return compileFilesDDC({kMainDart: source});
   }
 
-  /// Compile the given set of source files and return the resulting [DDCCompilationResults].
+  /// Compile the given set of source files and return the
+  /// resulting [DDCCompilationResults].
   /// [files] is a map containing the source files in the format
   ///   `{ "filename1":"sourcecode1" .. "filenameN":"sourcecodeN"}`
   Future<DDCCompilationResults> compileFilesDDC(
