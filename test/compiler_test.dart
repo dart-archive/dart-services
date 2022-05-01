@@ -142,8 +142,8 @@ void defineTests() {
 import 'dart:html';
 
 void main() {
-var count = querySelector('#count');
-print('hello');
+  var count = querySelector('#count');
+  print('hello');
 }
 
 ''';
