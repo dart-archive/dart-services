@@ -51,9 +51,7 @@ void defineTests() {
         expect(result.compiledJS, contains("define('dartpad_main', ["));
       };
 
-  //OBSOLETE//for (final nullSafety in [false, true]) {
-  //OBSOLETE//  group('Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler', () {
-  group('Null Safe Compiler', () {
+  group('(Always) Null Safe Compiler', () {
       setUpAll(() async {
         final channel =
             Platform.environment['FLUTTER_CHANNEL'] ?? stableChannel;
@@ -428,5 +426,4 @@ void main() { print ('foo'); }
       );
       // End of multi file files={} map testing.
     });
-  //OBSOLETE//}
 }
