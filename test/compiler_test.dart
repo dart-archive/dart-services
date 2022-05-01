@@ -51,8 +51,9 @@ void defineTests() {
         expect(result.compiledJS, contains("define('dartpad_main', ["));
       };
 
-  for (final nullSafety in [false, true]) {
-    group('Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler', () {
+  //OBSOLETE//for (final nullSafety in [false, true]) {
+  //OBSOLETE//  group('Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler', () {
+  group('Null Safe Compiler', () {
       setUpAll(() async {
         final channel =
             Platform.environment['FLUTTER_CHANNEL'] ?? stableChannel;
@@ -235,7 +236,6 @@ void main() { print ('foo'); }
       test(
         'files:{} compileFilesDDC simple',
         generateCompilerFilesDDCTest({kMainDart: sampleCode}),
-        skip: false,
       );
 
       test(
@@ -428,5 +428,5 @@ void main() { print ('foo'); }
       );
       // End of multi file files={} map testing.
     });
-  }
+  //OBSOLETE//}
 }
