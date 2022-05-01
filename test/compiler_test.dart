@@ -14,44 +14,11 @@ import 'package:test/test.dart';
 void main() => defineTests();
 
 void defineTests() {
-  late Compiler compiler;
   const kMainDart = 'main.dart';
 
-  Future<void> Function() generateCompilerFilesTest(
-          Map<String, String> files) =>
-      () async {
-        final result =
-            await compiler.compileFiles(files, returnSourceMap: false);
-        expect(result.problems, isEmpty);
-        expect(result.success, true);
-        expect(result.compiledJS, isNotEmpty);
-
-        expect(result.compiledJS, contains('(function dartProgram() {'));
-      };
-
-  Future<void> Function() generateCompilerFilesDDCTest(
-          Map<String, String> files) =>
-      () async {
-        final result = await compiler.compileFilesDDC(files);
-        expect(result.problems, isEmpty);
-        expect(result.success, true);
-        expect(result.compiledJS, isNotEmpty);
-        expect(result.modulesBaseUrl, isNotEmpty);
-
-        expect(result.compiledJS, contains("define('dartpad_main', ["));
-      };
-
-  Future<void> Function() generateCompilerDDCTest(String sample) => () async {
-        final result = await compiler.compileDDC(sample);
-        expect(result.problems, isEmpty);
-        expect(result.success, true);
-        expect(result.compiledJS, isNotEmpty);
-        expect(result.modulesBaseUrl, isNotEmpty);
-
-        expect(result.compiledJS, contains("define('dartpad_main', ["));
-      };
-
   group('(Always) Null Safe Compiler', () {
+    late Compiler compiler;
+
     setUpAll(() async {
       final channel = Platform.environment['FLUTTER_CHANNEL'] ?? stableChannel;
       compiler = Compiler(Sdk.create(channel));
@@ -61,6 +28,40 @@ void defineTests() {
     tearDownAll(() async {
       await compiler.dispose();
     });
+
+    Future<void> Function() generateCompilerFilesTest(
+            Map<String, String> files) =>
+        () async {
+          final result =
+              await compiler.compileFiles(files, returnSourceMap: false);
+          expect(result.problems, isEmpty);
+          expect(result.success, true);
+          expect(result.compiledJS, isNotEmpty);
+
+          expect(result.compiledJS, contains('(function dartProgram() {'));
+        };
+
+    Future<void> Function() generateCompilerFilesDDCTest(
+            Map<String, String> files) =>
+        () async {
+          final result = await compiler.compileFilesDDC(files);
+          expect(result.problems, isEmpty);
+          expect(result.success, true);
+          expect(result.compiledJS, isNotEmpty);
+          expect(result.modulesBaseUrl, isNotEmpty);
+
+          expect(result.compiledJS, contains("define('dartpad_main', ["));
+        };
+
+    Future<void> Function() generateCompilerDDCTest(String sample) => () async {
+          final result = await compiler.compileDDC(sample);
+          expect(result.problems, isEmpty);
+          expect(result.success, true);
+          expect(result.compiledJS, isNotEmpty);
+          expect(result.modulesBaseUrl, isNotEmpty);
+
+          expect(result.compiledJS, contains("define('dartpad_main', ["));
+        };
 
     test('simple', () async {
       final result = await compiler.compile(sampleCode);
