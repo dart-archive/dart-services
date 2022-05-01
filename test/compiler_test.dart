@@ -371,66 +371,69 @@ $sampleCode3PartFlutterImplicitAnimationsVarious
         expect(result.problems[1].message,
             equals('unsupported import: package:bar'));
       });
-
-      //------------------------------------------------------------------
-      // Similiar test as above but targeting compileFiles():
-      test(
-        'files:{} compileFiles simple',
-        generateCompilerFilesTest({kMainDart: sampleCode}),
-      );
-
-      test(
-        'files:{} compileFiles with web',
-        generateCompilerFilesTest({kMainDart: sampleCodeWeb}),
-      );
-
-      // 2 separate files, main importing 'various.dart'.
-      test(
-        'files:{} compileFiles with 2 file',
-        generateCompilerFilesTest(
-            {kMainDart: sampleCodeMultiFoo, 'bar.dart': sampleCodeMultiBar}),
-      );
-
-      // 2 separate files, main importing 'various.dart' but with
-      // up paths in names...test sanitizing filenames of '..\.../..' and '..'
-      // santizing should strip off all up dir chars and leave just the
-      // plain filenames.
-      test(
-        'files:{} compileFiles with 2 files and file names sanitized',
-        generateCompilerFilesTest({
-          '..\\.../../$kMainDart': sampleCodeMultiFoo,
-          '../bar.dart': sampleCodeMultiBar
-        }),
-      );
-
-      // Using "part 'various.dart'" to bring in second file.
-      test(
-        'files:{} compileFiles with 2 file using LIBRARY/PART/PART OF',
-        generateCompilerFilesTest({
-          kMainDart: sampleCodeLibraryMultiFoo,
-          'bar.dart': sampleCodePartMultiBar
-        }),
-      );
-
-      // Check sanitizing of package:, dart:, http:// from filenames.
-      test(
-        'files:{} compileFiles with 2 sanitized files using LIBRARY/PART/PART OF',
-        generateCompilerFilesTest({
-          'package:$kMainDart': sampleCodeLibraryMultiFoo,
-          'dart:bar.dart': sampleCodePartMultiBar
-        }),
-      );
-
-      // Test renaming the file with the main function ('mymain.dart') to be
-      // kMainDart when no file named kMainDat is found.
-      test(
-        'files:{} compileFiles with 2 files and none named kMainDart',
-        generateCompilerFilesTest({
-          'mymain.dart': sampleCodeMultiFoo,
-          'bar.dart': sampleCodeMultiBar
-        }),
-      );
 */
+      group(
+          'Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler [targeting compileFiles()] files={} multifile',
+          () {
+        //------------------------------------------------------------------
+        // Similiar test as above but targeting compileFiles():
+        test(
+          'files:{} compileFiles simple',
+          generateCompilerFilesTest({kMainDart: sampleCode}),
+        );
+
+        test(
+          'files:{} compileFiles with web',
+          generateCompilerFilesTest({kMainDart: sampleCodeWeb}),
+        );
+
+        // 2 separate files, main importing 'various.dart'.
+        test(
+          'files:{} compileFiles with 2 file',
+          generateCompilerFilesTest(
+              {kMainDart: sampleCodeMultiFoo, 'bar.dart': sampleCodeMultiBar}),
+        );
+
+        // 2 separate files, main importing 'various.dart' but with
+        // up paths in names...test sanitizing filenames of '..\.../..' and '..'
+        // santizing should strip off all up dir chars and leave just the
+        // plain filenames.
+        test(
+          'files:{} compileFiles with 2 files and file names sanitized',
+          generateCompilerFilesTest({
+            '..\\.../../$kMainDart': sampleCodeMultiFoo,
+            '../bar.dart': sampleCodeMultiBar
+          }),
+        );
+
+        // Using "part 'various.dart'" to bring in second file.
+        test(
+          'files:{} compileFiles with 2 file using LIBRARY/PART/PART OF',
+          generateCompilerFilesTest({
+            kMainDart: sampleCodeLibraryMultiFoo,
+            'bar.dart': sampleCodePartMultiBar
+          }),
+        );
+
+        // Check sanitizing of package:, dart:, http:// from filenames.
+        test(
+          'files:{} compileFiles with 2 sanitized files using LIBRARY/PART/PART OF',
+          generateCompilerFilesTest({
+            'package:$kMainDart': sampleCodeLibraryMultiFoo,
+            'dart:bar.dart': sampleCodePartMultiBar
+          }),
+        );
+
+        // Test renaming the file with the main function ('mymain.dart') to be
+        // kMainDart when no file named kMainDat is found.
+        test(
+          'files:{} compileFiles with 2 files and none named kMainDart',
+          generateCompilerFilesTest({
+            'mymain.dart': sampleCodeMultiFoo,
+            'bar.dart': sampleCodeMultiBar
+          }),
+        );
+      }, skip: true); //TIM TRACKING
     });
     // End of multi file files={} map testing.
   }
