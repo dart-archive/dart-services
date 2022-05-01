@@ -173,7 +173,6 @@ class HelloWorld extends StatelessWidget {
   ///----------------------------------------------------------------
   /// Beginning of multi file files={} tests group:
   group('MULTI FILE files={} Tests', () {
-    //TMM TRACKING HANG
     group('Flutter SDK analysis_server files={} variation', () {
       late AnalysisServerWrapper analysisServer;
 
@@ -336,7 +335,7 @@ class HelloWorld extends StatelessWidget {
         expect(results.issues, isEmpty);
       });
     });
-  }, skip: true); //TMM TRACKING HANG
+  });
 }
 
 class _MockContainer implements ServerContainer {

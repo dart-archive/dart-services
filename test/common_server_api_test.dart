@@ -866,7 +866,6 @@ void main() {
     test('compileFilesDDC files={} with 2 files using import need sanitizing',
         () async {
       for (final version in versions) {
-        print('TIM - version = $version');
         final jsonData = {
           'files': {
             '..\\.../../$kMainDart': sampleCode2PartImportMain,
@@ -1230,7 +1229,7 @@ main() {
         }), isNotEmpty);
       }
     });
-  }, skip: false); // TIM TRACKING HANG
+  });
   // End of multi file files={} tests group.
   //-------------------------------------------------------------------------
 }
