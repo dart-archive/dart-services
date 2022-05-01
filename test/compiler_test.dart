@@ -228,7 +228,6 @@ void main() { print ('foo'); }
         final result = await compiler.compile(code);
         expect(result.problems.length, 1);
       });
-    });
 
     //---------------------------------------------------------------
     // Beginning of multi file files={} tests group:
@@ -441,5 +440,7 @@ void main() { print ('foo'); }
 //TMM       }, skip: false); //TIM TRACKING
 //TMM     });
     // End of multi file files={} map testing.
+
+    });
   }
 }
