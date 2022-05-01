@@ -177,9 +177,8 @@ class Compiler {
       await File(bootstrapPath).writeAsString(bootstrapContents);
 
       files.forEach((filename, content) async {
-        final compileTarget = path.join(temp.path, 'lib', filename);
-        final aDartFile = File(compileTarget);
-        await aDartFile.writeAsString(content);
+        await File(path.join(temp.path, 'lib', filename))
+            .writeAsString(content);
       });
 
       final arguments = <String>[
