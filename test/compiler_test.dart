@@ -232,155 +232,142 @@ void main() { print ('foo'); }
       //---------------------------------------------------------------
       // Beginning of multi file files={} tests group:
 
-//TMM    group('Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler  files={} multifile',
-//TMM         () {
-      //-----------------------------------------------------------
-      // Now test multi file 'files:{}' source format:
-
-//TMM       group(
-//TMM           'Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler [targeting compileFilesDDC()] files={} multifile',
-//TMM           () {
       test(
         'files:{} compileFilesDDC simple',
         generateCompilerFilesDDCTest({kMainDart: sampleCode}),
         skip: false,
       );
-/*
-        test(
-          'files:{} compileFilesDDC with web',
-          generateCompilerFilesDDCTest({kMainDart: sampleCodeWeb}),
-        );
 
-        // Try not using 'main.dart' filename, should be handled OK.
-        test(
-          'files:{} compileFilesDDC with Flutter',
-          generateCompilerFilesDDCTest({'mymainthing.dart': sampleCodeFlutter}),
-        );
+      test(
+        'files:{} compileFilesDDC with web',
+        generateCompilerFilesDDCTest({kMainDart: sampleCodeWeb}),
+      );
 
-        // Filename other than 'main.dart'.
-        test(
-          'files:{} no main.dart (different.dart) compileFilesDDC with Flutter Counter',
-          generateCompilerFilesDDCTest(
-              {'different.dart': sampleCodeFlutterCounter}),
-        );
+      // Try not using 'main.dart' filename, should be handled OK.
+      test(
+        'files:{} compileFilesDDC with Flutter',
+        generateCompilerFilesDDCTest({'mymainthing.dart': sampleCodeFlutter}),
+      );
 
-        // 2 separate files, main importing 'various.dart'.
-        test(
-          'files:{} compileFilesDDC with 2 files using import',
-          generateCompilerFilesDDCTest({
-            kMainDart: sampleCode2PartImportMain,
-            'various.dart': sampleCode2PartImportVarious
-          }),
-        );
+      // Filename other than 'main.dart'.
+      test(
+        'files:{} no main.dart (different.dart) compileFilesDDC with Flutter Counter',
+        generateCompilerFilesDDCTest(
+            {'different.dart': sampleCodeFlutterCounter}),
+      );
 
-        // 3 separate files, main importing 'various.dart' and 'discdata.dart',
-        // and 'various.dart' importing 'discdata.dart'.
-        test(
-          'files:{} compileFilesDDC with 3 file using imports',
-          generateCompilerFilesDDCTest({
-            kMainDart: sampleCode3PartImportMain,
-            'discdata.dart': sampleCode3PartImportDiscData,
-            'various.dart': sampleCode3PartImportVarious
-          }),
-        );
+      // 2 separate files, main importing 'various.dart'.
+      test(
+        'files:{} compileFilesDDC with 2 files using import',
+        generateCompilerFilesDDCTest({
+          kMainDart: sampleCode2PartImportMain,
+          'various.dart': sampleCode2PartImportVarious
+        }),
+      );
 
-        // 2 separate files, main importing 'various.dart' but with
-        // up paths in names...test sanitizing filenames of '..\.../..' and '..'
-        // santizing should strip off all up dir chars and leave just the
-        // plain filenames.
-        test(
-          'files:{} compileFilesDDC with 2 files and file names sanitized',
-          generateCompilerFilesDDCTest({
-            '..\\.../../$kMainDart': sampleCode2PartImportMain,
-            '../various.dart': sampleCode2PartImportVarious
-          }),
-        );
+      // 3 separate files, main importing 'various.dart' and 'discdata.dart',
+      // and 'various.dart' importing 'discdata.dart'.
+      test(
+        'files:{} compileFilesDDC with 3 file using imports',
+        generateCompilerFilesDDCTest({
+          kMainDart: sampleCode3PartImportMain,
+          'discdata.dart': sampleCode3PartImportDiscData,
+          'various.dart': sampleCode3PartImportVarious
+        }),
+      );
 
-        // 2 files using "part 'various.dart'" to bring in second file.
-        test(
-          'files:{} compileFilesDDC with 2 file using LIBRARY/PART/PART OF',
-          generateCompilerFilesDDCTest({
-            kMainDart: sampleCode2PartLibraryMain,
-            'various.dart': sampleCode2PartVariousAndDiscDataPartOfTestAnim
-          }),
-        );
+      // 2 separate files, main importing 'various.dart' but with
+      // up paths in names...test sanitizing filenames of '..\.../..' and '..'
+      // santizing should strip off all up dir chars and leave just the
+      // plain filenames.
+      test(
+        'files:{} compileFilesDDC with 2 files and file names sanitized',
+        generateCompilerFilesDDCTest({
+          '..\\.../../$kMainDart': sampleCode2PartImportMain,
+          '../various.dart': sampleCode2PartImportVarious
+        }),
+      );
 
-        // 3 files using "part 'various.dart'" and "part 'discdata.dart'" to bring
-        // in second and third files.
-        test(
-          'files:{} compileFilesDDC with 3 files using LIBRARY/PART/PART OF',
-          generateCompilerFilesDDCTest({
-            kMainDart: sampleCode3PartLibraryMain,
-            'discdata.dart': sampleCode3PartDiscDataPartOfTestAnim,
-            'various.dart': sampleCode3PartVariousPartOfTestAnim
-          }),
-        );
+      // 2 files using "part 'various.dart'" to bring in second file.
+      test(
+        'files:{} compileFilesDDC with 2 file using LIBRARY/PART/PART OF',
+        generateCompilerFilesDDCTest({
+          kMainDart: sampleCode2PartLibraryMain,
+          'various.dart': sampleCode2PartVariousAndDiscDataPartOfTestAnim
+        }),
+      );
 
-        // Check sanitizing of package:, dart:, http:// from filenames.
-        test(
-          'files:{} compileFilesDDC with 3 SANITIZED files using LIBRARY/PART/PART OF',
-          generateCompilerFilesDDCTest({
-            'package:$kMainDart': sampleCode3PartLibraryMain,
-            'dart:discdata.dart': sampleCode3PartDiscDataPartOfTestAnim,
-            'http://various.dart': sampleCode3PartVariousPartOfTestAnim
-          }),
-        );
+      // 3 files using "part 'various.dart'" and "part 'discdata.dart'" to bring
+      // in second and third files.
+      test(
+        'files:{} compileFilesDDC with 3 files using LIBRARY/PART/PART OF',
+        generateCompilerFilesDDCTest({
+          kMainDart: sampleCode3PartLibraryMain,
+          'discdata.dart': sampleCode3PartDiscDataPartOfTestAnim,
+          'various.dart': sampleCode3PartVariousPartOfTestAnim
+        }),
+      );
 
-        // Test renaming the file with the main function ('mymain.dart') to be
-        // kMainDart when no file named kMainDart is found.
-        test(
-          'files:{} compileFilesDDC with 3 files and none named kMainDart',
-          generateCompilerFilesDDCTest({
-            'discdata.dart': sampleCode3PartDiscDataPartOfTestAnim,
-            'various.dart': sampleCode3PartVariousPartOfTestAnim,
-            'mymain.dart': sampleCode3PartLibraryMain
-          }),
-        );
+      // Check sanitizing of package:, dart:, http:// from filenames.
+      test(
+        'files:{} compileFilesDDC with 3 SANITIZED files using LIBRARY/PART/PART OF',
+        generateCompilerFilesDDCTest({
+          'package:$kMainDart': sampleCode3PartLibraryMain,
+          'dart:discdata.dart': sampleCode3PartDiscDataPartOfTestAnim,
+          'http://various.dart': sampleCode3PartVariousPartOfTestAnim
+        }),
+      );
 
-        // Two separate files, illegal import in second file, test that
-        // illegal imports within all files are detected.
-        final Map<String, String> filesVar2BadImports = {};
-        const String badImports = '''
+      // Test renaming the file with the main function ('mymain.dart') to be
+      // kMainDart when no file named kMainDart is found.
+      test(
+        'files:{} compileFilesDDC with 3 files and none named kMainDart',
+        generateCompilerFilesDDCTest({
+          'discdata.dart': sampleCode3PartDiscDataPartOfTestAnim,
+          'various.dart': sampleCode3PartVariousPartOfTestAnim,
+          'mymain.dart': sampleCode3PartLibraryMain
+        }),
+      );
+
+      // Two separate files, illegal import in second file, test that
+      // illegal imports within all files are detected.
+      final Map<String, String> filesVar2BadImports = {};
+      const String badImports = '''
   import 'package:foo';
   import 'package:bar';
   ''';
-        filesVar2BadImports[kMainDart] = '''
+      filesVar2BadImports[kMainDart] = '''
   $sampleCode3PartFlutterImplicitAnimationsImports
   import 'various.dart';
   $sampleCode3PartFlutterImplicitAnimationsMain
   ''';
-        filesVar2BadImports['various.dart'] = '''
+      filesVar2BadImports['various.dart'] = '''
   $sampleCode3PartFlutterImplicitAnimationsImports
   $badImports
   $sampleCode3PartFlutterImplicitAnimationsDiscData
   $sampleCode3PartFlutterImplicitAnimationsVarious
   ''';
-        test(
-            'multiple files, second file with multiple bad imports compileFiles()',
-            () async {
-          final result = await compiler.compileFiles(filesVar2BadImports);
-          expect(result.problems, hasLength(2));
-          expect(result.problems[0].message,
-              equals('unsupported import: package:foo'));
-          expect(result.problems[1].message,
-              equals('unsupported import: package:bar'));
-        });
-        test(
-            'multiple files, second file with multiple bad imports compileFilesDDC()',
-            () async {
-          final result = await compiler.compileFilesDDC(filesVar2BadImports);
-          expect(result.problems, hasLength(2));
-          expect(result.problems[0].message,
-              equals('unsupported import: package:foo'));
-          expect(result.problems[1].message,
-              equals('unsupported import: package:bar'));
-        });
-        */
-//TMM       }, skip: false); //TIM TRACKING
+      test(
+          'multiple files, second file with multiple bad imports compileFiles()',
+          () async {
+        final result = await compiler.compileFiles(filesVar2BadImports);
+        expect(result.problems, hasLength(2));
+        expect(result.problems[0].message,
+            equals('unsupported import: package:foo'));
+        expect(result.problems[1].message,
+            equals('unsupported import: package:bar'));
+      });
+      test(
+          'multiple files, second file with multiple bad imports compileFilesDDC()',
+          () async {
+        final result = await compiler.compileFilesDDC(filesVar2BadImports);
+        expect(result.problems, hasLength(2));
+        expect(result.problems[0].message,
+            equals('unsupported import: package:foo'));
+        expect(result.problems[1].message,
+            equals('unsupported import: package:bar'));
+      });
 
-//TMM       group(
-//TMM           'Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler [targeting compileFiles()] files={} multifile',
-//TMM           () {
       //------------------------------------------------------------------
       // Similiar test as above but targeting compileFiles():
       test(
@@ -439,8 +426,6 @@ void main() { print ('foo'); }
           'bar.dart': sampleCodeMultiBar
         }),
       );
-//TMM       }, skip: false); //TIM TRACKING
-//TMM     });
       // End of multi file files={} map testing.
     });
   }
