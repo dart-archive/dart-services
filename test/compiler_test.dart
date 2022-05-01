@@ -375,7 +375,7 @@ void main() { print ('foo'); }
               equals('unsupported import: package:bar'));
         });
         */
-      }, skip: true); //TIM TRACKING
+      }, skip: false); //TIM TRACKING
 
       group(
           'Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler [targeting compileFiles()] files={} multifile',
