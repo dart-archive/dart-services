@@ -15,6 +15,31 @@ void main() => defineTests();
 
 void defineTests() {
   late Compiler compiler;
+  const kMainDart = 'main.dart';
+
+  Future<void> Function() generateCompilerFilesTest(
+          Map<String, String> files) =>
+      () async {
+        final result =
+            await compiler.compileFiles(files, returnSourceMap: false);
+        expect(result.problems, isEmpty);
+        expect(result.success, true);
+        expect(result.compiledJS, isNotEmpty);
+
+        expect(result.compiledJS, contains('(function dartProgram() {'));
+      };
+
+  Future<void> Function() generateCompilerFilesDDCTest(
+          Map<String, String> files) =>
+      () async {
+        final result = await compiler.compileFilesDDC(files);
+        expect(result.problems, isEmpty);
+        expect(result.success, true);
+        expect(result.compiledJS, isNotEmpty);
+        expect(result.modulesBaseUrl, isNotEmpty);
+
+        expect(result.compiledJS, contains("define('dartpad_main', ["));
+      };
 
   Future<void> Function() generateCompilerDDCTest(String sample) => () async {
         final result = await compiler.compileDDC(sample);
@@ -207,43 +232,20 @@ void main() { print ('foo'); }
 
     //---------------------------------------------------------------
     // Beginning of multi file files={} tests group:
-    Future<void> Function() generateCompilerFilesTest(
-            Map<String, String> files) =>
-        () async {
-          final result =
-              await compiler.compileFiles(files, returnSourceMap: false);
-          expect(result.problems, isEmpty);
-          expect(result.success, true);
-          expect(result.compiledJS, isNotEmpty);
 
-          expect(result.compiledJS, contains('(function dartProgram() {'));
-        };
+//TMM    group('Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler  files={} multifile',
+//TMM         () {
+    //-----------------------------------------------------------
+    // Now test multi file 'files:{}' source format:
 
-    Future<void> Function() generateCompilerFilesDDCTest(
-            Map<String, String> files) =>
-        () async {
-          final result = await compiler.compileFilesDDC(files);
-          expect(result.problems, isEmpty);
-          expect(result.success, true);
-          expect(result.compiledJS, isNotEmpty);
-          expect(result.modulesBaseUrl, isNotEmpty);
-
-          expect(result.compiledJS, contains("define('dartpad_main', ["));
-        };
-
-    group('Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler  files={} multifile',
-        () {
-      //-----------------------------------------------------------
-      // Now test multi file 'files:{}' source format:
-      const kMainDart = 'main.dart';
-
-      group(
-          'Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler [targeting compileFilesDDC()] files={} multifile',
-          () {
-        test(
-          'files:{} compileFilesDDC simple',
-          generateCompilerFilesDDCTest({kMainDart: sampleCode}),
-        );
+//TMM       group(
+//TMM           'Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler [targeting compileFilesDDC()] files={} multifile',
+//TMM           () {
+    test(
+      'files:{} compileFilesDDC simple',
+      generateCompilerFilesDDCTest({kMainDart: sampleCode}),
+      skip: true,
+    );
 /*
         test(
           'files:{} compileFilesDDC with web',
@@ -375,71 +377,69 @@ void main() { print ('foo'); }
               equals('unsupported import: package:bar'));
         });
         */
-      }, skip: true); //TIM TRACKING
+//TMM       }, skip: false); //TIM TRACKING
 
-      group(
-          'Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler [targeting compileFiles()] files={} multifile',
-          () {
-        //------------------------------------------------------------------
-        // Similiar test as above but targeting compileFiles():
-        test(
-          'files:{} compileFiles simple',
-          generateCompilerFilesTest({kMainDart: sampleCode}),
-        );
+//TMM       group(
+//TMM           'Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler [targeting compileFiles()] files={} multifile',
+//TMM           () {
+    //------------------------------------------------------------------
+    // Similiar test as above but targeting compileFiles():
+    test(
+      'files:{} compileFiles simple',
+      generateCompilerFilesTest({kMainDart: sampleCode}),
+    );
 
-        test(
-          'files:{} compileFiles with web',
-          generateCompilerFilesTest({kMainDart: sampleCodeWeb}),
-        );
+    test(
+      'files:{} compileFiles with web',
+      generateCompilerFilesTest({kMainDart: sampleCodeWeb}),
+    );
 
-        // 2 separate files, main importing 'various.dart'.
-        test(
-          'files:{} compileFiles with 2 file',
-          generateCompilerFilesTest(
-              {kMainDart: sampleCodeMultiFoo, 'bar.dart': sampleCodeMultiBar}),
-        );
+    // 2 separate files, main importing 'various.dart'.
+    test(
+      'files:{} compileFiles with 2 file',
+      generateCompilerFilesTest(
+          {kMainDart: sampleCodeMultiFoo, 'bar.dart': sampleCodeMultiBar}),
+    );
 
-        // 2 separate files, main importing 'various.dart' but with
-        // up paths in names...test sanitizing filenames of '..\.../..' and '..'
-        // santizing should strip off all up dir chars and leave just the
-        // plain filenames.
-        test(
-          'files:{} compileFiles with 2 files and file names sanitized',
-          generateCompilerFilesTest({
-            '..\\.../../$kMainDart': sampleCodeMultiFoo,
-            '../bar.dart': sampleCodeMultiBar
-          }),
-        );
+    // 2 separate files, main importing 'various.dart' but with
+    // up paths in names...test sanitizing filenames of '..\.../..' and '..'
+    // santizing should strip off all up dir chars and leave just the
+    // plain filenames.
+    test(
+      'files:{} compileFiles with 2 files and file names sanitized',
+      generateCompilerFilesTest({
+        '..\\.../../$kMainDart': sampleCodeMultiFoo,
+        '../bar.dart': sampleCodeMultiBar
+      }),
+    );
 
-        // Using "part 'various.dart'" to bring in second file.
-        test(
-          'files:{} compileFiles with 2 file using LIBRARY/PART/PART OF',
-          generateCompilerFilesTest({
-            kMainDart: sampleCodeLibraryMultiFoo,
-            'bar.dart': sampleCodePartMultiBar
-          }),
-        );
+    // Using "part 'various.dart'" to bring in second file.
+    test(
+      'files:{} compileFiles with 2 file using LIBRARY/PART/PART OF',
+      generateCompilerFilesTest({
+        kMainDart: sampleCodeLibraryMultiFoo,
+        'bar.dart': sampleCodePartMultiBar
+      }),
+    );
 
-        // Check sanitizing of package:, dart:, http:// from filenames.
-        test(
-          'files:{} compileFiles with 2 sanitized files using LIBRARY/PART/PART OF',
-          generateCompilerFilesTest({
-            'package:$kMainDart': sampleCodeLibraryMultiFoo,
-            'dart:bar.dart': sampleCodePartMultiBar
-          }),
-        );
+    // Check sanitizing of package:, dart:, http:// from filenames.
+    test(
+      'files:{} compileFiles with 2 sanitized files using LIBRARY/PART/PART OF',
+      generateCompilerFilesTest({
+        'package:$kMainDart': sampleCodeLibraryMultiFoo,
+        'dart:bar.dart': sampleCodePartMultiBar
+      }),
+    );
 
-        // Test renaming the file with the main function ('mymain.dart') to be
-        // kMainDart when no file named kMainDat is found.
-        test(
-          'files:{} compileFiles with 2 files and none named kMainDart',
-          generateCompilerFilesTest({
-            'mymain.dart': sampleCodeMultiFoo,
-            'bar.dart': sampleCodeMultiBar
-          }),
-        );
-      }, skip: false); //TIM TRACKING
-    });
+    // Test renaming the file with the main function ('mymain.dart') to be
+    // kMainDart when no file named kMainDat is found.
+    test(
+      'files:{} compileFiles with 2 files and none named kMainDart',
+      generateCompilerFilesTest(
+          {'mymain.dart': sampleCodeMultiFoo, 'bar.dart': sampleCodeMultiBar}),
+    );
+//TMM       }, skip: false); //TIM TRACKING
+//TMM     });
     // End of multi file files={} map testing.
   }
 }
