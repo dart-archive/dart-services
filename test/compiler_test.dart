@@ -229,22 +229,22 @@ void main() { print ('foo'); }
         expect(result.problems.length, 1);
       });
 
-    //---------------------------------------------------------------
-    // Beginning of multi file files={} tests group:
+      //---------------------------------------------------------------
+      // Beginning of multi file files={} tests group:
 
 //TMM    group('Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler  files={} multifile',
 //TMM         () {
-    //-----------------------------------------------------------
-    // Now test multi file 'files:{}' source format:
+      //-----------------------------------------------------------
+      // Now test multi file 'files:{}' source format:
 
 //TMM       group(
 //TMM           'Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler [targeting compileFilesDDC()] files={} multifile',
 //TMM           () {
-    test(
-      'files:{} compileFilesDDC simple',
-      generateCompilerFilesDDCTest({kMainDart: sampleCode}),
-      skip: false,
-    );
+      test(
+        'files:{} compileFilesDDC simple',
+        generateCompilerFilesDDCTest({kMainDart: sampleCode}),
+        skip: false,
+      );
 /*
         test(
           'files:{} compileFilesDDC with web',
@@ -381,66 +381,67 @@ void main() { print ('foo'); }
 //TMM       group(
 //TMM           'Null ${nullSafety ? 'Safe' : 'Unsafe'} Compiler [targeting compileFiles()] files={} multifile',
 //TMM           () {
-    //------------------------------------------------------------------
-    // Similiar test as above but targeting compileFiles():
-    test(
-      'files:{} compileFiles simple',
-      generateCompilerFilesTest({kMainDart: sampleCode}),
-    );
+      //------------------------------------------------------------------
+      // Similiar test as above but targeting compileFiles():
+      test(
+        'files:{} compileFiles simple',
+        generateCompilerFilesTest({kMainDart: sampleCode}),
+      );
 
-    test(
-      'files:{} compileFiles with web',
-      generateCompilerFilesTest({kMainDart: sampleCodeWeb}),
-    );
+      test(
+        'files:{} compileFiles with web',
+        generateCompilerFilesTest({kMainDart: sampleCodeWeb}),
+      );
 
-    // 2 separate files, main importing 'various.dart'.
-    test(
-      'files:{} compileFiles with 2 file',
-      generateCompilerFilesTest(
-          {kMainDart: sampleCodeMultiFoo, 'bar.dart': sampleCodeMultiBar}),
-    );
+      // 2 separate files, main importing 'various.dart'.
+      test(
+        'files:{} compileFiles with 2 file',
+        generateCompilerFilesTest(
+            {kMainDart: sampleCodeMultiFoo, 'bar.dart': sampleCodeMultiBar}),
+      );
 
-    // 2 separate files, main importing 'various.dart' but with
-    // up paths in names...test sanitizing filenames of '..\.../..' and '..'
-    // santizing should strip off all up dir chars and leave just the
-    // plain filenames.
-    test(
-      'files:{} compileFiles with 2 files and file names sanitized',
-      generateCompilerFilesTest({
-        '..\\.../../$kMainDart': sampleCodeMultiFoo,
-        '../bar.dart': sampleCodeMultiBar
-      }),
-    );
+      // 2 separate files, main importing 'various.dart' but with
+      // up paths in names...test sanitizing filenames of '..\.../..' and '..'
+      // santizing should strip off all up dir chars and leave just the
+      // plain filenames.
+      test(
+        'files:{} compileFiles with 2 files and file names sanitized',
+        generateCompilerFilesTest({
+          '..\\.../../$kMainDart': sampleCodeMultiFoo,
+          '../bar.dart': sampleCodeMultiBar
+        }),
+      );
 
-    // Using "part 'various.dart'" to bring in second file.
-    test(
-      'files:{} compileFiles with 2 file using LIBRARY/PART/PART OF',
-      generateCompilerFilesTest({
-        kMainDart: sampleCodeLibraryMultiFoo,
-        'bar.dart': sampleCodePartMultiBar
-      }),
-    );
+      // Using "part 'various.dart'" to bring in second file.
+      test(
+        'files:{} compileFiles with 2 file using LIBRARY/PART/PART OF',
+        generateCompilerFilesTest({
+          kMainDart: sampleCodeLibraryMultiFoo,
+          'bar.dart': sampleCodePartMultiBar
+        }),
+      );
 
-    // Check sanitizing of package:, dart:, http:// from filenames.
-    test(
-      'files:{} compileFiles with 2 sanitized files using LIBRARY/PART/PART OF',
-      generateCompilerFilesTest({
-        'package:$kMainDart': sampleCodeLibraryMultiFoo,
-        'dart:bar.dart': sampleCodePartMultiBar
-      }),
-    );
+      // Check sanitizing of package:, dart:, http:// from filenames.
+      test(
+        'files:{} compileFiles with 2 sanitized files using LIBRARY/PART/PART OF',
+        generateCompilerFilesTest({
+          'package:$kMainDart': sampleCodeLibraryMultiFoo,
+          'dart:bar.dart': sampleCodePartMultiBar
+        }),
+      );
 
-    // Test renaming the file with the main function ('mymain.dart') to be
-    // kMainDart when no file named kMainDat is found.
-    test(
-      'files:{} compileFiles with 2 files and none named kMainDart',
-      generateCompilerFilesTest(
-          {'mymain.dart': sampleCodeMultiFoo, 'bar.dart': sampleCodeMultiBar}),
-    );
+      // Test renaming the file with the main function ('mymain.dart') to be
+      // kMainDart when no file named kMainDat is found.
+      test(
+        'files:{} compileFiles with 2 files and none named kMainDart',
+        generateCompilerFilesTest({
+          'mymain.dart': sampleCodeMultiFoo,
+          'bar.dart': sampleCodeMultiBar
+        }),
+      );
 //TMM       }, skip: false); //TIM TRACKING
 //TMM     });
-    // End of multi file files={} map testing.
-
+      // End of multi file files={} map testing.
     });
   }
 }
