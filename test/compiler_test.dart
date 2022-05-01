@@ -244,7 +244,7 @@ void main() { print ('foo'); }
     test(
       'files:{} compileFilesDDC simple',
       generateCompilerFilesDDCTest({kMainDart: sampleCode}),
-      skip: true,
+      skip: false,
     );
 /*
         test(
