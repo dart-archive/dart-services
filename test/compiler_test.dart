@@ -268,7 +268,7 @@ void main() { print ('foo'); }
           'various.dart': sampleCode2PartImportVarious
         }),
       );
-
+/* TIM TRACKING
       // 3 separate files, main importing 'various.dart' and 'discdata.dart',
       // and 'various.dart' importing 'discdata.dart'.
       test(
@@ -430,7 +430,8 @@ $sampleCode3PartFlutterImplicitAnimationsVarious
           'bar.dart': sampleCodeMultiBar
         }),
       );
-    }, skip: true); // TIM TRACKING HANG);
+*/
+    });
     // End of multi file files={} map testing.
   }
 }
