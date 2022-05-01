@@ -430,7 +430,7 @@ $sampleCode3PartFlutterImplicitAnimationsVarious
           'bar.dart': sampleCodeMultiBar
         }),
       );
-    }, skip: true); // TIM TRACKING HANG
+    }, skip: true); // TIM TRACKING HANG);
     // End of multi file files={} map testing.
   }
 }
