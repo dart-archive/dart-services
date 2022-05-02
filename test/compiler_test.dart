@@ -28,7 +28,7 @@ void defineTests() {
     tearDownAll(() async {
       await compiler.dispose();
     });
-    
+
     Future<void> Function() generateCompilerFilesTest(
             Map<String, String> files) =>
         () async {
