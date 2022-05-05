@@ -178,7 +178,7 @@ String? _packageNameFromPackageUri(String uriString) {
   return uri.pathSegments.first;
 }
 
-/// Goes through imports list and returns list of unsupported imports
+/// Goes through imports list and returns list of unsupported imports.
 /// Optional [sourcesFileList] contains a list of the source filenames
 /// which are all part of this overall sources file set.
 /// (These are to be allowed).  Note: The filenames in [sourcesFileList]
