@@ -181,10 +181,11 @@ String? _packageNameFromPackageUri(String uriString) {
 /// Goes through imports list and returns list of unsupported imports
 /// Optional [sourcesFileList] contains a list of the source filenames
 /// which are all part of this overall sources file set.
-/// (These are to be allowed).  Note that filenames in [sourcesFileList]
-/// were previously sanitized of any 'package:'/etc syntax
-/// within [sanitizeAndCheckFilenames()], so the filenames list
-/// can't be used to bypass unsupported imports.
+/// (These are to be allowed).  Note: The filenames in [sourcesFileList]
+/// were sanitized of any 'package:'/etc syntax as the file set arrives from
+/// the endpoint, and before being passed to [getUnsuppotedImports].
+/// This is done so the list can't be used to bypass unsupported imports.
+/// The function [sanitizeAndCheckFilenames()] is used to sanitize the filenames.
 List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports,
     {List<String>? sourcesFileList, required bool devMode}) {
   return imports.where((import) {
@@ -199,7 +200,7 @@ List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports,
     // Filenames from within this compilation files={} sources file set
     // are OK. (These filenames have been sanitized to prevent 'package:'
     // (and other) prefixes, so the a filename cannot be used to bypass
-    // import restrictions).
+    // import restrictions (see comment above)).
     if (sourcesFileList != null && sourcesFileList.contains(uriString)) {
       return false;
     }
