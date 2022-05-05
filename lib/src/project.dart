@@ -186,7 +186,7 @@ String? _packageNameFromPackageUri(String uriString) {
 /// 'package:'/etc syntax as the file set arrives from the endpoint,
 /// and before being passed to [getUnsuppotedImports].
 /// This is done so the list can't be used to bypass unsupported imports.
-/// The function [sanitizeAndCheckFilenames()] is used to sanitize the
+/// The function [sanitizeAndCheckFilenames()] was used to sanitize the
 /// filenames.
 List<ImportDirective> getUnsupportedImports(List<ImportDirective> imports,
     {List<String>? sourcesFileList, required bool devMode}) {
