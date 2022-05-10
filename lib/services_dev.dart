@@ -77,7 +77,7 @@ class EndpointsServer {
     // for use.
     final commonRouter = commonServerApi.router;
 
-    // Set cache GitHub OAuth and add GitHub OAuth routes to our router.
+    // Set cache for GitHub OAuth and add GitHub OAuth routes to our router.
     GitHubOAuthHandler.setCache(InMemoryCache());
     GitHubOAuthHandler.addRoutes(commonRouter);
 
