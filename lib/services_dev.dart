@@ -78,7 +78,7 @@ class EndpointsServer {
     final commonRouter = commonServerApi.router;
 
     // Set cache GitHub OAuth and add GitHub OAuth routes to our router.
-    GitHubOAuthHandler.setCache(_Cache());
+    GitHubOAuthHandler.setCache(InMemoryCache());
     GitHubOAuthHandler.addRoutes(commonRouter);
 
     pipeline = const Pipeline()
