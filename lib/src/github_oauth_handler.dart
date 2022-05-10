@@ -20,11 +20,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:encrypt/encrypt.dart';
-import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
+
+import 'server_cache.dart';
 
 final Logger _logger = Logger('github_oauth_handler');
 
@@ -46,11 +47,14 @@ class GitHubOAuthHandler {
   static bool initialized = false;
   static bool initializationEndedInErrorState = false;
 
-  static late final Box<int> _stateBox;
+  static late final ServerCache _cache;
+
   static late final String _clientId;
   static late final String _clientSecret;
   static late final String _authReturnUrl;
   static late final String _returnToAppUrl;
+
+  static final Duration tenMinuteExpiration = Duration(minutes: 10);
 
   /// Adds the GitHub OAuth api end point routes to the passed in Router.
   static bool addRoutes(Router router) {
@@ -65,6 +69,15 @@ class GitHubOAuthHandler {
 because initialization of GitHubOAuthHandler failed earlier.''');
     }
     return !initializationEndedInErrorState;
+  }
+
+  /// Set cache for tracking clients random states.  We do this so that
+  /// we only do work for clients at the [kEntryPointGitHubReturnAuthorize]
+  /// endpoint if we can verify they entered via the
+  /// [kEntryPointGitHubOAuthInitiate] end point (and returned through the
+  /// GitHub OAuth process).
+  static void setCache(ServerCache cache) {
+    _cache = cache;
   }
 
   /// This routine attempts to read all required initialization parameters
@@ -165,15 +178,6 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
       return false;
     }
 
-    if (!initializationEndedInErrorState) {
-      // We have all required parameters, go ahead and init hive db.
-      final path = Directory.current.path;
-      Hive.init(path);
-
-      _stateBox = await Hive.openBox<int>('statebox');
-      await _stateBox.clear(); // State never persist across runs.
-    }
-
     initialized = true;
     return !missingParameters;
   }
@@ -189,40 +193,22 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
   static Future<Response> _initiateHandler(
       Request request, String randomState) async {
     // See if we have anything stored for this random state.
-    int? timestamp = _stateBox.get(randomState);
+    String? timestampStr = await _cache.get(randomState);
     bool newRequest = false;
-    final int nowTimeStamp = DateTime.now().millisecondsSinceEpoch;
 
     if (randomState.isEmpty || randomState.length < 40) {
       return Response.ok('Random token must be >=40 characters in length');
     }
 
-    if (timestamp == null) {
-      timestamp = nowTimeStamp;
+    if (timestampStr == null) {
+      timestampStr = DateTime.now().millisecondsSinceEpoch.toString();
       newRequest = true;
     }
-    // Store this state/timestamp pair within the hive so
-    // we can later verify state on a return from GitHub.
-    await _stateBox.put(randomState, timestamp);
 
-    if (_stateBox.length > minimumHiveSizeBeforeHousekeeping) {
-      // Take this opportunity to do stateBox cleanup and remove any old entries.
-      // These would only be 'abandoned' entries, any request that returns
-      // from GitHub OAuth would have been automatically deleted.
-      try {
-        // Check everything in the box for expiration and delete if needed.
-        for (int i = _stateBox.length - 1; i >= 0; i--) {
-          final int maybeOldTimestamp = _stateBox.getAt(i)!;
-          final int howOld = nowTimeStamp - maybeOldTimestamp;
-          if (howOld > (15 * 60 * 1000)) {
-            // Recored older than 15 minutes, delete it.
-            await _stateBox.deleteAt(i);
-          }
-        }
-      } catch (e) {
-        _logger.severe('Exception $e caught during state box cleanup');
-      }
-    }
+    // Store this state/timestamp pair within the cache so
+    // we can later verify state on a return from GitHub.
+    await _cache.set(randomState, timestampStr,
+        expiration: tenMinuteExpiration);
 
     /*
       Incoming Random String from DartPad.
@@ -275,9 +261,9 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
       final String state = request.requestedUri.queryParameters['state'] ?? '';
 
       // See if we have anything stored for this state value.
-      final int? timestamp = _stateBox.get(state);
+      final String? timestampStr = await _cache.get(state);
 
-      if (timestamp == null) {
+      if (timestampStr == null) {
         // ERROR!! We did not have a record of this initial request - ignore.
       } else {
         validCallback = true;
@@ -332,7 +318,7 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
             tokenAquired = true;
 
             // We can delete this record because we are done.
-            _stateBox.delete(state);
+            _cache.remove(state);
 
             // Encrypt the auth token using the original random state.
             final String encrBase64AuthToken =
