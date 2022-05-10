@@ -111,7 +111,7 @@ class EndpointsServer {
     // it is called, so it is important to get it only ONCE and store
     // for use.
     final commonRouter = commonServerApi.router;
-    
+
     // Add GitHub OAuth routes to our router.
     GitHubOAuthHandler.addRoutes(commonRouter);
 

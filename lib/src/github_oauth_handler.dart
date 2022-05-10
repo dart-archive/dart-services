@@ -57,8 +57,9 @@ class GitHubOAuthHandler {
     if (!initializationEndedInErrorState) {
       // Add our routes to the router.
       _logger.info('Adding GitHub OAuth routes to passed router.');
-      router.get('/$kEntryPointGitHubOAuthInitiate/<randomState|[a-zA-Z0-9]+>', _initiateHandler);
-      router.get('/$entryPointGitHubReturnAuthorize', _returnAuthorizeHandler);   
+      router.get('/$kEntryPointGitHubOAuthInitiate/<randomState|[a-zA-Z0-9]+>',
+          _initiateHandler);
+      router.get('/$entryPointGitHubReturnAuthorize', _returnAuthorizeHandler);
     } else {
       _logger.info('''Attempt to add GitHub OAuth routes to router FAILED
 because initialization of GitHubOAuthHandler failed earlier.''');
@@ -178,7 +179,7 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
   }
 
   ///  The calling app initiates a request for GitHub OAuth authorization by
-  ///  sending get request to `/$kEntryPointGitHubOAuthInitiate/XXXXXXXXX` where 
+  ///  sending get request to `/$kEntryPointGitHubOAuthInitiate/XXXXXXXXX` where
   ///  `XXXXXX` is a random alpha numeric token of at least 40 characters in
   ///  length.
   ///  When the entire process is complete the browser will be redirected to
