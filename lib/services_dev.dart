@@ -12,7 +12,6 @@ import 'package:args/args.dart';
 import 'package:logging/logging.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
-import 'package:shelf_router/shelf_router.dart';
 
 import 'src/common_server_api.dart';
 import 'src/common_server_impl.dart';
