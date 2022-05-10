@@ -111,7 +111,16 @@ class EndpointsServer {
     // for use.
     final commonRouter = commonServerApi.router;
 
-    // Add GitHub OAuth routes to our router.
+    // Set cache GitHub OAuth and add GitHub OAuth routes to our router.
+    GitHubOAuthHandler.setCache(redisServerUri == null
+        ? InMemoryCache()
+        : RedisCache(
+            redisServerUri,
+            sdk,
+            // The name of the Cloud Run revision being run, for more detail please see:
+            // https://cloud.google.com/run/docs/reference/container-contract#env-vars
+            Platform.environment['K_REVISION'],
+          ));
     GitHubOAuthHandler.addRoutes(commonRouter);
 
     pipeline = const Pipeline()
