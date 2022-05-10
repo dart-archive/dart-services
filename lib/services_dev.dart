@@ -12,9 +12,11 @@ import 'package:args/args.dart';
 import 'package:logging/logging.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
+import 'package:shelf_router/shelf_router.dart';
 
 import 'src/common_server_api.dart';
 import 'src/common_server_impl.dart';
+import 'src/github_oauth_handler.dart';
 import 'src/sdk.dart';
 import 'src/server_cache.dart';
 import 'src/shelf_cors.dart' as shelf_cors;
@@ -43,6 +45,8 @@ Future<void> main(List<String> args) async {
     if (record.stackTrace != null) print(record.stackTrace);
   });
 
+  await GitHubOAuthHandler.initFromEnvironmentalVars();
+
   await EndpointsServer.serve(port, Sdk.create(result['channel'] as String),
       result['null-safety'] as bool);
   _logger.info('Listening on port $port');
@@ -69,11 +73,19 @@ class EndpointsServer {
     commonServerApi = CommonServerApi(commonServerImpl);
     commonServerImpl.init();
 
+    // The [commonServerApi.router] getter CREATES a router each time
+    // it is called, so it is important to get it only ONCE and store
+    // for use.
+    final commonRouter = commonServerApi.router;
+
+    // Add GitHub OAuth routes to our router.
+    GitHubOAuthHandler.addRoutes(commonRouter);
+
     pipeline = const Pipeline()
         .addMiddleware(logRequests())
         .addMiddleware(_createCustomCorsHeadersMiddleware());
 
-    handler = pipeline.addHandler(commonServerApi.router);
+    handler = pipeline.addHandler(commonRouter);
   }
 
   Middleware _createCustomCorsHeadersMiddleware() {

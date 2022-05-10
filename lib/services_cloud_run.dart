@@ -12,9 +12,11 @@ import 'package:args/args.dart';
 import 'package:logging/logging.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
+import 'package:shelf_router/shelf_router.dart';
 
 import 'src/common_server_api.dart';
 import 'src/common_server_impl.dart';
+import 'src/github_oauth_handler.dart';
 import 'src/sdk.dart';
 import 'src/server_cache.dart';
 import 'src/shelf_cors.dart' as shelf_cors;
@@ -61,6 +63,8 @@ Future<void> main(List<String> args) async {
     Cloud Run Environment variables:
     $cloudRunEnvVars''');
 
+  await GitHubOAuthHandler.initFromEnvironmentalVars();
+
   await EndpointsServer.serve(port, redisServerUri, sdk);
   _logger.info('Listening on port $port');
 }
@@ -103,11 +107,19 @@ class EndpointsServer {
     );
     commonServerApi = CommonServerApi(_commonServerImpl);
 
+    // The [commonServerApi.router] getter CREATES a router each time
+    // it is called, so it is important to get it only ONCE and store
+    // for use.
+    final commonRouter = commonServerApi.router;
+    
+    // Add GitHub OAuth routes to our router.
+    GitHubOAuthHandler.addRoutes(commonRouter);
+
     pipeline = const Pipeline()
         .addMiddleware(logRequests())
         .addMiddleware(_createCustomCorsHeadersMiddleware());
 
-    handler = pipeline.addHandler(commonServerApi.router);
+    handler = pipeline.addHandler(commonRouter);
   }
 
   Future<void> init() => _commonServerImpl.init();
