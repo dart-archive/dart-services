@@ -20,7 +20,9 @@ dependencies:
   shelf: ^1.0.0
   shelf_router: ^1.0.0
   yaml: ^3.0.0
-
+  encrypt: ^5.0.1
+  hive: ^2.1.0
+  
 dev_dependencies:
   angel3_mock_request: ^6.0.0
   async: ^2.9.0
