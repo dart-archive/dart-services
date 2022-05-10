@@ -40,7 +40,7 @@ class GitHubOAuthHandler {
   /// redirect to after the OAuth process is completed.  This entry point name
   /// here must also match that used in [_returnToAppUrl] member variable (or
   /// set using the K_GITHUB_OAUTH_RETURN_TO_APP_URL environmental variable).
-  static const entryPointGitHubReturnAuthorize = 'github_oauth_authorized';
+  static const kEntryPointGitHubReturnAuthorize = 'github_oauth_authorized';
 
   static const minimumHiveSizeBeforeHousekeeping = 10;
   static bool initialized = false;
@@ -59,7 +59,7 @@ class GitHubOAuthHandler {
       _logger.info('Adding GitHub OAuth routes to passed router.');
       router.get('/$kEntryPointGitHubOAuthInitiate/<randomState|[a-zA-Z0-9]+>',
           _initiateHandler);
-      router.get('/$entryPointGitHubReturnAuthorize', _returnAuthorizeHandler);
+      router.get('/$kEntryPointGitHubReturnAuthorize', _returnAuthorizeHandler);
     } else {
       _logger.info('''Attempt to add GitHub OAuth routes to router FAILED
 because initialization of GitHubOAuthHandler failed earlier.''');
@@ -115,7 +115,7 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
 
     if (authReturnUrl.isEmpty) {
       // This would be the locally running dart-services server.
-      authReturnUrl = 'http://localhost:8080/$entryPointGitHubReturnAuthorize';
+      authReturnUrl = 'http://localhost:8080/$kEntryPointGitHubReturnAuthorize';
       _logger.info(
           'K_GITHUB_OAUTH_AUTH_RETURN_URL environmental variable not set - defaulting to "$authReturnUrl"');
     }
