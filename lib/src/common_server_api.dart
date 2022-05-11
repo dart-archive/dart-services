@@ -107,10 +107,8 @@ class CommonServerApi {
           decodeFromProto: (bytes) => proto.VersionRequest.fromBuffer(bytes),
           transform: _impl.version);
 
-  Router? _router;
-
-  /// Return the router, creating it if we have not done so already.
-  Router get router => (_router ??= _$CommonServerApiRouter(this));
+  /// The (lazily-constructed) router.
+  late final Router router = _$CommonServerApiRouter(this);
 
   // We are serving requests that are arriving in both Protobuf binary encoding,
   // and Protobuf JSON encoding. To handle this we need the ability to decode
