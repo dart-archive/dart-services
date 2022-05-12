@@ -72,20 +72,15 @@ class EndpointsServer {
     commonServerApi = CommonServerApi(commonServerImpl);
     commonServerImpl.init();
 
-    // The [commonServerApi.router] getter CREATES a router each time
-    // it is called, so it is important to get it only ONCE and store
-    // for use.
-    final commonRouter = commonServerApi.router;
-
     // Set cache for GitHub OAuth and add GitHub OAuth routes to our router.
     GitHubOAuthHandler.setCache(InMemoryCache());
-    GitHubOAuthHandler.addRoutes(commonRouter);
+    GitHubOAuthHandler.addRoutes(commonServerApi.router);
 
     pipeline = const Pipeline()
         .addMiddleware(logRequests())
         .addMiddleware(_createCustomCorsHeadersMiddleware());
 
-    handler = pipeline.addHandler(commonRouter);
+    handler = pipeline.addHandler(commonServerApi.router);
   }
 
   Middleware _createCustomCorsHeadersMiddleware() {

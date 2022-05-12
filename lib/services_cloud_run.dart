@@ -106,11 +106,6 @@ class EndpointsServer {
     );
     commonServerApi = CommonServerApi(_commonServerImpl);
 
-    // The [commonServerApi.router] getter CREATES a router each time
-    // it is called, so it is important to get it only ONCE and store
-    // for use.
-    final commonRouter = commonServerApi.router;
-
     // Set cache for GitHub OAuth and add GitHub OAuth routes to our router.
     GitHubOAuthHandler.setCache(redisServerUri == null
         ? InMemoryCache()
@@ -121,13 +116,13 @@ class EndpointsServer {
             // https://cloud.google.com/run/docs/reference/container-contract#env-vars
             Platform.environment['K_REVISION'],
           ));
-    GitHubOAuthHandler.addRoutes(commonRouter);
+    GitHubOAuthHandler.addRoutes(commonServerApi.router);
 
     pipeline = const Pipeline()
         .addMiddleware(logRequests())
         .addMiddleware(_createCustomCorsHeadersMiddleware());
 
-    handler = pipeline.addHandler(commonRouter);
+    handler = pipeline.addHandler(commonServerApi.router);
   }
 
   Future<void> init() => _commonServerImpl.init();
