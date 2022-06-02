@@ -737,7 +737,7 @@ void main() {
       for (final version in versions) {
         final jsonData = {
           'files': {
-            ('..\\.../../' + kMainDart): sampleCodeMultiFoo,
+            '..\\.../../$kMainDart': sampleCodeMultiFoo,
             '../bar.dart': sampleCodeMultiBar
           }
         };
@@ -922,7 +922,7 @@ void main() {
       for (final version in versions) {
         final jsonData = {
           'files': {
-            'package:' + kMainDart: sampleCode3PartLibraryMain,
+            'package:$kMainDart': sampleCode3PartLibraryMain,
             'dart:discdata.dart': sampleCode3PartDiscDataPartOfTestAnim,
             'http://various.dart': sampleCode3PartVariousPartOfTestAnim,
           }

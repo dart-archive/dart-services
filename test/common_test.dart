@@ -84,7 +84,7 @@ void defineTests() {
 
   test('sanitizeAndCheckFilenames', () {
     final Map<String, String> filesSanitize = {
-      '..\\.../../' + kMainDart: '',
+      '..\\.../../$kMainDart': '',
       '../various.dart': ''
     };
 
@@ -105,11 +105,11 @@ void defineTests() {
     expect(filesVar2.keys.elementAt(1), 'various.dart');
 
     final Map<String, String> filesVar3Sani = {
-      'package:' + kMainDart: '',
+      'package:$kMainDart': '',
       'dart:discdata.dart': '',
       'http://dart:http://various.dart': ''
     };
-    newmain = sanitizeAndCheckFilenames(filesVar3Sani, 'package:' + kMainDart);
+    newmain = sanitizeAndCheckFilenames(filesVar3Sani, 'package:$kMainDart');
     expect(newmain, kMainDart);
     expect(filesVar3Sani.keys.elementAt(0), kMainDart);
     expect(filesVar3Sani.keys.elementAt(1), 'discdata.dart');
