@@ -31,17 +31,17 @@ final Logger _logger = Logger('github_oauth_handler');
 
 class GitHubOAuthHandler {
   /// Entry point called from Dart-Pad to initiate a GitHub OAuth Token request.
-  /// NOTE: any change to [kEntryPointGitHubOAuthInitiate] must also be
+  /// NOTE: any change to [entryPointGitHubOAuthInitiate] must also be
   /// reflected in changing value in dart-pad\lib\github.dart's
-  /// [GitHubUIController.kEntryPointGitHubOAuthInitiate] to
+  /// [GitHubUIController.entryPointGitHubOAuthInitiate] to
   /// match.
-  static const kEntryPointGitHubOAuthInitiate = 'github_oauth_initiate';
+  static const entryPointGitHubOAuthInitiate = 'github_oauth_initiate';
 
   /// Entry point specifed to GitHub when setting up OAuth App that GitHub will
   /// redirect to after the OAuth process is completed.  This entry point name
   /// here must also match that used in [_returnToAppUrl] member variable (or
   /// set using the K_GITHUB_OAUTH_RETURN_TO_APP_URL environmental variable).
-  static const kEntryPointGitHubReturnAuthorize = 'github_oauth_authorized';
+  static const entryPointGitHubReturnAuthorize = 'github_oauth_authorized';
 
   static const minimumHiveSizeBeforeHousekeeping = 10;
   static bool initialized = false;
@@ -61,9 +61,9 @@ class GitHubOAuthHandler {
     if (!initializationEndedInErrorState) {
       // Add our routes to the router.
       _logger.info('Adding GitHub OAuth routes to passed router.');
-      router.get('/$kEntryPointGitHubOAuthInitiate/<randomState|[a-zA-Z0-9]+>',
+      router.get('/$entryPointGitHubOAuthInitiate/<randomState|[a-zA-Z0-9]+>',
           _initiateHandler);
-      router.get('/$kEntryPointGitHubReturnAuthorize', _returnAuthorizeHandler);
+      router.get('/$entryPointGitHubReturnAuthorize', _returnAuthorizeHandler);
     } else {
       _logger.info('''Attempt to add GitHub OAuth routes to router FAILED
 because initialization of GitHubOAuthHandler failed earlier.''');
@@ -72,9 +72,9 @@ because initialization of GitHubOAuthHandler failed earlier.''');
   }
 
   /// Set cache for tracking clients random states.  We do this so that
-  /// we only do work for clients at the [kEntryPointGitHubReturnAuthorize]
+  /// we only do work for clients at the [entryPointGitHubReturnAuthorize]
   /// endpoint if we can verify they entered via the
-  /// [kEntryPointGitHubOAuthInitiate] end point (and returned through the
+  /// [entryPointGitHubOAuthInitiate] end point (and returned through the
   /// GitHub OAuth process).
   static void setCache(ServerCache cache) {
     _cache = cache;
@@ -128,7 +128,7 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
 
     if (authReturnUrl.isEmpty) {
       // This would be the locally running dart-services server.
-      authReturnUrl = 'http://localhost:8080/$kEntryPointGitHubReturnAuthorize';
+      authReturnUrl = 'http://localhost:8080/$entryPointGitHubReturnAuthorize';
       _logger.info(
           'K_GITHUB_OAUTH_AUTH_RETURN_URL environmental variable not set - defaulting to "$authReturnUrl"');
     }
@@ -183,7 +183,7 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
   }
 
   ///  The calling app initiates a request for GitHub OAuth authorization by
-  ///  sending get request to `/$kEntryPointGitHubOAuthInitiate/XXXXXXXXX` where
+  ///  sending get request to `/$entryPointGitHubOAuthInitiate/XXXXXXXXX` where
   ///  `XXXXXX` is a random alpha numeric token of at least 40 characters in
   ///  length.
   ///  When the entire process is complete the browser will be redirected to
@@ -353,7 +353,7 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
 
   /// Take the GitHub auth token [ghAuthToken] and the original random
   /// state string [randomStateWeWereSent] the client sent in the original
-  /// `/$kEntryPointGitHubOAuthInitiate/XXXXX` request and encrypt the token using
+  /// `/$entryPointGitHubOAuthInitiate/XXXXX` request and encrypt the token using
   /// the random state string.  This protects the GH token on the return
   /// and also allows the client to verify that we origin of the token.
   /// This is probably overkill, we could just XOR encrypt (or something
