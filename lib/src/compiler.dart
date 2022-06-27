@@ -174,7 +174,7 @@ class Compiler {
 
       final bootstrapPath = path.join(temp.path, 'lib', kBootstrapDart);
       final bootstrapContents = usingFlutter
-          ? bootstrapFlutterCode(_sdk.versionFull)
+          ? bootstrapFlutterCode(_sdk.flutterVersion)
           : kBootstrapDartCode;
       await File(bootstrapPath).writeAsString(bootstrapContents);
 
