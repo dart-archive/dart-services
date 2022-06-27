@@ -10,17 +10,29 @@ const kMainDart = 'main.dart';
 const kBootstrapDart = 'bootstrap.dart';
 
 /// This code should be kept up-to-date with WebEntrypointTarget.build() from
-/// flutter_tools: https://github.com/flutter/flutter/blob/169020719bc5882e746b836629721644633b6c8a/packages/flutter_tools/lib/src/build_system/targets/web.dart#L137
+/// flutter_tools: https://github.com/flutter/flutter/blob/main/packages/flutter_tools/lib/src/build_system/targets/web.dart
 const kBootstrapFlutterCode = r'''
 import 'dart:ui' as ui;
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'generated_plugin_registrant.dart';
+import 'dart:async';
+
 import 'main.dart' as entrypoint;
+import 'web_plugin_registrant.dart' as pluginRegistrant;
+
+typedef _UnaryFunction = dynamic Function(List<String> args);
+typedef _NullaryFunction = dynamic Function();
 
 Future<void> main() async {
-  registerPlugins(webPluginRegistrar);
-  await ui.webOnlyInitializePlatform();
-  entrypoint.main();
+  await ui.webOnlyWarmupEngine(
+    runApp: () {
+      if (entrypoint.main is _UnaryFunction) {
+        return (entrypoint.main as _UnaryFunction)(<String>[]);
+      }
+      return (entrypoint.main as _NullaryFunction)();
+    },
+    registerPlugins: () {
+      pluginRegistrant.registerPlugins();
+    },
+  );
 }
 ''';
 
