@@ -5,13 +5,16 @@
 library services.common;
 
 import 'dart:io';
+import 'package:pub_semver/pub_semver.dart';
 
 const kMainDart = 'main.dart';
 const kBootstrapDart = 'bootstrap.dart';
 
 /// This code should be kept up-to-date with WebEntrypointTarget.build() from
 /// flutter_tools: https://github.com/flutter/flutter/blob/main/packages/flutter_tools/lib/src/build_system/targets/web.dart
-const kBootstrapFlutterCode = r'''
+String bootstrapFlutterCode(String version) {
+  if (Version.parse(version).compareTo(Version.parse('3.1.0-9.0.pre')) >= 0) {
+    return r'''
 import 'dart:ui' as ui;
 import 'dart:async';
 
@@ -35,6 +38,20 @@ Future<void> main() async {
   );
 }
 ''';
+  }
+
+  return r'''
+import 'dart:ui' as ui;
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'generated_plugin_registrant.dart';
+import 'main.dart' as entrypoint;
+Future<void> main() async {
+  registerPlugins(webPluginRegistrar);
+  await ui.webOnlyInitializePlatform();
+  entrypoint.main();
+}
+''';
+}
 
 const kBootstrapDartCode = r'''
 import 'main.dart' as user_code;

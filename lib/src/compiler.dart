@@ -174,7 +174,7 @@ class Compiler {
 
       final bootstrapPath = path.join(temp.path, 'lib', kBootstrapDart);
       final bootstrapContents =
-          usingFlutter ? kBootstrapFlutterCode : kBootstrapDartCode;
+          usingFlutter ? bootstrapFlutterCode(_sdk.versionFull) : kBootstrapDartCode;
       await File(bootstrapPath).writeAsString(bootstrapContents);
 
       files.forEach((filename, content) async {
