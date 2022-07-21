@@ -206,6 +206,9 @@ Future<String> _buildStorageArtifacts(Directory dir, Sdk sdk,
   );
   joinFile(dir, ['pubspec.yaml']).writeAsStringSync(pubspec);
 
+  // Make sure the tooling knows this is a Flutter Web project
+  File(path.join(dir.path, 'web', 'index.html')).createSync(recursive: true);
+
   await runFlutterPackagesGet(sdk.flutterToolPath, dir.path, log: log);
 
   // Working around Flutter 3.3's deprecation of generated_plugin_registrant.dart
