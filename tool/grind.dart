@@ -208,6 +208,16 @@ Future<String> _buildStorageArtifacts(Directory dir, Sdk sdk,
 
   await runFlutterPackagesGet(sdk.flutterToolPath, dir.path, log: log);
 
+  // Working around Flutter 3.3's deprecation of generated_plugin_registrant.dart
+  // Context: https://github.com/flutter/flutter/pull/106921
+
+  final pluginRegistrant =
+      File(path.join(dir.path, '.tool', 'dartpad', 'plugin_registrant.dart'));
+  if (pluginRegistrant.existsSync()) {
+    pluginRegistrant.copySync(
+        path.join(dir.path, 'lib', 'generated_plugin_registrant.dart'));
+  }
+
   // locate the artifacts
   final flutterPackages = ['flutter', 'flutter_test'];
 
