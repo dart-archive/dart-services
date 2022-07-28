@@ -254,13 +254,14 @@ Future<String> _buildStorageArtifacts(Directory dir, Sdk sdk,
   // Build the artifacts using DDC:
   // dart-sdk/bin/dartdevc -s kernel/flutter_ddc_sdk.dill
   //     --modules=amd package:flutter/animation.dart ...
-  final compilerPath = path.join(sdk.dartSdkPath, 'bin', 'dartdevc');
+  final compilerPath = path.join(sdk.dartSdkPath, 'bin', 'dart');
   final dillPath = path.join(
     sdk.flutterWebSdkPath,
     'flutter_ddc_sdk_sound.dill',
   );
 
   final args = <String>[
+    path.join(sdk.dartSdkPath, 'bin', 'snapshots', 'dartdevc.dart.snapshot'),
     '-s',
     dillPath,
     '--sound-null-safety',
