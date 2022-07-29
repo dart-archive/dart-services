@@ -147,8 +147,8 @@ Future<void> _validateExists(Uri url) async {
 void buildProjectTemplates() async {
   final templatesPath = path.join(Directory.current.path, 'project_templates');
   final templatesDirectory = Directory(templatesPath);
-  final exists = await templatesDirectory.exists();
-  if (exists) {
+  if (await templatesDirectory.exists()) {
+    log('Removing ${templatesDirectory.path}');
     await templatesDirectory.delete(recursive: true);
   }
 
