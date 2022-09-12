@@ -19,5 +19,5 @@ flutter_sdk:
     flutter_version: 3.0.5
     dart_language_version: 2.17.6
   master:
-    flutter_version: e43850d197e09a7582f06f9023576ede7c46dfc9
-    dart_language_version: 2.19.0-177.0.dev
+    flutter_version: 9ba35816ca5e6e85fdc9c799723fd42dc2a61dc2
+    dart_language_version: 2.19.0-190.0.dev
