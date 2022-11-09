@@ -9,15 +9,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bazel_worker/driver.dart';
-import 'package:logging/logging.dart';
+import 'package:gcp/gcp.dart';
 import 'package:path/path.dart' as path;
 
 import 'common.dart';
 import 'project.dart';
 import 'pub.dart';
 import 'sdk.dart';
-
-Logger _logger = Logger('compiler');
 
 /// An interface to the dart2js compiler. A compiler object can process one
 /// compile at a time.
@@ -73,7 +71,7 @@ class Compiler {
     }
 
     final temp = await Directory.systemTemp.createTemp('dartpad');
-    _logger.info('Temp directory created: ${temp.path}');
+    currentLogger.info('Temp directory created: ${temp.path}');
 
     try {
       await copyPath(_projectTemplates.dartPath, temp.path);
@@ -101,7 +99,7 @@ class Compiler {
       final mainJs = File(path.join(temp.path, '$kMainDart.js'));
       final mainSourceMap = File(path.join(temp.path, '$kMainDart.js.map'));
 
-      _logger.info('About to exec: $_dartPath ${arguments.join(' ')}');
+      currentLogger.info('About to exec: $_dartPath ${arguments.join(' ')}');
 
       final result =
           await Process.run(_dartPath, arguments, workingDirectory: temp.path);
@@ -123,11 +121,11 @@ class Compiler {
         return results;
       }
     } catch (e, st) {
-      _logger.warning('Compiler failed: $e\n$st');
+      currentLogger.warning('Compiler failed: $e\n$st');
       rethrow;
     } finally {
       await temp.delete(recursive: true);
-      _logger.info('temp folder removed: ${temp.path}');
+      currentLogger.info('temp folder removed: ${temp.path}');
     }
   }
 
@@ -158,7 +156,7 @@ class Compiler {
     }
 
     final temp = await Directory.systemTemp.createTemp('dartpad');
-    _logger.info('Temp directory created: ${temp.path}');
+    currentLogger.info('Temp directory created: ${temp.path}');
 
     try {
       final usingFlutter = usesFlutterWeb(imports, devMode: _sdk.devMode);
@@ -200,7 +198,8 @@ class Compiler {
 
       final mainJs = File(path.join(temp.path, '$kMainDart.js'));
 
-      _logger.info('About to exec dartdevc worker: ${arguments.join(' ')}"');
+      currentLogger
+          .info('About to exec dartdevc worker: ${arguments.join(' ')}"');
 
       final response =
           await _ddcDriver.doWork(WorkRequest()..arguments.addAll(arguments));
@@ -226,11 +225,11 @@ class Compiler {
         return results;
       }
     } catch (e, st) {
-      _logger.warning('Compiler failed: $e\n$st');
+      currentLogger.warning('Compiler failed: $e\n$st');
       rethrow;
     } finally {
       await temp.delete(recursive: true);
-      _logger.info('temp folder removed: ${temp.path}');
+      currentLogger.info('temp folder removed: ${temp.path}');
     }
   }
 

@@ -20,14 +20,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:encrypt/encrypt.dart';
+import 'package:gcp/gcp.dart';
 import 'package:http/http.dart' as http;
-import 'package:logging/logging.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
 import 'server_cache.dart';
-
-final Logger _logger = Logger('github_oauth_handler');
 
 class GitHubOAuthHandler {
   /// Entry point called from Dart-Pad to initiate a GitHub OAuth Token request.
@@ -60,12 +58,12 @@ class GitHubOAuthHandler {
   static bool addRoutes(Router router) {
     if (!initializationEndedInErrorState) {
       // Add our routes to the router.
-      _logger.info('Adding GitHub OAuth routes to passed router.');
+      currentLogger.info('Adding GitHub OAuth routes to passed router.');
       router.get('/$entryPointGitHubOAuthInitiate/<randomState|[a-zA-Z0-9]+>',
           _initiateHandler);
       router.get('/$entryPointGitHubReturnAuthorize', _returnAuthorizeHandler);
     } else {
-      _logger.info('''Attempt to add GitHub OAuth routes to router FAILED
+      currentLogger.info('''Attempt to add GitHub OAuth routes to router FAILED
 because initialization of GitHubOAuthHandler failed earlier.''');
     }
     return !initializationEndedInErrorState;
@@ -103,23 +101,23 @@ because initialization of GitHubOAuthHandler failed earlier.''');
 
     bool missingEnvVariables = false;
     if (clientId == 'MissingClientIdEnvironmentalVariable') {
-      _logger.severe(
+      currentLogger.error(
           'PK_GITHUB_OAUTH_CLIENT_ID environmental variable not set! This is REQUIRED.');
       missingEnvVariables = true;
     }
     if (clientSecret == 'MissingClientSecretEnvironmentalVariable') {
-      _logger.severe(
+      currentLogger.error(
           'PK_GITHUB_OAUTH_CLIENT_SECRET environmental variable not set! This is REQUIRED.');
       missingEnvVariables = true;
     }
     if (missingEnvVariables) {
-      _logger.severe(
+      currentLogger.error(
           'GitHub OAuth Handler DISABLED - Ensure all required environmental variables are set and re-run.');
       initializationEndedInErrorState = true;
       return false;
     }
 
-    _logger.info(
+    currentLogger.info(
         '''Enviroment PK_GITHUB_OAUTH_CLIENT_ID=${_replaceAllButLastFour(clientId)}');
 Enviroment PK_GITHUB_OAUTH_CLIENT_SECRET=${_replaceAllButLastFour(clientSecret)}
 Enviroment K_GITHUB_OAUTH_AUTH_RETURN_URL=$authReturnUrl'
@@ -129,13 +127,13 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
     if (authReturnUrl.isEmpty) {
       // This would be the locally running dart-services server.
       authReturnUrl = 'http://localhost:8080/$entryPointGitHubReturnAuthorize';
-      _logger.info(
+      currentLogger.info(
           'K_GITHUB_OAUTH_AUTH_RETURN_URL environmental variable not set - defaulting to "$authReturnUrl"');
     }
     if (returnToAppUrl.isEmpty) {
       // This would be the locally running dart-pad server.
       returnToAppUrl = 'http://localhost:8000/index.html';
-      _logger.info(
+      currentLogger.info(
           'K_GITHUB_OAUTH_RETURN_TO_APP_URL environmental variable not set - defaulting to "$returnToAppUrl"');
     }
     return init(clientId, clientSecret, authReturnUrl, returnToAppUrl);
@@ -154,25 +152,26 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
 
     bool missingParameters = false;
     if (_clientId.isEmpty) {
-      _logger.severe('GitHubOAuthHandler no client id passed to init().');
+      currentLogger.error('GitHubOAuthHandler no client id passed to init().');
       missingParameters = true;
     }
     if (_clientSecret.isEmpty) {
-      _logger.severe('GitHubOAuthHandler no client secret passed to init().');
+      currentLogger
+          .error('GitHubOAuthHandler no client secret passed to init().');
       missingParameters = true;
     }
     if (_authReturnUrl.isEmpty) {
-      _logger.severe(
+      currentLogger.error(
           'GitHubOAuthHandler no authorization return url passed to init().');
       missingParameters = true;
     }
     if (_returnToAppUrl.isEmpty) {
-      _logger
-          .severe('GitHubOAuthHandler no return ti app url passed to init().');
+      currentLogger
+          .error('GitHubOAuthHandler no return ti app url passed to init().');
       missingParameters = true;
     }
     if (missingParameters) {
-      _logger.severe(
+      currentLogger.error(
           'GitHub OAuth Handler DISABLED - Ensure all required parameters not passed to init().');
       initializationEndedInErrorState = true;
       return false;
@@ -228,7 +227,7 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
       url +=
           'client_id=$_clientId&redirect_uri=$_authReturnUrl&scope=gist&state=$randomState';
 
-      _logger.fine('Redirecting to GITHUB authorize');
+      currentLogger.debug('Redirecting to GITHUB authorize');
       return Response(302, headers: {'location': url});
     }
 
@@ -250,7 +249,7 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
           state=RANDOMSTR we them sent earlier.
 
     */
-    _logger.fine('Entered _returnAuthorizeHandler');
+    currentLogger.debug('Entered _returnAuthorizeHandler');
 
     String backToAppUrl = _returnToAppUrl;
     bool validCallback = false;
@@ -326,7 +325,7 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
             // Build URL to redirect back to the app.
             backToAppUrl += '?gh=$encrBase64AuthToken&scope=$scope';
 
-            _logger.fine('success - redirecting back to app');
+            currentLogger.debug('success - redirecting back to app');
           } else if (postResponse.statusCode == 404) {
             throw Exception('contentNotFound');
           } else if (postResponse.statusCode == 403) {
@@ -376,7 +375,7 @@ Enviroment K_GITHUB_OAUTH_RETURN_TO_APP_URL=$returnToAppUrl'
 
       return Uri.encodeComponent(encryptedToken.base64);
     } catch (e) {
-      _logger.severe('CAUGHT EXCEPTION during encryption ${e.toString()}');
+      currentLogger.error('CAUGHT EXCEPTION during encryption ${e.toString()}');
     }
     return 'ENCRYPTION_ERROR';
   }

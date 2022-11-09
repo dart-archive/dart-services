@@ -9,7 +9,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:logging/logging.dart';
+import 'package:gcp/gcp.dart';
 
 import 'analysis_server.dart';
 import 'common.dart';
@@ -17,8 +17,6 @@ import 'common_server_impl.dart' show BadRequest;
 import 'project.dart' as project;
 import 'protos/dart_services.pb.dart' as proto;
 import 'pub.dart';
-
-final Logger _logger = Logger('analysis_servers');
 
 class AnalysisServersWrapper {
   final String _dartSdkPath;
@@ -41,26 +39,26 @@ class AnalysisServersWrapper {
       DateTime.now().difference(_restartingSince!).inMinutes < 30);
 
   Future<void> warmup() async {
-    _logger.info('Beginning AnalysisServersWrapper init().');
+    currentLogger.info('Beginning AnalysisServersWrapper init().');
     _dartAnalysisServer = DartAnalysisServerWrapper(dartSdkPath: _dartSdkPath);
     _flutterAnalysisServer =
         FlutterAnalysisServerWrapper(dartSdkPath: _dartSdkPath);
 
     await _dartAnalysisServer.init();
-    _logger.info('Dart analysis server initialized.');
+    currentLogger.info('Dart analysis server initialized.');
 
     await _flutterAnalysisServer.init();
-    _logger.info('Flutter analysis server initialized.');
+    currentLogger.info('Flutter analysis server initialized.');
 
     unawaited(_dartAnalysisServer.onExit.then((int code) {
-      _logger.severe('dartAnalysisServer exited, code: $code');
+      currentLogger.error('dartAnalysisServer exited, code: $code');
       if (code != 0) {
         exit(code);
       }
     }));
 
     unawaited(_flutterAnalysisServer.onExit.then((int code) {
-      _logger.severe('flutterAnalysisServer exited, code: $code');
+      currentLogger.error('flutterAnalysisServer exited, code: $code');
       if (code != 0) {
         exit(code);
       }
@@ -70,12 +68,12 @@ class AnalysisServersWrapper {
   }
 
   Future<void> _restart() async {
-    _logger.warning('Restarting');
+    currentLogger.warning('Restarting');
     await shutdown();
-    _logger.info('shutdown');
+    currentLogger.info('shutdown');
 
     await warmup();
-    _logger.warning('Restart complete');
+    currentLogger.warning('Restart complete');
   }
 
   Future<dynamic> shutdown() {
@@ -217,10 +215,13 @@ class AnalysisServersWrapper {
     try {
       final watch = Stopwatch()..start();
       final response = await body(imports, location);
-      _logger.info('PERF: Computed $action in ${watch.elapsedMilliseconds}ms.');
+      currentLogger
+          .info('PERF: Computed $action in ${watch.elapsedMilliseconds}ms.');
       return response;
     } catch (e, st) {
-      _logger.severe(errorDescription, e, st);
+      currentLogger.error(errorDescription);
+      currentLogger.error(e);
+      currentLogger.error(st);
       await _restart();
       rethrow;
     }

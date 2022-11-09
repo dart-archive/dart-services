@@ -15,7 +15,6 @@ import 'package:dart_services/src/common_server_api.dart';
 import 'package:dart_services/src/common_server_impl.dart';
 import 'package:dart_services/src/sdk.dart';
 import 'package:dart_services/src/server_cache.dart';
-import 'package:logging/logging.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:test/test.dart';
 
@@ -105,14 +104,6 @@ void defineTests() {
     tearDown(() async {
       await commonServerImpl.shutdown();
     });
-
-    setUp(() {
-      log.onRecord.listen((LogRecord rec) {
-        print('${rec.level.name}: ${rec.time}: ${rec.message}');
-      });
-    });
-
-    tearDown(log.clearListeners);
 
     test('analyze Dart', () async {
       for (final version in versions) {
@@ -568,14 +559,6 @@ main() {
     tearDown(() async {
       await commonServerImpl.shutdown();
     });
-
-    setUp(() {
-      log.onRecord.listen((LogRecord rec) {
-        print('${rec.level.name}: ${rec.time}: ${rec.message}');
-      });
-    });
-
-    tearDown(log.clearListeners);
 
     test('analyzeFiles Dart files={}', () async {
       for (final version in versions) {

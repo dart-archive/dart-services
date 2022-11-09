@@ -9,7 +9,7 @@ import 'dart:convert';
 
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
-import 'package:logging/logging.dart';
+import 'package:gcp/gcp.dart';
 
 import '../version.dart';
 import 'analysis_servers.dart';
@@ -22,7 +22,6 @@ import 'sdk.dart';
 import 'server_cache.dart';
 
 const Duration _standardExpiration = Duration(hours: 1);
-final Logger log = Logger('common_server');
 
 class BadRequest implements Exception {
   String cause;
@@ -50,13 +49,10 @@ class CommonServerImpl {
     this._container,
     this._cache,
     this._sdk,
-  ) {
-    hierarchicalLoggingEnabled = true;
-    log.level = Level.ALL;
-  }
+  );
 
   Future<void> init() async {
-    log.info('Beginning CommonServer init().');
+    currentLogger.info('Beginning CommonServer init().');
     _analysisServers = AnalysisServersWrapper(_sdk.dartSdkPath);
     _compiler = Compiler(_sdk);
 
@@ -289,7 +285,7 @@ class CommonServerImpl {
 
       final result = await _checkCache(memCacheKey);
       if (result != null) {
-        log.info('CACHE: Cache hit for compileDart2js');
+        currentLogger.info('CACHE: Cache hit for compileDart2js');
         final resultObj = json.decode(result) as Map<String, dynamic>;
         final response = proto.CompileResponse()
           ..result = resultObj['compiledJS'] as String;
@@ -299,7 +295,7 @@ class CommonServerImpl {
         return response;
       }
 
-      log.info('CACHE: MISS for compileDart2js');
+      currentLogger.info('CACHE: MISS for compileDart2js');
       final watch = Stopwatch()..start();
 
       final results = await _compiler.compileFiles(sources,
@@ -309,7 +305,7 @@ class CommonServerImpl {
         final lineCount = countLines(sources);
         final outputSize = (results.compiledJS?.length ?? 0 / 1024).ceil();
         final ms = watch.elapsedMilliseconds;
-        log.info('PERF: Compiled $lineCount lines of Dart into '
+        currentLogger.info('PERF: Compiled $lineCount lines of Dart into '
             '${outputSize}kb of JavaScript in ${ms}ms using dart2js.');
         final sourceMap = returnSourceMap ? results.sourceMap : null;
 
@@ -332,7 +328,9 @@ class CommonServerImpl {
       }
     } catch (e, st) {
       if (e is! BadRequest) {
-        log.severe('Error during compile (dart2js) on "$sources"', e, st);
+        currentLogger.error('Error during compile (dart2js) on "$sources"');
+        currentLogger.error(e);
+        currentLogger.error(st);
       }
       rethrow;
     }
@@ -346,14 +344,14 @@ class CommonServerImpl {
 
       final result = await _checkCache(memCacheKey);
       if (result != null) {
-        log.info('CACHE: Cache hit for compileDDC');
+        currentLogger.info('CACHE: Cache hit for compileDDC');
         final resultObj = json.decode(result) as Map<String, dynamic>;
         return proto.CompileDDCResponse()
           ..result = resultObj['compiledJS'] as String
           ..modulesBaseUrl = resultObj['modulesBaseUrl'] as String;
       }
 
-      log.info('CACHE: MISS for compileDDC');
+      currentLogger.info('CACHE: MISS for compileDDC');
       final watch = Stopwatch()..start();
 
       final results = await _compiler.compileFilesDDC(sources);
@@ -362,7 +360,7 @@ class CommonServerImpl {
         final lineCount = countLines(sources);
         final outputSize = (results.compiledJS?.length ?? 0 / 1024).ceil();
         final ms = watch.elapsedMilliseconds;
-        log.info('PERF: Compiled $lineCount lines of Dart into '
+        currentLogger.info('PERF: Compiled $lineCount lines of Dart into '
             '${outputSize}kb of JavaScript in ${ms}ms using DDC.');
 
         final cachedResult = const JsonEncoder().convert(<String, String>{
@@ -381,7 +379,9 @@ class CommonServerImpl {
       }
     } catch (e, st) {
       if (e is! BadRequest) {
-        log.severe('Error during compile (DDC) on "$sources"', e, st);
+        currentLogger.error('Error during compile (DDC) on "$sources"');
+        currentLogger.error(e);
+        currentLogger.error(st);
       }
       rethrow;
     }

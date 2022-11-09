@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+// ignore_for_file: avoid_print
+
 library services.common_server_api_protobuf_test;
 
 import 'dart:async';
@@ -15,7 +17,6 @@ import 'package:dart_services/src/common_server_impl.dart';
 import 'package:dart_services/src/protos/dart_services.pb.dart' as proto;
 import 'package:dart_services/src/sdk.dart';
 import 'package:dart_services/src/server_cache.dart';
-import 'package:logging/logging.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:test/test.dart';
@@ -105,14 +106,6 @@ void defineTests() {
     tearDownAll(() async {
       await commonServerImpl.shutdown();
     });
-
-    setUp(() {
-      log.onRecord.listen((LogRecord rec) {
-        print('${rec.level.name}: ${rec.time}: ${rec.message}');
-      });
-    });
-
-    tearDown(log.clearListeners);
 
     test('analyze Dart', () async {
       final request = proto.SourceRequest()..source = sampleCode;
@@ -441,14 +434,6 @@ main() {
     tearDownAll(() async {
       await commonServerImpl.shutdown();
     });
-
-    setUp(() {
-      log.onRecord.listen((LogRecord rec) {
-        print('${rec.level.name}: ${rec.time}: ${rec.message}');
-      });
-    });
-
-    tearDown(log.clearListeners);
 
     test('analyzeFiles Dart files={}', () async {
       final request = proto.SourceFilesRequest(files: {kMainDart: sampleCode});

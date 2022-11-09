@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:convert' show utf8;
 import 'dart:io';
 
+import 'package:gcp/gcp.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
@@ -251,7 +252,7 @@ class _DownloadedFlutterSdk {
 
   Future<int> _execLog(
       String executable, List<String> arguments, String cwd) async {
-    print('$executable ${arguments.join(' ')}');
+    currentLogger.info('$executable ${arguments.join(' ')}');
 
     final process = await Process.start(
       executable,

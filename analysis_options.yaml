@@ -18,6 +18,7 @@ linter:
   rules:
     - always_declare_return_types
     - avoid_dynamic_calls
+    - avoid_print
     - directives_ordering
     - prefer_final_in_for_each
     - prefer_final_locals

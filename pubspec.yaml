@@ -12,8 +12,8 @@ dependencies:
   convert: ^3.1.1
   crypto: ^3.0.2
   encrypt: ^5.0.1
+  gcp: ^0.1.0
   http: ^0.13.5
-  logging: ^1.1.0
   meta: ^1.8.0
   path: ^1.8.2
   protobuf: ^2.1.0

@@ -9,7 +9,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:logging/logging.dart';
+import 'package:gcp/gcp.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
 
@@ -19,8 +19,6 @@ import 'src/github_oauth_handler.dart';
 import 'src/sdk.dart';
 import 'src/server_cache.dart';
 import 'src/shelf_cors.dart' as shelf_cors;
-
-final Logger _logger = Logger('services');
 
 Future<void> main(List<String> args) async {
   final parser = ArgParser()
@@ -43,39 +41,41 @@ Future<void> main(List<String> args) async {
   }
 
   final redisServerUri = results['redis-url'] as String;
+  String? projectId;
 
-  Logger.root.level = Level.FINER;
-  Logger.root.onRecord.listen((LogRecord record) {
-    print(record);
-    if (record.stackTrace != null) print(record.stackTrace);
-  });
+  try {
+    projectId = await projectIdFromMetadataServer();
+  } on BadConfigurationException {
+    projectId = projectIdFromEnvironment();
+  }
+
+  await GitHubOAuthHandler.initFromEnvironmentalVars();
+  await EndpointsServer.serve(port, redisServerUri, sdk, projectId);
 
   final cloudRunEnvVars = Platform.environment.entries
       .where((entry) => entry.key.startsWith('K_'))
       .map((entry) => '${entry.key}: ${entry.value}')
       .join('\n');
 
-  _logger.info('''Initializing dart-services:
+  currentLogger.info('''Initializing dart-services:
     port: $port
     sdkPath: ${sdk.dartSdkPath}
     redisServerUri: $redisServerUri
     Cloud Run Environment variables:
     $cloudRunEnvVars''');
-
-  await GitHubOAuthHandler.initFromEnvironmentalVars();
-
-  await EndpointsServer.serve(port, redisServerUri, sdk);
-  _logger.info('Listening on port $port');
+  currentLogger.info('Listening on port $port');
 }
 
 class EndpointsServer {
   static Future<EndpointsServer> serve(
-      int port, String redisServerUri, Sdk sdk) async {
+      int port, String redisServerUri, Sdk sdk, String? projectId) async {
     final endpointsServer = EndpointsServer._(redisServerUri, sdk);
+    final handler = createLoggingMiddleware(projectId: projectId)
+        .addHandler(endpointsServer.handler);
 
     await endpointsServer.init();
     endpointsServer.server = await shelf.serve(
-      endpointsServer.handler,
+      handler,
       InternetAddress.anyIPv4,
       port,
     );

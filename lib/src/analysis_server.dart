@@ -11,7 +11,7 @@ import 'dart:io';
 
 import 'package:analysis_server_lib/analysis_server_lib.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:logging/logging.dart';
+import 'package:gcp/gcp.dart';
 import 'package:path/path.dart' as path;
 
 import 'common.dart';
@@ -20,8 +20,6 @@ import 'protos/dart_services.pb.dart' as proto;
 import 'pub.dart';
 import 'scheduler.dart';
 import 'utils.dart' as utils;
-
-final Logger _logger = Logger('analysis_server');
 
 /// Flag to determine whether we should dump the communication with the server
 /// to stdout.
@@ -85,18 +83,18 @@ abstract class AnalysisServerWrapper {
     _isInitialized = true;
 
     void onRead(String str) {
-      if (dumpServerMessages) _logger.info('<-- $str');
+      if (dumpServerMessages) currentLogger.info('<-- $str');
     }
 
     void onWrite(String str) {
-      if (dumpServerMessages) _logger.info('--> $str');
+      if (dumpServerMessages) currentLogger.info('--> $str');
     }
 
     final serverArgs = <String>[
       '--client-id=DartPad',
       '--client-version=$_sdkVersion',
     ];
-    _logger.info('Starting server; sdk: `$sdkPath`, args: $serverArgs');
+    currentLogger.info('Starting server; sdk: `$sdkPath`, args: $serverArgs');
 
     analysisServer = await AnalysisServer.create(
       onRead: onRead,
@@ -107,8 +105,9 @@ abstract class AnalysisServerWrapper {
 
     try {
       analysisServer.server.onError.listen((ServerError error) {
-        _logger.severe('server error${error.isFatal ? ' (fatal)' : ''}',
-            error.message, StackTrace.fromString(error.stackTrace));
+        currentLogger.error(
+            'server error${error.isFatal ? ' (fatal)' : ''}: ${error.message}');
+        currentLogger.error(error.stackTrace);
       });
       await analysisServer.server.onConnected.first;
       await analysisServer.server.setSubscriptions(<String>['STATUS']);
@@ -120,7 +119,8 @@ abstract class AnalysisServerWrapper {
       await _sendAddOverlays({mainPath: _warmupSrc});
       await _sendRemoveOverlays();
     } catch (err, st) {
-      _logger.severe('Error starting analysis server ($sdkPath): $err.\n$st');
+      currentLogger
+          .error('Error starting analysis server ($sdkPath): $err.\n$st');
       rethrow;
     }
   }
@@ -238,7 +238,7 @@ abstract class AnalysisServerWrapper {
         ..newString = src
         ..offset = editResult.selectionOffset;
     }).catchError((dynamic error) {
-      _logger.fine('format error: $error');
+      currentLogger.debug('format error: $error');
       return proto.FormatResponse()
         ..newString = src
         ..offset = offset;
@@ -251,7 +251,8 @@ abstract class AnalysisServerWrapper {
 
   Future<Map<String, String>> dartdocMulti(
       Map<String, String> sources, Location location) {
-    _logger.fine('dartdoc: Scheduler queue: ${serverScheduler.queueCount}');
+    currentLogger
+        .debug('dartdoc: Scheduler queue: ${serverScheduler.queueCount}');
 
     sources = _getOverlayMapWithPaths(sources);
     final sourcepath = _getPathFromName(location.sourceName);
@@ -293,7 +294,8 @@ abstract class AnalysisServerWrapper {
 
   Future<proto.AnalysisResults> analyzeFiles(Map<String, String> sources,
       {List<ImportDirective>? imports}) {
-    _logger.fine('analyze: Scheduler queue: ${serverScheduler.queueCount}');
+    currentLogger
+        .debug('analyze: Scheduler queue: ${serverScheduler.queueCount}');
 
     return serverScheduler
         .schedule(ClosureTask<proto.AnalysisResults>(() async {
@@ -363,7 +365,7 @@ abstract class AnalysisServerWrapper {
     final path = _getPathFromName(sourceName);
 
     if (serverScheduler.queueCount > 0) {
-      _logger.fine(
+      currentLogger.debug(
           'getRefactoringsImpl: Scheduler queue: ${serverScheduler.queueCount}');
     }
 
@@ -489,7 +491,7 @@ abstract class AnalysisServerWrapper {
   Future<CompletionResults> _completeImpl(
       Map<String, String> sources, String sourceName, int offset) async {
     if (serverScheduler.queueCount > 0) {
-      _logger
+      currentLogger
           .info('completeImpl: Scheduler queue: ${serverScheduler.queueCount}');
     }
 
@@ -516,8 +518,8 @@ abstract class AnalysisServerWrapper {
     final path = _getPathFromName(sourceName);
 
     if (serverScheduler.queueCount > 0) {
-      _logger
-          .fine('getFixesImpl: Scheduler queue: ${serverScheduler.queueCount}');
+      currentLogger.debug(
+          'getFixesImpl: Scheduler queue: ${serverScheduler.queueCount}');
     }
 
     return serverScheduler.schedule(ClosureTask<FixesResult>(() async {
@@ -533,7 +535,8 @@ abstract class AnalysisServerWrapper {
   }
 
   Future<FormatResult> _formatImpl(String src, int offset) async {
-    _logger.fine('FormatImpl: Scheduler queue: ${serverScheduler.queueCount}');
+    currentLogger
+        .debug('FormatImpl: Scheduler queue: ${serverScheduler.queueCount}');
 
     return serverScheduler.schedule(ClosureTask<FormatResult>(() async {
       await _loadSources({mainPath: src});
@@ -583,8 +586,8 @@ abstract class AnalysisServerWrapper {
     final contentOverlays = overlays.map((overlayPath, content) =>
         MapEntry(overlayPath, AddContentOverlay(content)));
 
-    _logger.fine('About to send analysis.updateContent');
-    _logger.fine('  ${contentOverlays.keys}');
+    currentLogger.debug('About to send analysis.updateContent');
+    currentLogger.debug('  ${contentOverlays.keys}');
 
     _overlayPaths.addAll(contentOverlays.keys);
 
@@ -592,8 +595,9 @@ abstract class AnalysisServerWrapper {
   }
 
   Future<void> _sendRemoveOverlays() async {
-    _logger.fine('About to send analysis.updateContent remove overlays:');
-    _logger.fine('  $_overlayPaths');
+    currentLogger
+        .debug('About to send analysis.updateContent remove overlays:');
+    currentLogger.debug('  $_overlayPaths');
 
     final contentOverlays = {
       for (final overlayPath in _overlayPaths)
