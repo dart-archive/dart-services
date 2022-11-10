@@ -79,7 +79,7 @@ void defineTests() {
           .any((completion) => completion.completion['completion'] == expected);
 
   group('Platform SDK analysis_server', () {
-    late final Sdk sdk;
+    late Sdk sdk;
     setUp(() async {
       sdk = Sdk.create(channel);
       analysisServer = DartAnalysisServerWrapper(dartSdkPath: sdk.dartSdkPath);
@@ -257,7 +257,7 @@ void defineTests() {
   //--------------------------------------------------------
   // Begin testing the multi file group files={} map entry points:
   group('Platform SDK analysis_server multifile files={}', () {
-    late final Sdk sdk;
+    late Sdk sdk;
     setUp(() async {
       sdk = Sdk.create(channel);
       analysisServer = DartAnalysisServerWrapper(dartSdkPath: sdk.dartSdkPath);

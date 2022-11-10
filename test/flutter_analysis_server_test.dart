@@ -49,7 +49,7 @@ void defineTests() {
       'Flutter SDK analysis_server with analysis '
       'servers', () {
     late AnalysisServersWrapper analysisServersWrapper;
-    late final Sdk sdk;
+    late Sdk sdk;
     setUp(() async {
       sdk = Sdk.create(channel);
       analysisServersWrapper = AnalysisServersWrapper(sdk.dartSdkPath);
@@ -209,7 +209,7 @@ class HelloWorld extends StatelessWidget {
         'Flutter SDK analysis_server with analysis files={}'
         'servers', () {
       late AnalysisServersWrapper analysisServersWrapper;
-      late final Sdk sdk;
+      late Sdk sdk;
       setUp(() async {
         sdk = Sdk.create(channel);
         analysisServersWrapper = AnalysisServersWrapper(sdk.dartSdkPath);
