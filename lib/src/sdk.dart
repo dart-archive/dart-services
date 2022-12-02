@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:convert' show utf8;
 import 'dart:io';
 
+import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
@@ -35,6 +36,9 @@ class Sdk {
 
   /// Is this the old channel
   bool get oldChannel => channel == 'old';
+
+  /// Is this the master channel
+  bool get masterChannel => channel == 'master';
 
   // Which channel is this SDK?
   final String channel;
