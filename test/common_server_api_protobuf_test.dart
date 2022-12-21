@@ -167,6 +167,11 @@ void defineTests() {
       final request = proto.CompileRequest()..source = sampleCode;
       final response =
           await sendPostRequest('dartservices/v2/compile', request);
+
+      // Debuggging GitHub Actions CI
+      print(JsonEncoder.withIndent('  ')
+          .convert(json.decode(await response.transform(utf8.decoder).join())));
+
       expect(response.statusCode, 200);
       final data = json.decode(await response.transform(utf8.decoder).join());
       final reply = proto.CompileResponse()..mergeFromProto3Json(data);
