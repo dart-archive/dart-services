@@ -88,6 +88,8 @@ class Compiler {
         '--packages=${path.join('.dart_tool', 'package_config.json')}',
         '--sound-null-safety',
         '--enable-asserts',
+        ..._sdk.experiments
+            .map((experiment) => '--enable-experiment=$experiment'),
         '-o',
         '$kMainDart.js',
         path.join('lib', kMainDart),
