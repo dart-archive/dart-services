@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library services.common_server_api_test;
-
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
@@ -153,9 +151,7 @@ void main() {
         final data = await response.transform(utf8.decoder).join();
         expect(json.decode(data), <dynamic, dynamic>{});
       }
-    },
-        // TODO(srawlins): delete when channel `old` >= 2.15
-        skip: channel == 'old');
+    });
 
     test('analyze counterApp', () async {
       for (final version in versions) {
@@ -623,9 +619,7 @@ void main() {
         final data = await response.transform(utf8.decoder).join();
         expect(json.decode(data), <dynamic, dynamic>{});
       }
-    },
-        // TODO(srawlins): delete when channel `old` >= 2.15
-        skip: channel == 'old');
+    });
 
     test('analyzeFiles counterApp files={}', () async {
       for (final version in versions) {
