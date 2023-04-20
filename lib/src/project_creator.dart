@@ -201,7 +201,7 @@ String createPubspec({
   var content = '''
 name: dartpad_sample
 environment:
-  sdk: '>=$dartLanguageVersion <4.0.0'
+  sdk: ^$dartLanguageVersion
 dependencies:
 ''';
 
