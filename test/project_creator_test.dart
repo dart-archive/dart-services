@@ -103,7 +103,7 @@ void defineTests() {
           d.file(
             'pubspec.yaml',
             allOf([
-              matches('sdk: ^$languageVersion'),
+              matches('sdk: $languageVersion'),
               matches('sdk: flutter'),
             ]),
           ),
@@ -167,7 +167,7 @@ void defineTests() {
           d.file(
             'pubspec.yaml',
             allOf([
-              matches('sdk: ^$languageVersion'),
+              matches('sdk: $languageVersion'),
               matches('sdk: flutter'),
             ]),
           ),
