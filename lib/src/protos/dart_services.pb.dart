@@ -675,6 +675,17 @@ class AnalysisIssue extends $pb.GeneratedMessage {
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'correction')
+    ..a<$core.int>(
+        11,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'column',
+        $pb.PbFieldType.O3)
+    ..aOS(
+        12,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'code')
     ..hasRequiredFields = false;
 
   AnalysisIssue._() : super();
@@ -689,6 +700,8 @@ class AnalysisIssue extends $pb.GeneratedMessage {
     $core.String? url,
     $core.Iterable<DiagnosticMessage>? diagnosticMessages,
     $core.String? correction,
+    $core.int? column,
+    $core.String? code,
   }) {
     final _result = create();
     if (kind != null) {
@@ -720,6 +733,12 @@ class AnalysisIssue extends $pb.GeneratedMessage {
     }
     if (correction != null) {
       _result.correction = correction;
+    }
+    if (column != null) {
+      _result.column = column;
+    }
+    if (code != null) {
+      _result.code = code;
     }
     return _result;
   }
@@ -860,6 +879,30 @@ class AnalysisIssue extends $pb.GeneratedMessage {
   $core.bool hasCorrection() => $_has(9);
   @$pb.TagNumber(10)
   void clearCorrection() => clearField(10);
+
+  @$pb.TagNumber(11)
+  $core.int get column => $_getIZ(10);
+  @$pb.TagNumber(11)
+  set column($core.int v) {
+    $_setSignedInt32(10, v);
+  }
+
+  @$pb.TagNumber(11)
+  $core.bool hasColumn() => $_has(10);
+  @$pb.TagNumber(11)
+  void clearColumn() => clearField(11);
+
+  @$pb.TagNumber(12)
+  $core.String get code => $_getSZ(11);
+  @$pb.TagNumber(12)
+  set code($core.String v) {
+    $_setString(11, v);
+  }
+
+  @$pb.TagNumber(12)
+  $core.bool hasCode() => $_has(11);
+  @$pb.TagNumber(12)
+  void clearCode() => clearField(12);
 }
 
 class DiagnosticMessage extends $pb.GeneratedMessage {
