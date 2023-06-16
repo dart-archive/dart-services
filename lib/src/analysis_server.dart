@@ -322,11 +322,11 @@ abstract class AnalysisServerWrapper {
           ..charStart = error.location.offset
           ..charLength = error.location.length
           ..diagnosticMessages.addAll(
-            error.contextMessages?.map((m) => proto.DiagnosticMessage(
-                    message: utils.normalizeFilePaths(m.message),
-                    line: m.location.startLine,
-                    charStart: m.location.offset,
-                    charLength: m.location.length)) ??
+            error.contextMessages?.map((m) => proto.DiagnosticMessage()
+                  ..message = utils.normalizeFilePaths(m.message)
+                  ..line = m.location.startLine
+                  ..charStart = m.location.offset
+                  ..charLength = m.location.length) ??
                 [],
           );
 
