@@ -17,7 +17,7 @@ class ProjectCreator {
 
   final String _templatesPath;
 
-  /// The Dart Language Version to use for code using null safety.
+  /// The Dart language version to use.
   final String _dartLanguageVersion;
 
   final File _dependenciesFile;
@@ -180,7 +180,7 @@ ${_sdk.experiments.map((experiment) => '    - $experiment').join('\n')}
     final allVersions =
         parsePubDependenciesFile(dependenciesFile: _dependenciesFile);
     final result = {
-      for (var package in packages) package: allVersions[package] ?? 'any',
+      for (final package in packages) package: allVersions[package] ?? 'any',
     };
 
     // Overwrite with important constraints.
@@ -220,7 +220,7 @@ String createPubspec({
   var content = '''
 name: dartpad_sample
 environment:
-  sdk: $dartLanguageVersion
+  sdk: ^$dartLanguageVersion
 dependencies:
 ''';
 
