@@ -1,5 +1,9 @@
 # Dart Services
 
+**Note:** This is no longer the source of truth for Dart Services. Please see [github.com/dart-lang/dart-pad/tree/main/pkgs/dart_services][] for the new source of truth for this project.
+
+  [github.com/dart-lang/dart-pad/tree/main/pkgs/dart_services]: https://github.com/dart-lang/dart-pad/tree/main/pkgs/dart_services
+
 A server backend to support DartPad.
 
 [![Build Status](https://github.com/dart-lang/dart-services/workflows/dart-services/badge.svg)](https://github.com/dart-lang/dart-services/actions?workflow=dart-services)
